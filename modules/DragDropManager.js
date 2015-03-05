@@ -1,37 +1,76 @@
 'use strict';
 
-import DragDropContext from './DragDropContext';
 import Flux from './Flux';
+import keyMirror from 'keymirror';
+import DragDropContext from './DragDropContext';
+import getNextUniqueId from './utils/getNextUniqueId';
+import getIn from './utils/getIn';
+import setIn from './utils/setIn';
+
+const HandlerRoles = keyMirror({
+  SOURCE: null,
+  TARGET: null
+});
+
+function makePath({ role, type, id }: descriptor) {
+  return [role, type, id];
+}
 
 export default class DragDropManager {
   constructor(Backend) {
-    this.alt = new Flux();
+    this._alt = new Flux();
+    this._handlers = {};
 
-    this.backend = new Backend(this.alt);
-    this.context = new DragDropContext(this.alt);
+    this._backend = new Backend(this);
+    this._context = new DragDropContext(this);
+  }
+
+  getAlt() {
+    return this._alt;
   }
 
   getBackend() {
-    return this.backend;
+    return this._backend;
   }
 
   getContext() {
-    return this.context;
+    return this._context;
   }
 
-  addSource() {
-
+  addSource(type, source) {
+    return this._addHandler(HandlerRoles.SOURCE, type, source);
   }
 
-  addTarget() {
-
+  addTarget(type, source) {
+    return this._addHandler(HandlerRoles.TARGET, type, source);
   }
 
-  removeSource() {
+  _addHandler(role, type, handler) {
+    const id = getNextUniqueId().toString();
+    const descriptor = { role, type, id };
+    const path = makePath(descriptor);
 
+    setIn(this._handlers, path, handler);
+    return descriptor;
   }
 
-  removeTarget() {
+  getSource(descriptor) {
+    const path = makePath(descriptor);
+    return getIn(this._handlers, path);
+  }
 
+  getTarget(descriptor) {
+    const path = makePath(descriptor);
+    return getIn(this._handlers, path);
+  }
+
+  removeSource(descriptor) {
+    const path = makePath(descriptor);
+    setIn(this._handlers, path, null);
+  }
+
+  removeTarget(descriptor) {
+    const path = makePath(descriptor);
+    setIn(this._handlers, path, null);
   }
 }

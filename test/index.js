@@ -21,14 +21,14 @@ describe('DragDropManager', () => {
   });
 
   it('prevents drag when canDrag returns false', () => {
-    manager.addSource(Types.FOO, new NonDraggableSource());
-    backend.simulateBeginDrag({ itemType: Types.FOO });
+    const descriptor = manager.addSource(Types.FOO, new NonDraggableSource());
+    backend.simulateBeginDrag(descriptor);
     expect(context.isDragging()).to.equal(false);
   });
 
   it('begins drag when canDrag returns true', () => {
-    manager.addSource(Types.FOO, new NormalSource());
-    backend.simulateBeginDrag({ itemType: Types.FOO });
+    const descriptor = manager.addSource(Types.FOO, new NormalSource());
+    backend.simulateBeginDrag(descriptor);
     expect(context.isDragging()).to.equal(true);
   });
 });

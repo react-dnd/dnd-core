@@ -2,8 +2,7 @@
 
 export default class DragOperationStore {
   constructor() {
-    const actions = this.alt.getDragDropActions();
-    this.bindActions(actions);
+    this.bindActions(this.alt.dragDropActions);
 
     this.draggedItemType = null;
   }

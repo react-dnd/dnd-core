@@ -1,11 +1,20 @@
 'use strict';
 
 export default class TestBackend {
-  constructor(alt) {
-    this.actions = alt.getDragDropActions();
+  constructor(manager) {
+    this.manager = manager;
+    this.actions = manager.getAlt().dragDropActions;
   }
 
-  simulateBeginDrag(itemType) {
-    this.actions.beginDrag({ itemType });
+  simulateBeginDrag(descriptor) {
+    const dragSource = this.manager.getSource(descriptor);
+    if (!dragSource.canDrag()) {
+      return;
+    }
+
+    this.actions.beginDrag({
+      itemType: descriptor.type,
+      item: dragSource.beginDrag()
+    });
   }
 };

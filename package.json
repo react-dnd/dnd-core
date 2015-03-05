@@ -24,6 +24,8 @@
   },
   "dependencies": {
     "alt": "^0.13.10",
+    "invariant": "^2.0.0",
+    "keymirror": "^0.1.1",
     "lodash": "^3.3.1"
   }
 }

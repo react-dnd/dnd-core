@@ -1,9 +1,9 @@
 export default class DragDropContext {
-  constructor(alt) {
-    this.dragOperationStore = alt.getDragOperationStore();
+  constructor(manager) {
+    this.alt = manager.getAlt();
   }
 
   isDragging() {
-    return this.dragOperationStore.isDragging();
+    return this.alt.dragOperationStore.isDragging();
   }
 }
