@@ -1,22 +1,31 @@
 'use strict';
 
-export default class DragOperationStore {
-  constructor() {
-    this.bindActions(this.alt.dragDropActions);
+import { Store } from 'flummox';
 
-    this.draggedItemType = null;
+export default class DragOperationStore extends Store {
+  constructor(flux) {
+    super();
+
+    const actionIds = flux.getDragDropActionIds();
+    this.register(actionIds.beginDrag, this.handleBeginDrag);
+
+    this.state = {
+      draggedItemType: null
+    };
   }
 
-  beginDrag({ itemType }) {
-    this.draggedItemType = itemType;
+  handleBeginDrag({ itemType }) {
+    this.setState({
+      draggedItemType: itemType
+    });
   }
 
-  static getDraggedItemType() {
-    const { draggedItemType } = this.getState();
+  getDraggedItemType() {
+    const { draggedItemType } = this.state;
     return draggedItemType;
   }
 
-  static isDragging() {
+  isDragging() {
     return Boolean(this.getDraggedItemType());
   }
 };

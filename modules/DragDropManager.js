@@ -18,15 +18,15 @@ function makePath({ role, type, id }: descriptor) {
 
 export default class DragDropManager {
   constructor(Backend) {
-    this._alt = new Flux();
+    this._flux = new Flux();
     this._handlers = {};
 
     this._backend = new Backend(this);
     this._context = new DragDropContext(this);
   }
 
-  getAlt() {
-    return this._alt;
+  getFlux() {
+    return this._flux;
   }
 
   getBackend() {

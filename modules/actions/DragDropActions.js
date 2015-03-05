@@ -1,7 +1,9 @@
 'use strict';
 
-export default class DragDropActions {
-  constructor() {
-    this.generateActions('beginDrag');
+import { Actions } from 'flummox'
+
+export default class DragDropActions extends Actions {
+  beginDrag({ itemType, item }) {
+    return { itemType, item };
   }
 }

@@ -3,7 +3,8 @@
 export default class TestBackend {
   constructor(manager) {
     this.manager = manager;
-    this.actions = manager.getAlt().dragDropActions;
+    const flux = manager.getFlux();
+    this.actions = flux.getDragDropActions();
   }
 
   simulateBeginDrag(descriptor) {
