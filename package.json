@@ -2,9 +2,10 @@
   "name": "dnd-core",
   "version": "0.0.1",
   "description": "Drag and drop sans the GUI",
-  "main": "index.js",
+  "main": "dist-modules/index.js",
   "scripts": {
-    "test": "mocha --require test/babel-hook"
+    "build": "./scripts/build",
+    "test": "./scripts/test"
   },
   "repository": {
     "type": "git",
