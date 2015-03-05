@@ -10,22 +10,25 @@ import {
 
 describe('DragDropManager', () => {
   let manager;
+  let backend;
   let context;
 
   beforeEach(() => {
     manager = new DragDropManager(TestBackend);
+
     context = manager.getContext();
+    backend = manager.getBackend();
   });
 
   it('prevents drag when canDrag returns false', () => {
-    let sourceId = manager.addSource(Types.FOO, new NonDraggableSource());
-    TestBackend.simulateBeginDrag(sourceId);
+    manager.addSource(Types.FOO, new NonDraggableSource());
+    backend.simulateBeginDrag({ itemType: Types.FOO });
     expect(context.isDragging()).to.equal(false);
   });
 
   it('begins drag when canDrag returns true', () => {
-    let sourceId = manager.addSource(Types.FOO, new NormalSource());
-    TestBackend.simulateBeginDrag(sourceId);
+    manager.addSource(Types.FOO, new NormalSource());
+    backend.simulateBeginDrag({ itemType: Types.FOO });
     expect(context.isDragging()).to.equal(true);
   });
 });
