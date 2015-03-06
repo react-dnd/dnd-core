@@ -59,10 +59,11 @@ export default class DragDropManager {
 
   updateDraggedSource() {
     const handle = this.context.getDraggedSourceHandle();
-    if (handle && this.draggedSource) {
+    if (handle === this.draggedSourceHandle) {
       return;
     }
 
+    this.draggedSourceHandle = handle;
     if (handle) {
       this.draggedSource = this.getSource(handle);
     } else {
