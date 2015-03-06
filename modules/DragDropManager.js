@@ -1,6 +1,7 @@
 'use strict';
 
 import Flux from './Flux';
+import invariant from 'invariant';
 import keyMirror from 'keymirror';
 import DragDropContext from './DragDropContext';
 import getNextUniqueId from './utils/getNextUniqueId';
@@ -11,6 +12,16 @@ const HandlerRoles = keyMirror({
   SOURCE: null,
   TARGET: null
 });
+
+function validateSourceContract(source) {
+  invariant(typeof source.canDrag === 'function', 'Expected canDrag to be a function.');
+  invariant(typeof source.beginDrag === 'function', 'Expected beginDrag to be a function.');
+  invariant(typeof source.endDrag === 'function', 'Expected endDrag to be a function.');
+}
+
+function validateTargetContract(target) {
+  invariant(typeof target.drop === 'function', 'Expected beginDrag to be a function.');
+}
 
 function makePath({ role, type, id }: handle) {
   return [role, type, id];
@@ -38,10 +49,12 @@ export default class DragDropManager {
   }
 
   addSource(type, source) {
+    validateSourceContract(source);
     return this._addHandler(HandlerRoles.SOURCE, type, source);
   }
 
   addTarget(type, source) {
+    validateTargetContract(source);
     return this._addHandler(HandlerRoles.TARGET, type, source);
   }
 
@@ -65,11 +78,17 @@ export default class DragDropManager {
   }
 
   removeSource(handle) {
+    invariant(this.getSource(handle), 'Cannot remove a source that was not added.');
+    invariant(handle.role === HandlerRoles.SOURCE, 'Expected to receive a source handle');
+
     const path = makePath(handle);
     setIn(this._handlers, path, null);
   }
 
   removeTarget(handle) {
+    invariant(this.getTarget(handle), 'Cannot remove a target that was not added.');
+    invariant(handle.role === HandlerRoles.TARGET, 'Expected to receive a target handle');
+
     const path = makePath(handle);
     setIn(this._handlers, path, null);
   }

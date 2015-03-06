@@ -18,4 +18,11 @@ export class NonDraggableSource {
   canDrag() {
     return false;
   }
+
+  beginDrag() {
+    return {};
+  }
+
+  endDrag() {
+  }
 };
