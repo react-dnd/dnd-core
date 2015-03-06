@@ -4,7 +4,7 @@ import invariant from 'invariant';
 
 export default class DragDropContext {
   constructor(manager) {
-    this.manager = manager;
+    this.registry = manager.registry;
     this.dragOperationStore = manager.flux.dragOperationStore;
   }
 
@@ -17,7 +17,7 @@ export default class DragDropContext {
   }
 
   canDrag(sourceHandle) {
-    const source = this.manager.getSource(sourceHandle);
+    const source = this.registry.getSource(sourceHandle);
     invariant(source, 'Expected to find a valid source.');
 
     if (this.isDragging()) {
@@ -28,7 +28,7 @@ export default class DragDropContext {
   }
 
   canDrop(targetHandle) {
-    const target = this.manager.getTarget(targetHandle);
+    const target = this.registry.getTarget(targetHandle);
     invariant(target, 'Expected to find a valid target.');
 
     if (!this.isDragging() || this.didDrop()) {
