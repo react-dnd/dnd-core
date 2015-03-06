@@ -18,31 +18,51 @@ describe('DragDropContext', () => {
     backend = manager.getBackend();
   });
 
-  it('raises change events on beginDrag()', (done) => {
+  it('raises change event on beginDrag()', (done) => {
     const source = new NormalSource();
     const sourceHandle = manager.addSource(Types.FOO, source);
 
-    context.addChangeListener(() => {
-      expect(context.isDragging()).to.equal(true);
-      done();
-    });
+    context.addChangeListener(done);
     backend.simulateBeginDrag(sourceHandle);
   });
 
-  it('raises change events on endDrag()', (done) => {
+  it('raises change event on endDrag()', (done) => {
     const source = new NormalSource();
     const sourceHandle = manager.addSource(Types.FOO, source);
     const target = new NormalTarget();
     manager.addTarget(Types.FOO, target);
 
     backend.simulateBeginDrag(sourceHandle);
-    expect(context.isDragging()).to.equal(true);
-
-    context.addChangeListener(() => {
-      expect(context.isDragging()).to.equal(false);
-      done();
-    });
+    context.addChangeListener(done);
     backend.simulateEndDrag();
+  });
+
+  it('raises change event when adding a source', (done) => {
+    const source = new NormalSource();
+    context.addChangeListener(done);
+    manager.addSource(Types.FOO, source);
+  });
+
+  it('raises change event when adding a target', (done) => {
+    const target = new NormalTarget();
+    context.addChangeListener(done);
+    manager.addTarget(Types.FOO, target);
+  });
+
+  it('raises change event when removing a source', (done) => {
+    const source = new NormalSource();
+    const sourceHandle = manager.addSource(Types.FOO, source);
+
+    context.addChangeListener(done);
+    manager.removeSource(sourceHandle);
+  });
+
+  it('raises change event when removing a target', (done) => {
+    const target = new NormalTarget();
+    const targetHandle = manager.addTarget(Types.FOO, target);
+
+    context.addChangeListener(done);
+    manager.removeTarget(targetHandle);
   });
 
   it('returns true from canDrag unless already dragging or drag source opts out', () => {
