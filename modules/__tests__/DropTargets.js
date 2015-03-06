@@ -1,12 +1,14 @@
 export class NormalTarget {
+  constructor(dropResult) {
+    this.dropResult = dropResult || { foo: 'bar' };
+  }
+
   canDrop() {
     return true;
   }
 
   drop() {
-    return {
-      foo: 'bar'
-    };
+    return this.dropResult;
   }
 };
 

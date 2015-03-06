@@ -3,7 +3,7 @@
 import expect from 'expect.js';
 import Types from './Types';
 import { NormalSource, NonDraggableSource } from './DragSources';
-import { NormalTarget, NonDroppableTarget } from './DropTargets';
+import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult } from './DropTargets';
 import { DragDropManager, TestBackend } from '..';
 
 describe('DragDropContext', () => {
@@ -161,10 +161,6 @@ describe('DragDropContext', () => {
     const sourceAHandle = manager.addSource(Types.FOO, sourceA);
     const sourceB = new NormalSource();
     const sourceBHandle = manager.addSource(Types.FOO, sourceB);
-    const sourceC = new NormalSource();
-    manager.addSource(Types.BAR, sourceC);
-    const sourceD = new NonDraggableSource();
-    manager.addSource(Types.FOO, sourceD);
     const target = new NormalTarget();
     const targetHandle = manager.addTarget(Types.FOO, target);
 
@@ -181,5 +177,69 @@ describe('DragDropContext', () => {
 
     backend.simulateBeginDrag(sourceBHandle);
     expect(context.getDraggedSourceHandle()).to.equal(sourceBHandle);
+  });
+
+  it('keeps track of dragged item and type', () => {
+    const sourceA = new NormalSource({ a: 123 });
+    const sourceAHandle = manager.addSource(Types.FOO, sourceA);
+    const sourceB = new NormalSource({ a: 456 });
+    const sourceBHandle = manager.addSource(Types.BAR, sourceB);
+    const target = new NormalTarget();
+    const targetHandle = manager.addTarget(Types.FOO, target);
+
+    expect(context.getDraggedItem()).to.equal(null);
+    expect(context.getDraggedItemType()).to.equal(null);
+
+    backend.simulateBeginDrag(sourceAHandle);
+    expect(context.getDraggedItem().a).to.equal(123);
+    expect(context.getDraggedItemType()).to.equal(Types.FOO);
+
+    backend.simulateDrop(targetHandle);
+    expect(context.getDraggedItem().a).to.equal(123);
+    expect(context.getDraggedItemType()).to.equal(Types.FOO);
+
+    backend.simulateEndDrag();
+    expect(context.getDraggedItem()).to.equal(null);
+    expect(context.getDraggedItemType()).to.equal(null);
+
+    backend.simulateBeginDrag(sourceBHandle);
+    expect(context.getDraggedItem().a).to.equal(456);
+    expect(context.getDraggedItemType()).to.equal(Types.BAR);
+  });
+
+  it('keeps track of drop result and whether it occured', () => {
+    const source = new NormalSource();
+    const sourceHandle = manager.addSource(Types.FOO, source);
+    const targetA = new NormalTarget({ a: 123 });
+    const targetAHandle = manager.addTarget(Types.FOO, targetA);
+    const targetB = new TargetWithNoDropResult();
+    const targetBHandle = manager.addTarget(Types.FOO, targetB);
+
+    expect(context.didDrop()).to.equal(false);
+    expect(context.getDropResult()).to.equal(null);
+
+    backend.simulateBeginDrag(sourceHandle);
+    expect(context.didDrop()).to.equal(false);
+    expect(context.getDropResult()).to.equal(null);
+
+    backend.simulateDrop(targetAHandle);
+    expect(context.didDrop()).to.equal(true);
+    expect(context.getDropResult().a).to.equal(123);
+
+    backend.simulateEndDrag();
+    expect(context.didDrop()).to.equal(false);
+    expect(context.getDropResult()).to.equal(null);
+
+    backend.simulateBeginDrag(sourceHandle);
+    expect(context.didDrop()).to.equal(false);
+    expect(context.getDropResult()).to.equal(null);
+
+    backend.simulateDrop(targetBHandle);
+    expect(context.didDrop()).to.equal(true);
+    expect(context.getDropResult()).to.equal(null);
+
+    backend.simulateEndDrag();
+    expect(context.didDrop()).to.equal(false);
+    expect(context.getDropResult()).to.equal(null);
   });
 });

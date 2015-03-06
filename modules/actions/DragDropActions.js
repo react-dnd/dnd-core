@@ -35,10 +35,15 @@ export default class DragDropActions extends Actions {
     );
 
     const target = manager.getTarget(targetHandle);
-    const dropResult = target.drop();
+
+    let dropResult = target.drop();
+    if (typeof dropResult === 'undefined') {
+      dropResult = null;
+    }
+
     invariant(
-      typeof dropResult === 'undefined' || isObject(dropResult),
-      'Drop result must either be an object or undefined.'
+      dropResult === null || isObject(dropResult),
+      'Drop result must either be an object or null.'
     );
 
     return { dropResult };

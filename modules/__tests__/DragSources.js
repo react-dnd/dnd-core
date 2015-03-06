@@ -1,12 +1,14 @@
 export class NormalSource {
+  constructor(item) {
+    this.item = item || { baz: 42 };
+  }
+
   canDrag() {
     return true;
   }
 
   beginDrag() {
-    return {
-      baz: 42
-    };
+    return this.item;
   }
 
   endDrag(endDragArgument) {
