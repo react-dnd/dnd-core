@@ -11,30 +11,29 @@ export default class DragDropActions extends Actions {
   }
 
   beginDrag(sourceHandle) {
-    const manager = this.manager;
-    const context = manager.context;
+    const { context, registry } = this.manager;
     invariant(
       context.canDrag(sourceHandle),
       'Cannot call beginDrag now. Check context.canDrag(sourceHandle) first.'
     );
 
-    const source = manager.getSource(sourceHandle);
+    const source = registry.getSource(sourceHandle);
     const item = source.beginDrag(context);
     invariant(isObject(item), 'Item must be an object.');
 
+    registry.pinSource(sourceHandle);
     const { type: itemType } = sourceHandle;
     return { itemType, item, sourceHandle };
   }
 
   drop(targetHandle) {
-    const manager = this.manager;
-    const context = manager.context;
+    const { context, registry } = this.manager;
     invariant(
       context.canDrop(targetHandle),
       'Cannot call drop now. Check context.canDrop(targetHandle) first.'
     );
 
-    const target = manager.getTarget(targetHandle);
+    const target = registry.getTarget(targetHandle);
 
     let dropResult = target.drop(context);
     invariant(
@@ -49,15 +48,16 @@ export default class DragDropActions extends Actions {
   }
 
   endDrag() {
-    const manager = this.manager;
-    const context = manager.context;
+    const { context, registry } = this.manager;
     invariant(
       context.canEndDrag(),
       'Cannot call endDrag now. Check context.canEndDrag() first.'
     );
 
-    const source = manager.getDraggedSource();
+    const sourceHandle = context.getDraggedSourceHandle();
+    const source = registry.getPinnedSource(sourceHandle);
     source.endDrag(context);
+    registry.unpinSource(sourceHandle);
 
     return {};
   }

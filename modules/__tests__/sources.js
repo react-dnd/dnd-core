@@ -31,3 +31,34 @@ export class BadItemSource extends DragSource {
     return 42;
   }
 }
+
+export class NumberSource extends DragSource {
+  constructor(number) {
+    this.number = number;
+  }
+
+  beginDrag() {
+    return {
+      number: this.number
+    };
+  }
+}
+
+export class NumberPredicateMirrorSource extends DragSource {
+  constructor(predicate) {
+    this.predicate = predicate;
+  }
+
+  canDrag() {
+    return false;
+  }
+
+  isDragging(context) {
+    const item = context.getDraggedItem();
+    return this.predicate(item.number);
+  }
+
+  beginDrag() {
+    return {};
+  }
+}

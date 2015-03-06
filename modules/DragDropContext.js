@@ -4,8 +4,8 @@ import invariant from 'invariant';
 
 export default class DragDropContext {
   constructor(flux, registry) {
-    this.registry = registry;
     this.dragOperationStore = flux.dragOperationStore;
+    this.registry = registry;
   }
 
   addChangeListener(listener, context) {

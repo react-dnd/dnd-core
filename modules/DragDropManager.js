@@ -12,13 +12,6 @@ export default class DragDropManager {
     this.registry = new HandlerRegistry();
     this.context = new DragDropContext(flux, this.registry);
     this.backend = new Backend(flux.dragDropActions);
-
-    this.context.addChangeListener(this.updateDraggedSource, this);
-    this.updateDraggedSource();
-  }
-
-  dispose() {
-    this.context.removeChangeListener(this.updateDraggedSource, this);
   }
 
   getContext() {
@@ -29,45 +22,7 @@ export default class DragDropManager {
     return this.backend;
   }
 
-  addSource(type, source) {
-    return this.registry.addSource(type, source);
-  }
-
-  addTarget(type, target) {
-    return this.registry.addTarget(type, target);
-  }
-
-  getSource(handle) {
-    return this.registry.getSource(handle);
-  }
-
-  getTarget(handle) {
-    return this.registry.getTarget(handle);
-  }
-
-  removeSource(handle) {
-    this.registry.removeSource(handle);
-  }
-
-  removeTarget(handle) {
-    this.registry.removeTarget(handle);
-  }
-
-  getDraggedSource() {
-    return this.draggedSource;
-  }
-
-  updateDraggedSource() {
-    const handle = this.context.getDraggedSourceHandle();
-    if (handle === this.draggedSourceHandle) {
-      return;
-    }
-
-    this.draggedSourceHandle = handle;
-    if (handle) {
-      this.draggedSource = this.getSource(handle);
-    } else {
-      this.draggedSource = null;
-    }
+  getRegistry() {
+    return this.registry;
   }
 }

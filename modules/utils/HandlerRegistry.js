@@ -44,6 +44,7 @@ function makePath({ role, type, id }: handle) {
 export default class HandlerRegistry extends EventEmitter {
   constructor() {
     this.handlers = {};
+    this.pinned = {};
   }
 
   addSource(type, source) {
@@ -84,11 +85,34 @@ export default class HandlerRegistry extends EventEmitter {
     return getIn(this.handlers, path);
   }
 
+  getPinnedSource(handle) {
+    validateSourceHandle(handle);
+
+    const path = makePath(handle);
+    return getIn(this.pinned, path);
+  }
+
   getTarget(handle) {
     validateTargetHandle(handle);
 
     const path = makePath(handle);
     return getIn(this.handlers, path);
+  }
+
+  pinSource(handle) {
+    const path = makePath(handle);
+    const handler = this.getSource(handle);
+    invariant(handler, 'Cannot pin a source that was not added.');
+
+    setIn(this.pinned, path, handler);
+  }
+
+  unpinSource(handle) {
+    validateSourceHandle(handle);
+    invariant(this.getPinnedSource(handle), 'Cannot unpin a source that was not pinned.');
+
+    const path = makePath(handle);
+    setIn(this.pinned, path, null);
   }
 
   removeSource(handle) {
@@ -97,7 +121,6 @@ export default class HandlerRegistry extends EventEmitter {
 
     const path = makePath(handle);
     setIn(this.handlers, path, null);
-
     this.emit('change');
   }
 
@@ -107,7 +130,6 @@ export default class HandlerRegistry extends EventEmitter {
 
     const path = makePath(handle);
     setIn(this.handlers, path, null);
-
     this.emit('change');
   }
 }

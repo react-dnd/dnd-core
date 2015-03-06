@@ -9,19 +9,20 @@ import { DragDropManager, TestBackend } from '..';
 describe('DragDropContext', () => {
   let manager;
   let backend;
+  let registry;
   let context;
 
   beforeEach(() => {
     manager = new DragDropManager(TestBackend);
-
-    context = manager.getContext();
     backend = manager.getBackend();
+    registry = manager.getRegistry();
+    context = manager.getContext();
   });
 
   describe('change event', () => {
     it('raises change event on beginDrag()', (done) => {
       const source = new NormalSource();
-      const sourceHandle = manager.addSource(Types.FOO, source);
+      const sourceHandle = registry.addSource(Types.FOO, source);
 
       context.addChangeListener(done);
       backend.simulateBeginDrag(sourceHandle);
@@ -29,9 +30,9 @@ describe('DragDropContext', () => {
 
     it('raises change event on endDrag()', (done) => {
       const source = new NormalSource();
-      const sourceHandle = manager.addSource(Types.FOO, source);
+      const sourceHandle = registry.addSource(Types.FOO, source);
       const target = new NormalTarget();
-      manager.addTarget(Types.FOO, target);
+      registry.addTarget(Types.FOO, target);
 
       backend.simulateBeginDrag(sourceHandle);
       context.addChangeListener(done);
@@ -41,44 +42,44 @@ describe('DragDropContext', () => {
     it('raises change event when adding a source', (done) => {
       const source = new NormalSource();
       context.addChangeListener(done);
-      manager.addSource(Types.FOO, source);
+      registry.addSource(Types.FOO, source);
     });
 
     it('raises change event when adding a target', (done) => {
       const target = new NormalTarget();
       context.addChangeListener(done);
-      manager.addTarget(Types.FOO, target);
+      registry.addTarget(Types.FOO, target);
     });
 
     it('raises change event when removing a source', (done) => {
       const source = new NormalSource();
-      const sourceHandle = manager.addSource(Types.FOO, source);
+      const sourceHandle = registry.addSource(Types.FOO, source);
 
       context.addChangeListener(done);
-      manager.removeSource(sourceHandle);
+      registry.removeSource(sourceHandle);
     });
 
     it('raises change event when removing a target', (done) => {
       const target = new NormalTarget();
-      const targetHandle = manager.addTarget(Types.FOO, target);
+      const targetHandle = registry.addTarget(Types.FOO, target);
 
       context.addChangeListener(done);
-      manager.removeTarget(targetHandle);
+      registry.removeTarget(targetHandle);
     });
   });
 
   describe('state tracking', () => {
     it('returns true from canDrag unless already dragging or drag source opts out', () => {
       const sourceA = new NormalSource();
-      const sourceAHandle = manager.addSource(Types.FOO, sourceA);
+      const sourceAHandle = registry.addSource(Types.FOO, sourceA);
       const sourceB = new NormalSource();
-      const sourceBHandle = manager.addSource(Types.FOO, sourceB);
+      const sourceBHandle = registry.addSource(Types.FOO, sourceB);
       const sourceC = new NormalSource();
-      const sourceCHandle = manager.addSource(Types.BAR, sourceC);
+      const sourceCHandle = registry.addSource(Types.BAR, sourceC);
       const sourceD = new NonDraggableSource();
-      const sourceDHandle = manager.addSource(Types.FOO, sourceD);
+      const sourceDHandle = registry.addSource(Types.FOO, sourceD);
       const target = new NormalTarget();
-      const targetHandle = manager.addTarget(Types.FOO, target);
+      const targetHandle = registry.addTarget(Types.FOO, target);
 
       expect(context.canDrag(sourceAHandle)).to.equal(true);
       expect(context.canDrag(sourceBHandle)).to.equal(true);
@@ -112,15 +113,15 @@ describe('DragDropContext', () => {
 
     it('returns true from canDrop if dragging and type matches, unless target opts out', () => {
       const source = new NormalSource();
-      const sourceHandle = manager.addSource(Types.FOO, source);
+      const sourceHandle = registry.addSource(Types.FOO, source);
       const targetA = new NormalTarget();
-      const targetAHandle = manager.addTarget(Types.FOO, targetA);
+      const targetAHandle = registry.addTarget(Types.FOO, targetA);
       const targetB = new NormalTarget();
-      const targetBHandle = manager.addTarget(Types.FOO, targetB);
+      const targetBHandle = registry.addTarget(Types.FOO, targetB);
       const targetC = new NormalTarget();
-      const targetCHandle = manager.addTarget(Types.BAR, targetC);
+      const targetCHandle = registry.addTarget(Types.BAR, targetC);
       const targetD = new NonDroppableTarget();
-      const targetDHandle = manager.addTarget(Types.FOO, targetD);
+      const targetDHandle = registry.addTarget(Types.FOO, targetD);
 
       expect(context.canDrop(targetAHandle)).to.equal(false);
       expect(context.canDrop(targetBHandle)).to.equal(false);
@@ -154,9 +155,9 @@ describe('DragDropContext', () => {
 
     it('returns true from canEndDrag and isDragging only while dragging', () => {
       const source = new NormalSource();
-      const sourceHandle = manager.addSource(Types.FOO, source);
+      const sourceHandle = registry.addSource(Types.FOO, source);
       const target = new NormalTarget();
-      const targetHandle = manager.addTarget(Types.FOO, target);
+      const targetHandle = registry.addTarget(Types.FOO, target);
 
       expect(context.canEndDrag()).to.equal(false);
       expect(context.isDragging()).to.equal(false);
@@ -180,11 +181,11 @@ describe('DragDropContext', () => {
 
     it('keeps track of dragged source handle', () => {
       const sourceA = new NormalSource();
-      const sourceAHandle = manager.addSource(Types.FOO, sourceA);
+      const sourceAHandle = registry.addSource(Types.FOO, sourceA);
       const sourceB = new NormalSource();
-      const sourceBHandle = manager.addSource(Types.FOO, sourceB);
+      const sourceBHandle = registry.addSource(Types.FOO, sourceB);
       const target = new NormalTarget();
-      const targetHandle = manager.addTarget(Types.FOO, target);
+      const targetHandle = registry.addTarget(Types.FOO, target);
 
       expect(context.getDraggedSourceHandle()).to.equal(null);
 
@@ -203,11 +204,11 @@ describe('DragDropContext', () => {
 
     it('keeps track of dragged item and type', () => {
       const sourceA = new NormalSource({ a: 123 });
-      const sourceAHandle = manager.addSource(Types.FOO, sourceA);
+      const sourceAHandle = registry.addSource(Types.FOO, sourceA);
       const sourceB = new NormalSource({ a: 456 });
-      const sourceBHandle = manager.addSource(Types.BAR, sourceB);
+      const sourceBHandle = registry.addSource(Types.BAR, sourceB);
       const target = new NormalTarget();
-      const targetHandle = manager.addTarget(Types.FOO, target);
+      const targetHandle = registry.addTarget(Types.FOO, target);
 
       expect(context.getDraggedItem()).to.equal(null);
       expect(context.getDraggedItemType()).to.equal(null);
@@ -231,11 +232,11 @@ describe('DragDropContext', () => {
 
     it('keeps track of drop result and whether it occured', () => {
       const source = new NormalSource();
-      const sourceHandle = manager.addSource(Types.FOO, source);
+      const sourceHandle = registry.addSource(Types.FOO, source);
       const targetA = new NormalTarget({ a: 123 });
-      const targetAHandle = manager.addTarget(Types.FOO, targetA);
+      const targetAHandle = registry.addTarget(Types.FOO, targetA);
       const targetB = new TargetWithNoDropResult();
-      const targetBHandle = manager.addTarget(Types.FOO, targetB);
+      const targetBHandle = registry.addTarget(Types.FOO, targetB);
 
       expect(context.didDrop()).to.equal(false);
       expect(context.getDropResult()).to.equal(null);
