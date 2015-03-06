@@ -9,8 +9,8 @@ export class NormalSource {
     };
   }
 
-  endDrag(data) {
-    this.data = data;
+  endDrag(endDragArgument) {
+    this.endDragArgument = endDragArgument;
   }
 };
 

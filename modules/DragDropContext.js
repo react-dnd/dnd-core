@@ -4,15 +4,35 @@ export default class DragDropContext {
     this.dragOperationStore = flux.getDragOperationStore();
   }
 
-  addListener(...args) {
-    this.dragOperationStore.addListener(...args);
+  addChangeListener(listener) {
+    this.dragOperationStore.addListener('change', listener);
   }
 
-  removeListener(...args) {
-    this.dragOperationStore.removeListener(...args);
+  removeChangeListener(listener) {
+    this.dragOperationStore.removeListener('change', listener);
   }
 
   isDragging() {
     return this.dragOperationStore.isDragging();
+  }
+
+  getDraggedSourceHandle() {
+    return this.dragOperationStore.getDraggedSourceHandle();
+  }
+
+  getDraggedItemType() {
+    return this.dragOperationStore.getDraggedItemType();
+  }
+
+  getDraggedItem() {
+    return this.dragOperationStore.getDraggedItem();
+  }
+
+  getDropResult() {
+    return this.dragOperationStore.getDropResult();
+  }
+
+  didDrop() {
+    return this.dragOperationStore.didDrop();
   }
 }

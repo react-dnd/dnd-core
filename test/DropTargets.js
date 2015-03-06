@@ -5,3 +5,8 @@ export class NormalTarget {
     };
   }
 };
+
+export class TargetWithNoDropResult {
+  drop() {
+  }
+};
