@@ -10,22 +10,25 @@ export default class TestBackend {
   }
 
   simulateBeginDrag(sourceHandle) {
-    const dragSource = this.manager.getSource(sourceHandle);
-    if (!dragSource.canDrag()) {
+    const source = this.manager.getSource(sourceHandle);
+    if (!source.canDrag()) {
       return;
     }
 
     this.actions.beginDrag({
       sourceHandle: sourceHandle,
       itemType: sourceHandle.type,
-      item: dragSource.beginDrag()
+      item: source.beginDrag()
     });
   }
 
   simulateDrop(targetHandle) {
     const target = this.manager.getTarget(targetHandle);
-    const dropResult = target.drop();
+    if (!target.canDrop()) {
+      return;
+    }
 
+    const dropResult = target.drop();
     this.actions.drop({ dropResult });
   }
 

@@ -3,11 +3,8 @@
 import expect from 'expect.js';
 import Types from './Types';
 import { NormalSource, NonDraggableSource } from './DragSources';
-import { NormalTarget, TargetWithNoDropResult } from './DropTargets';
-import {
-  DragDropManager,
-  TestBackend
-} from '../modules';
+import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult } from './DropTargets';
+import { DragDropManager, TestBackend } from '../modules';
 
 describe('DragDropContext', () => {
   let manager;
@@ -61,20 +58,22 @@ describe('DragDropManager', () => {
     backend = manager.getBackend();
   });
 
-  it('prevents drag when canDrag() returns false', () => {
+  it('prevents drag if canDrag() returns false', () => {
     const source = new NonDraggableSource();
     const sourceHandle = manager.addSource(Types.FOO, source);
 
     backend.simulateBeginDrag(sourceHandle);
     expect(context.isDragging()).to.equal(false);
+    expect(context.didDrop()).to.equal(false);
   });
 
-  it('begins drag when canDrag() returns true', () => {
+  it('begins drag if canDrag() returns true', () => {
     const source = new NormalSource();
     const sourceHandle = manager.addSource(Types.FOO, source);
 
     backend.simulateBeginDrag(sourceHandle);
     expect(context.isDragging()).to.equal(true);
+    expect(context.didDrop()).to.equal(false);
   });
 
   it('passes drop() return value to endDrag() if dropped on a target', () => {
@@ -84,11 +83,10 @@ describe('DragDropManager', () => {
     const targetHandle = manager.addTarget(Types.FOO, target);
 
     backend.simulateBeginDrag(sourceHandle);
-    expect(context.isDragging()).to.equal(true);
-
     backend.simulateDrop(targetHandle);
     backend.simulateEndDrag();
     expect(context.isDragging()).to.equal(false);
+    expect(context.didDrop()).to.equal(false);
     expect(source.endDragArgument.foo).to.equal('bar');
   });
 
@@ -99,11 +97,12 @@ describe('DragDropManager', () => {
     const targetHandle = manager.addTarget(Types.FOO, target);
 
     backend.simulateBeginDrag(sourceHandle);
-    expect(context.isDragging()).to.equal(true);
-
     backend.simulateDrop(targetHandle);
+    expect(context.didDrop()).to.equal(true);
+
     backend.simulateEndDrag();
     expect(context.isDragging()).to.equal(false);
+    expect(context.didDrop()).to.equal(false);
     expect(source.endDragArgument).to.equal(true);
   });
 
@@ -112,10 +111,24 @@ describe('DragDropManager', () => {
     const sourceHandle = manager.addSource(Types.FOO, source);
 
     backend.simulateBeginDrag(sourceHandle);
-    expect(context.isDragging()).to.equal(true);
+    backend.simulateEndDrag();
+    expect(context.isDragging()).to.equal(false);
+    expect(source.endDragArgument).to.equal(false);
+  });
+
+  it('prevents drop if canDrop() returns false', () => {
+    const source = new NormalSource();
+    const sourceHandle = manager.addSource(Types.FOO, source);
+    const target = new NonDroppableTarget();
+    const targetHandle = manager.addTarget(Types.FOO, target);
+
+    backend.simulateBeginDrag(sourceHandle);
+    backend.simulateDrop(targetHandle);
+    expect(context.didDrop()).to.equal(false);
 
     backend.simulateEndDrag();
     expect(context.isDragging()).to.equal(false);
+    expect(context.didDrop()).to.equal(false);
     expect(source.endDragArgument).to.equal(false);
   });
 });
