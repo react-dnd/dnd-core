@@ -22,18 +22,23 @@ describe('DragDropContext', () => {
   });
 
   it('raises change events on drag', (done) => {
+    const source = new NormalSource();
+    const sourceId = manager.addSource(Types.FOO, source);
+
     context.addListener('change', () => {
       expect(context.isDragging()).to.equal(true);
       done();
     });
-
-    const descriptor = manager.addSource(Types.FOO, new NormalSource());
-    backend.simulateBeginDrag(descriptor);
+    backend.simulateBeginDrag(sourceId);
   });
 
   it('raises change events on drop', (done) => {
-    const descriptor = manager.addSource(Types.FOO, new NormalSource());
-    backend.simulateBeginDrag(descriptor);
+    const source = new NormalSource();
+    const sourceId = manager.addSource(Types.FOO, source);
+    const target = new NormalTarget();
+    const targetId = manager.addTarget(Types.FOO, target);
+
+    backend.simulateBeginDrag(sourceId);
     expect(context.isDragging()).to.equal(true);
 
     context.addListener('change', () => {
@@ -41,10 +46,8 @@ describe('DragDropContext', () => {
       done();
     });
 
-    const target = manager.addTarget(Types.FOO, new NormalTarget());
-    backend.simulateDrop(descriptor, target);
+    backend.simulateDrop(sourceId, targetId);
   });
-
 });
 
 describe('DragDropManager', () => {
@@ -60,40 +63,43 @@ describe('DragDropManager', () => {
   });
 
   it('prevents drag when canDrag returns false', () => {
-    const descriptor = manager.addSource(Types.FOO, new NonDraggableSource());
-    backend.simulateBeginDrag(descriptor);
+    const source = new NonDraggableSource();
+    const sourceId = manager.addSource(Types.FOO, source);
+
+    backend.simulateBeginDrag(sourceId);
     expect(context.isDragging()).to.equal(false);
   });
 
   it('begins drag when canDrag returns true', () => {
-    const descriptor = manager.addSource(Types.FOO, new NormalSource());
-    backend.simulateBeginDrag(descriptor);
+    const source = new NormalSource();
+    const sourceId = manager.addSource(Types.FOO, source);
+
+    backend.simulateBeginDrag(sourceId);
     expect(context.isDragging()).to.equal(true);
   });
 
   it('dropping a valid target provides drop data to endDrag', () => {
-    const t = new NormalTarget();
-    const s = new NormalSource();
-    const sourceDescriptor = manager.addSource(Types.FOO, s);
-    const targetDescriptor = manager.addTarget(Types.FOO, t);
+    const source = new NormalSource();
+    const sourceId = manager.addSource(Types.FOO, source);
+    const target = new NormalTarget();
+    const targetId = manager.addTarget(Types.FOO, target);
 
-    backend.simulateBeginDrag(sourceDescriptor);
+    backend.simulateBeginDrag(sourceId);
     expect(context.isDragging()).to.equal(true);
-    backend.simulateDrop(sourceDescriptor, targetDescriptor);
+    backend.simulateDrop(sourceId, targetId);
     expect(context.isDragging()).to.equal(false);
-    expect(s.data.foo).to.equal('bar');
+    expect(source.data.foo).to.equal('bar');
   });
 
   it('dropping an invalid target calls endDrag', () => {
-    const s = new NormalSource();
-    const sourceDescriptor = manager.addSource(Types.FOO, s);
-    const targetDescriptor = manager.addTarget(Types.FOO, null);
+    const source = new NormalSource();
+    const sourceId = manager.addSource(Types.FOO, source);
 
-    backend.simulateBeginDrag(sourceDescriptor);
+    backend.simulateBeginDrag(sourceId);
     expect(context.isDragging()).to.equal(true);
-    backend.simulateDrop(sourceDescriptor, targetDescriptor);
+    backend.simulateDrop(sourceId, null);
     expect(context.isDragging()).to.equal(false); // TODO: more explict way to see?
-    expect(s.data).to.equal(undefined);
+    expect(source.data).to.equal(undefined);
   });
 
 });
