@@ -62,7 +62,7 @@ describe('DragDropManager', () => {
   });
 
   describe('drag source and target contract', () => {
-    it('throws if calling beginDrag() when canDrag() returns false', () => {
+    it('throws in beginDrag() if canDrag() returns false', () => {
       const source = new NonDraggableSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
       expect(() => backend.simulateBeginDrag(sourceHandle)).to.throwError();
@@ -74,7 +74,7 @@ describe('DragDropManager', () => {
       expect(() => backend.simulateBeginDrag(sourceHandle)).to.not.throwError();
     });
 
-    it('throws if beginDrag() is called twice during one operation', () => {
+    it('throws in beginDrag() if it is called twice during one operation', () => {
       const source = new NormalSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
 
@@ -124,13 +124,13 @@ describe('DragDropManager', () => {
       expect(source.endDragArgument).to.equal(false);
     });
 
-    it('throws if endDrag() is called outside a drag operation', () => {
+    it('throws in endDrag() if it is called outside a drag operation', () => {
       const source = new NormalSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
       expect(() => backend.simulateEndDrag(sourceHandle)).to.throwError();
     });
 
-    it('throws if dropping when canDrop() returns false', () => {
+    it('throws in drop() if canDrop() returns false', () => {
       const source = new NormalSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
       const target = new NonDroppableTarget();
@@ -140,13 +140,13 @@ describe('DragDropManager', () => {
       expect(() => backend.simulateDrop(targetHandle)).to.throwError();
     });
 
-    it('throws if dropping when outside a drag operation', () => {
+    it('throws in drop() if it is called outside a drag operation', () => {
       const target = new NormalTarget();
       const targetHandle = manager.addTarget(Types.BAR, target);
       expect(() => backend.simulateDrop(targetHandle)).to.throwError();
     });
 
-    it('throws if dropping when target has a different type', () => {
+    it('throws in drop() if target has a different type', () => {
       const source = new NormalSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
       const target = new NormalTarget();
