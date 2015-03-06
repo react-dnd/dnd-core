@@ -37,6 +37,11 @@ export default class DragDropActions extends Actions {
     );
 
     invariant(
+      !this.getDragOperationStore().didDrop(),
+      'Cannot drop twice during the same operation.'
+    );
+
+    invariant(
       typeof dropResult === 'undefined' || isObject(dropResult),
       'Drop result must either be an object or undefined.'
     );
