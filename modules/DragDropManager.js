@@ -59,15 +59,6 @@ export default class DragDropManager {
     this.context.removeChangeListener(this._updateDraggedSource, this);
   }
 
-  _updateDraggedSource() {
-    const handle = this.context.getDraggedSourceHandle();
-    if (handle) {
-      this.draggedSource = this.getSource(handle);
-    } else {
-      this.draggedSource = null;
-    }
-  }
-
   getContext() {
     return this.context;
   }
@@ -135,5 +126,14 @@ export default class DragDropManager {
 
     setIn(this.handlers, path, handler);
     return handle;
+  }
+
+  _updateDraggedSource() {
+    const handle = this.context.getDraggedSourceHandle();
+    if (handle) {
+      this.draggedSource = this.getSource(handle);
+    } else {
+      this.draggedSource = null;
+    }
   }
 }
