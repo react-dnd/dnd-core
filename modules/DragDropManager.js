@@ -50,6 +50,22 @@ export default class DragDropManager {
     this.flux = flux;
     this.context = new DragDropContext(this);
     this.backend = new Backend(flux.dragDropActions);
+
+    this.context.addChangeListener(this._updateDraggedSource, this);
+    this._updateDraggedSource();
+  }
+
+  dispose() {
+    this.context.removeChangeListener(this._updateDraggedSource, this);
+  }
+
+  _updateDraggedSource() {
+    const handle = this.context.getDraggedSourceHandle();
+    if (handle) {
+      this.draggedSource = this.getSource(handle);
+    } else {
+      this.draggedSource = null;
+    }
   }
 
   getContext() {
@@ -78,13 +94,8 @@ export default class DragDropManager {
     return handle;
   }
 
-  _addHandler(role, type, handler) {
-    const id = getNextUniqueId().toString();
-    const handle = { role, type, id };
-    const path = makePath(handle);
-
-    setIn(this.handlers, path, handler);
-    return handle;
+  getDraggedSource() {
+    return this.draggedSource;
   }
 
   getSource(handle) {
@@ -115,5 +126,14 @@ export default class DragDropManager {
 
     const path = makePath(handle);
     setIn(this.handlers, path, null);
+  }
+
+  _addHandler(role, type, handler) {
+    const id = getNextUniqueId().toString();
+    const handle = { role, type, id };
+    const path = makePath(handle);
+
+    setIn(this.handlers, path, handler);
+    return handle;
   }
 }

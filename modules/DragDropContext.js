@@ -8,12 +8,12 @@ export default class DragDropContext {
     this.dragOperationStore = manager.flux.dragOperationStore;
   }
 
-  addChangeListener(listener) {
-    this.dragOperationStore.addListener('change', listener);
+  addChangeListener(listener, context) {
+    this.dragOperationStore.addListener('change', listener, context);
   }
 
-  removeChangeListener(listener) {
-    this.dragOperationStore.removeListener('change', listener);
+  removeChangeListener(listener, context) {
+    this.dragOperationStore.removeListener('change', listener, context);
   }
 
   canDrag(sourceHandle) {

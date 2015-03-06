@@ -59,8 +59,7 @@ export default class DragDropActions extends Actions {
 
     const didDrop = context.didDrop();
     const dropResult = context.getDropResult();
-    const sourceHandle = context.getDraggedSourceHandle();
-    const source = manager.getSource(sourceHandle);
+    const source = manager.getDraggedSource();
 
     const effectiveDropResult = didDrop && isObject(dropResult) ?
       dropResult :

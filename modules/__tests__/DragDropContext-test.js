@@ -85,7 +85,6 @@ describe('DragDropContext', () => {
     expect(context.canDrag(sourceBHandle)).to.equal(false);
     expect(context.canDrag(sourceCHandle)).to.equal(false);
     expect(context.canDrag(sourceDHandle)).to.equal(false);
-
   });
 
   it('returns true from canDrop if dragging and type matches, unless target opts out', () => {

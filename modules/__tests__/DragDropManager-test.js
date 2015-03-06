@@ -124,6 +124,18 @@ describe('DragDropManager', () => {
       expect(source.endDragArgument).to.equal(false);
     });
 
+    it('calls endDrag even if source was unregistered', () => {
+      const source = new NormalSource();
+      const sourceHandle = manager.addSource(Types.FOO, source);
+
+      backend.simulateBeginDrag(sourceHandle);
+      manager.removeSource(sourceHandle);
+      expect(manager.getSource(sourceHandle)).to.equal(null);
+
+      backend.simulateEndDrag();
+      expect(source.endDragArgument).to.equal(false);
+    });
+
     it('throws in endDrag() if it is called outside a drag operation', () => {
       const source = new NormalSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
