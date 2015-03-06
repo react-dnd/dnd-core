@@ -8,6 +8,10 @@ export class NormalSource {
       baz: 42
     };
   }
+
+  endDrag(endDragArgument) {
+    this.endDragArgument = endDragArgument;
+  }
 };
 
 export class NonDraggableSource {

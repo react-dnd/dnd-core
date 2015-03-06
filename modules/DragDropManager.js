@@ -12,17 +12,17 @@ const HandlerRoles = keyMirror({
   TARGET: null
 });
 
-function makePath({ role, type, id }: descriptor) {
+function makePath({ role, type, id }: handle) {
   return [role, type, id];
 }
 
 export default class DragDropManager {
   constructor(Backend) {
     this._flux = new Flux();
-    this._handlers = {};
-
-    this._backend = new Backend(this);
     this._context = new DragDropContext(this);
+    this._backend = new Backend(this);
+
+    this._handlers = {};
   }
 
   getFlux() {
@@ -47,30 +47,30 @@ export default class DragDropManager {
 
   _addHandler(role, type, handler) {
     const id = getNextUniqueId().toString();
-    const descriptor = { role, type, id };
-    const path = makePath(descriptor);
+    const handle = { role, type, id };
+    const path = makePath(handle);
 
     setIn(this._handlers, path, handler);
-    return descriptor;
+    return handle;
   }
 
-  getSource(descriptor) {
-    const path = makePath(descriptor);
+  getSource(handle) {
+    const path = makePath(handle);
     return getIn(this._handlers, path);
   }
 
-  getTarget(descriptor) {
-    const path = makePath(descriptor);
+  getTarget(handle) {
+    const path = makePath(handle);
     return getIn(this._handlers, path);
   }
 
-  removeSource(descriptor) {
-    const path = makePath(descriptor);
+  removeSource(handle) {
+    const path = makePath(handle);
     setIn(this._handlers, path, null);
   }
 
-  removeTarget(descriptor) {
-    const path = makePath(descriptor);
+  removeTarget(handle) {
+    const path = makePath(handle);
     setIn(this._handlers, path, null);
   }
 }
