@@ -3,17 +3,19 @@
 import invariant from 'invariant';
 
 export default class DragDropContext {
-  constructor(manager) {
-    this.registry = manager.registry;
-    this.dragOperationStore = manager.flux.dragOperationStore;
+  constructor(flux, registry) {
+    this.registry = registry;
+    this.dragOperationStore = flux.dragOperationStore;
   }
 
   addChangeListener(listener, context) {
     this.dragOperationStore.addListener('change', listener, context);
+    this.registry.addListener('change', listener, context);
   }
 
   removeChangeListener(listener, context) {
     this.dragOperationStore.removeListener('change', listener, context);
+    this.registry.removeListener('change', listener, context);
   }
 
   canDrag(sourceHandle) {

@@ -5,6 +5,7 @@ import keyMirror from 'keymirror';
 import getIn from './getIn';
 import setIn from './setIn';
 import getNextUniqueId from './getNextUniqueId';
+import EventEmitter from 'eventemitter3';
 
 const HandlerRoles = keyMirror({
   SOURCE: null,
@@ -40,7 +41,7 @@ function makePath({ role, type, id }: handle) {
   return [role, type, id];
 }
 
-export default class HandlerRegistry {
+export default class HandlerRegistry extends EventEmitter {
   constructor() {
     this.handlers = {};
   }
@@ -51,6 +52,8 @@ export default class HandlerRegistry {
 
     const handle = this.addHandler(HandlerRoles.SOURCE, type, source);
     validateSourceHandle(handle);
+
+    this.emit('change');
     return handle;
   }
 
@@ -60,6 +63,17 @@ export default class HandlerRegistry {
 
     const handle = this.addHandler(HandlerRoles.TARGET, type, target);
     validateTargetHandle(handle);
+
+    this.emit('change');
+    return handle;
+  }
+
+  addHandler(role, type, handler) {
+    const id = getNextUniqueId().toString();
+    const handle = { role, type, id };
+    const path = makePath(handle);
+
+    setIn(this.handlers, path, handler);
     return handle;
   }
 
@@ -83,6 +97,8 @@ export default class HandlerRegistry {
 
     const path = makePath(handle);
     setIn(this.handlers, path, null);
+
+    this.emit('change');
   }
 
   removeTarget(handle) {
@@ -91,14 +107,7 @@ export default class HandlerRegistry {
 
     const path = makePath(handle);
     setIn(this.handlers, path, null);
-  }
 
-  addHandler(role, type, handler) {
-    const id = getNextUniqueId().toString();
-    const handle = { role, type, id };
-    const path = makePath(handle);
-
-    setIn(this.handlers, path, handler);
-    return handle;
+    this.emit('change');
   }
 }

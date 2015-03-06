@@ -23,6 +23,7 @@
     "mocha": "^2.0.1"
   },
   "dependencies": {
+    "eventemitter3": "^0.1.6",
     "flummox": "^2.13.0",
     "invariant": "^2.0.0",
     "keymirror": "^0.1.1",

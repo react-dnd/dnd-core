@@ -8,9 +8,9 @@ export default class DragDropManager {
   constructor(Backend) {
     const flux = new Flux(this);
 
-    this.registry = new HandlerRegistry();
     this.flux = flux;
-    this.context = new DragDropContext(this);
+    this.registry = new HandlerRegistry();
+    this.context = new DragDropContext(flux, this.registry);
     this.backend = new Backend(flux.dragDropActions);
 
     this.context.addChangeListener(this.updateDraggedSource, this);
@@ -59,6 +59,10 @@ export default class DragDropManager {
 
   updateDraggedSource() {
     const handle = this.context.getDraggedSourceHandle();
+    if (handle && this.draggedSource) {
+      return;
+    }
+
     if (handle) {
       this.draggedSource = this.getSource(handle);
     } else {
