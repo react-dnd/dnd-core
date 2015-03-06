@@ -12,7 +12,7 @@ export class NormalSource extends DragSource {
   endDrag(endDragArgument) {
     this.endDragArgument = endDragArgument;
   }
-};
+}
 
 export class NonDraggableSource extends DragSource {
   canDrag() {
@@ -22,4 +22,4 @@ export class NonDraggableSource extends DragSource {
   beginDrag() {
     return {};
   }
-};
+}

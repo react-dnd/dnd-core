@@ -8,7 +8,7 @@ export class NormalTarget extends DropTarget {
   drop() {
     return this.dropResult;
   }
-};
+}
 
 export class NonDroppableTarget extends DropTarget {
   canDrop() {
