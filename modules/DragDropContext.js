@@ -42,6 +42,10 @@ export default class DragDropContext {
            target.canDrop();
   }
 
+  canEndDrag() {
+    return this.isDragging();
+  }
+
   isDragging() {
     return this.dragOperationStore.isDragging();
   }

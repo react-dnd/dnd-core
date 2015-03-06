@@ -13,17 +13,12 @@ export default class DragDropActions extends Actions {
   beginDrag(sourceHandle) {
     const manager = this.manager;
     const context = manager.context;
-
     invariant(
       context.canDrag(sourceHandle),
       'Cannot call beginDrag now. Check context.canDrag(sourceHandle) first.'
     );
 
     const source = manager.getSource(sourceHandle);
-    if (!source.canDrag()) {
-      return;
-    }
-
     const item = source.beginDrag();
     invariant(isObject(item), 'Item must be an object.');
 
@@ -34,7 +29,6 @@ export default class DragDropActions extends Actions {
   drop(targetHandle) {
     const manager = this.manager;
     const context = manager.context;
-
     invariant(
       context.canDrop(targetHandle),
       'Cannot call drop now. Check context.canDrop(targetHandle) first.'
@@ -53,10 +47,9 @@ export default class DragDropActions extends Actions {
   endDrag() {
     const manager = this.manager;
     const context = manager.context;
-
     invariant(
-      context.isDragging(),
-      'Cannot call endDrag while not dragging.'
+      context.canEndDrag(),
+      'Cannot call endDrag now. Check context.canEndDrag() first.'
     );
 
     const didDrop = context.didDrop();
