@@ -1,3 +1,4 @@
 require('babel/register')({
-  experimental: true
+  experimental: true,
+  loose: 'all'
 });
