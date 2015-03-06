@@ -1,7 +1,8 @@
+'use strict';
+
 export default class DragDropContext {
-  constructor(manager) {
-    const flux = manager.getFlux();
-    this.dragOperationStore = flux.getDragOperationStore();
+  constructor(flux) {
+    this.dragOperationStore = flux.dragOperationStore;
   }
 
   addChangeListener(listener) {

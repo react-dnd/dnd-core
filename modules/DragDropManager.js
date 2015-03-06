@@ -44,23 +44,20 @@ function makePath({ role, type, id }: handle) {
 
 export default class DragDropManager {
   constructor(Backend) {
-    this._flux = new Flux();
-    this._context = new DragDropContext(this);
-    this._backend = new Backend(this);
+    const flux = new Flux(this);
 
-    this._handlers = {};
-  }
-
-  getFlux() {
-    return this._flux;
-  }
-
-  getBackend() {
-    return this._backend;
+    this.handlers = {};
+    this.flux = flux;
+    this.context = new DragDropContext(flux);
+    this.backend = new Backend(flux.dragDropActions);
   }
 
   getContext() {
-    return this._context;
+    return this.context;
+  }
+
+  getBackend() {
+    return this.backend;
   }
 
   addSource(type, source) {
@@ -86,7 +83,7 @@ export default class DragDropManager {
     const handle = { role, type, id };
     const path = makePath(handle);
 
-    setIn(this._handlers, path, handler);
+    setIn(this.handlers, path, handler);
     return handle;
   }
 
@@ -94,14 +91,14 @@ export default class DragDropManager {
     validateSourceHandle(handle);
 
     const path = makePath(handle);
-    return getIn(this._handlers, path);
+    return getIn(this.handlers, path);
   }
 
   getTarget(handle) {
     validateTargetHandle(handle);
 
     const path = makePath(handle);
-    return getIn(this._handlers, path);
+    return getIn(this.handlers, path);
   }
 
   removeSource(handle) {
@@ -109,7 +106,7 @@ export default class DragDropManager {
     invariant(this.getSource(handle), 'Cannot remove a source that was not added.');
 
     const path = makePath(handle);
-    setIn(this._handlers, path, null);
+    setIn(this.handlers, path, null);
   }
 
   removeTarget(handle) {
@@ -117,6 +114,6 @@ export default class DragDropManager {
     invariant(this.getTarget(handle), 'Cannot remove a target that was not added.');
 
     const path = makePath(handle);
-    setIn(this._handlers, path, null);
+    setIn(this.handlers, path, null);
   }
 }

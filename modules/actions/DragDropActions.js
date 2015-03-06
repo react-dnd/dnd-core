@@ -5,47 +5,78 @@ import invariant from 'invariant';
 import isObject from 'lodash/lang/isObject';
 
 export default class DragDropActions extends Actions {
-  constructor(flux) {
+  constructor(manager) {
     super();
-    this.getDragOperationStore = flux.getDragOperationStore.bind(flux);
+    this.manager = manager;
   }
 
-  beginDrag({ itemType, item, sourceHandle }) {
-    invariant(itemType, 'Type must be specified.');
-    invariant(isObject(item), 'Item must be an object.');
+  beginDrag(sourceHandle) {
+    const manager = this.manager;
+    const context = manager.context;
+
     invariant(
-      !this.getDragOperationStore().isDragging(),
+      !context.isDragging(),
       'Cannot call beginDrag while already dragging.'
     );
 
+    const source = manager.getSource(sourceHandle);
+    if (!source.canDrag()) {
+      return;
+    }
+
+    const item = source.beginDrag();
+    invariant(isObject(item), 'Item must be an object.');
+
+    const { type: itemType } = sourceHandle;
     return { itemType, item, sourceHandle };
   }
 
-  endDrag() {
-    invariant(
-      this.getDragOperationStore().isDragging(),
-      'Cannot call endDrag while not dragging.'
-    );
+  drop(targetHandle) {
+    const manager = this.manager;
+    const context = manager.context;
 
-    return {};
-  }
-
-  drop({ dropResult }) {
     invariant(
-      this.getDragOperationStore().isDragging(),
+      context.isDragging(),
       'Cannot call drop while not dragging.'
     );
-
     invariant(
-      !this.getDragOperationStore().didDrop(),
+      !context.didDrop(),
       'Cannot drop twice during the same operation.'
     );
 
+    const target = manager.getTarget(targetHandle);
+    if (!target.canDrop()) {
+      return;
+    }
+
+    const dropResult = target.drop();
     invariant(
       typeof dropResult === 'undefined' || isObject(dropResult),
       'Drop result must either be an object or undefined.'
     );
 
     return { dropResult };
+  }
+
+  endDrag() {
+    const manager = this.manager;
+    const context = manager.context;
+
+    invariant(
+      context.isDragging(),
+      'Cannot call endDrag while not dragging.'
+    );
+
+    const didDrop = context.didDrop();
+    const dropResult = context.getDropResult();
+    const sourceHandle = context.getDraggedSourceHandle();
+    const source = manager.getSource(sourceHandle);
+
+    const effectiveDropResult = didDrop && isObject(dropResult) ?
+      dropResult :
+      didDrop;
+
+    source.endDrag(effectiveDropResult);
+    return {};
   }
 }

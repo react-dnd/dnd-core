@@ -6,11 +6,10 @@ export default class DragOperationStore extends Store {
   constructor(flux) {
     super();
 
-    const actionIds = flux.getDragDropActionIds();
-
-    this.register(actionIds.beginDrag, this.handleBeginDrag);
-    this.register(actionIds.endDrag, this.handleEndDrag);
-    this.register(actionIds.drop, this.handleDrop);
+    const { dragDropActionIds } = flux;
+    this.register(dragDropActionIds.beginDrag, this.handleBeginDrag);
+    this.register(dragDropActionIds.endDrag, this.handleEndDrag);
+    this.register(dragDropActionIds.drop, this.handleDrop);
 
     this.state = {
       draggedItemType: null,
