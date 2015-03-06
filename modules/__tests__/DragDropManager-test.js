@@ -1,9 +1,9 @@
 'use strict';
 
 import expect from 'expect.js';
-import Types from './Types';
-import { NormalSource, NonDraggableSource } from './DragSources';
-import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult } from './DropTargets';
+import Types from './types';
+import { NormalSource, NonDraggableSource } from './sources';
+import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult } from './targets';
 import { DragDropManager, TestBackend } from '..';
 
 describe('DragDropManager', () => {
