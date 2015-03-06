@@ -1,3 +1,5 @@
+'use strict';
+
 import { DragSource } from '..';
 
 export class NormalSource extends DragSource {
@@ -9,8 +11,8 @@ export class NormalSource extends DragSource {
     return this.item;
   }
 
-  endDrag(endDragArgument) {
-    this.endDragArgument = endDragArgument;
+  endDrag(context) {
+    this.recordedDropResult = context.getDropResult();
   }
 }
 

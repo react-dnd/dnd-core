@@ -19,7 +19,7 @@ export default class DragDropActions extends Actions {
     );
 
     const source = manager.getSource(sourceHandle);
-    const item = source.beginDrag();
+    const item = source.beginDrag(context);
     invariant(isObject(item), 'Item must be an object.');
 
     const { type: itemType } = sourceHandle;
@@ -36,15 +36,14 @@ export default class DragDropActions extends Actions {
 
     const target = manager.getTarget(targetHandle);
 
-    let dropResult = target.drop();
-    if (typeof dropResult === 'undefined') {
-      dropResult = null;
-    }
-
+    let dropResult = target.drop(context);
     invariant(
-      dropResult === null || isObject(dropResult),
-      'Drop result must either be an object or null.'
+      typeof dropResult === 'undefined' || isObject(dropResult),
+      'Drop result must either be an object or undefined.'
     );
+    if (typeof dropResult === 'undefined') {
+      dropResult = true;
+    }
 
     return { dropResult };
   }
@@ -57,15 +56,9 @@ export default class DragDropActions extends Actions {
       'Cannot call endDrag now. Check context.canEndDrag() first.'
     );
 
-    const didDrop = context.didDrop();
-    const dropResult = context.getDropResult();
     const source = manager.getDraggedSource();
+    source.endDrag(context);
 
-    const effectiveDropResult = didDrop && isObject(dropResult) ?
-      dropResult :
-      didDrop;
-
-    source.endDrag(effectiveDropResult);
     return {};
   }
 }

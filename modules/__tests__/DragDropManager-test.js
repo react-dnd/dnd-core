@@ -91,7 +91,7 @@ describe('DragDropManager', () => {
       expect(() => backend.simulateBeginDrag(sourceHandle)).to.not.throwError();
     });
 
-    it('passes drop() return value to endDrag() if dropped on a target', () => {
+    it('endDrag() sees drop() return value as drop result if dropped on a target', () => {
       const source = new NormalSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
       const target = new NormalTarget();
@@ -100,10 +100,10 @@ describe('DragDropManager', () => {
       backend.simulateBeginDrag(sourceHandle);
       backend.simulateDrop(targetHandle);
       backend.simulateEndDrag();
-      expect(source.endDragArgument.foo).to.equal('bar');
+      expect(source.recordedDropResult.foo).to.equal('bar');
     });
 
-    it('passes true to endDrag() by default if dropped on a target', () => {
+    it('endDrag() sees true as drop result by default if dropped on a target', () => {
       const source = new NormalSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
       const target = new TargetWithNoDropResult();
@@ -112,16 +112,16 @@ describe('DragDropManager', () => {
       backend.simulateBeginDrag(sourceHandle);
       backend.simulateDrop(targetHandle);
       backend.simulateEndDrag();
-      expect(source.endDragArgument).to.equal(true);
+      expect(source.recordedDropResult).to.equal(true);
     });
 
-    it('passes false to endDrag() if dropped outside a target', () => {
+    it('endDrag() sees false as drop result if dropped outside a target', () => {
       const source = new NormalSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
 
       backend.simulateBeginDrag(sourceHandle);
       backend.simulateEndDrag();
-      expect(source.endDragArgument).to.equal(false);
+      expect(source.recordedDropResult).to.equal(false);
     });
 
     it('calls endDrag even if source was unregistered', () => {
@@ -133,7 +133,7 @@ describe('DragDropManager', () => {
       expect(manager.getSource(sourceHandle)).to.equal(null);
 
       backend.simulateEndDrag();
-      expect(source.endDragArgument).to.equal(false);
+      expect(source.recordedDropResult).to.equal(false);
     });
 
     it('throws in endDrag() if it is called outside a drag operation', () => {

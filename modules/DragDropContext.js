@@ -24,7 +24,7 @@ export default class DragDropContext {
       return false;
     }
 
-    return source.canDrag();
+    return source.canDrag(this);
   }
 
   canDrop(targetHandle) {
@@ -39,7 +39,7 @@ export default class DragDropContext {
     const draggedItemType = this.getDraggedItemType();
 
     return targetType === draggedItemType &&
-           target.canDrop();
+           target.canDrop(this);
   }
 
   canEndDrag() {

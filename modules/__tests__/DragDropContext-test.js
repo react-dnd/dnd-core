@@ -219,7 +219,7 @@ describe('DragDropContext', () => {
 
     backend.simulateBeginDrag(sourceHandle);
     expect(context.didDrop()).to.equal(false);
-    expect(context.getDropResult()).to.equal(null);
+    expect(context.getDropResult()).to.equal(false);
 
     backend.simulateDrop(targetAHandle);
     expect(context.didDrop()).to.equal(true);
@@ -231,11 +231,11 @@ describe('DragDropContext', () => {
 
     backend.simulateBeginDrag(sourceHandle);
     expect(context.didDrop()).to.equal(false);
-    expect(context.getDropResult()).to.equal(null);
+    expect(context.getDropResult()).to.equal(false);
 
     backend.simulateDrop(targetBHandle);
     expect(context.didDrop()).to.equal(true);
-    expect(context.getDropResult()).to.equal(null);
+    expect(context.getDropResult()).to.equal(true);
 
     backend.simulateEndDrag();
     expect(context.didDrop()).to.equal(false);
