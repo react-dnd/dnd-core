@@ -48,7 +48,7 @@ export default class DragDropManager {
 
     this.handlers = {};
     this.flux = flux;
-    this.context = new DragDropContext(flux);
+    this.context = new DragDropContext(this);
     this.backend = new Backend(flux.dragDropActions);
   }
 

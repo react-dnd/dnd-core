@@ -15,8 +15,8 @@ export default class DragDropActions extends Actions {
     const context = manager.context;
 
     invariant(
-      !context.isDragging(),
-      'Cannot call beginDrag while already dragging.'
+      context.canDrag(sourceHandle),
+      'Cannot call beginDrag now. Check context.canDrag(sourceHandle) first.'
     );
 
     const source = manager.getSource(sourceHandle);
@@ -36,19 +36,11 @@ export default class DragDropActions extends Actions {
     const context = manager.context;
 
     invariant(
-      context.isDragging(),
-      'Cannot call drop while not dragging.'
-    );
-    invariant(
-      !context.didDrop(),
-      'Cannot drop twice during the same operation.'
+      context.canDrop(targetHandle),
+      'Cannot call drop now. Check context.canDrop(targetHandle) first.'
     );
 
     const target = manager.getTarget(targetHandle);
-    if (!target.canDrop()) {
-      return;
-    }
-
     const dropResult = target.drop();
     invariant(
       typeof dropResult === 'undefined' || isObject(dropResult),

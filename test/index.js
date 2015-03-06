@@ -105,20 +105,21 @@ describe('DragDropManager', () => {
   });
 
   describe('drag source and target contract', () => {
-    it('prevents drag if canDrag() returns false', () => {
+    it('throws if calling beginDrag() when canDrag() returns false', () => {
       const source = new NonDraggableSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
 
-      backend.simulateBeginDrag(sourceHandle);
-      expect(context.isDragging()).to.equal(false);
-      expect(context.didDrop()).to.equal(false);
+      expect(context.canDrag(sourceHandle)).to.equal(false);
+      expect(() => backend.simulateBeginDrag(sourceHandle)).to.throwError();
     });
 
     it('begins drag if canDrag() returns true', () => {
       const source = new NormalSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
 
+      expect(context.canDrag(sourceHandle)).to.equal(true);
       backend.simulateBeginDrag(sourceHandle);
+
       expect(context.isDragging()).to.equal(true);
       expect(context.didDrop()).to.equal(false);
     });
@@ -180,20 +181,41 @@ describe('DragDropManager', () => {
       expect(source.endDragArgument).to.equal(false);
     });
 
-    it('prevents drop if canDrop() returns false', () => {
+    it('throws if endDrag() is called outside a drag operation', () => {
+      const source = new NormalSource();
+      const sourceHandle = manager.addSource(Types.FOO, source);
+
+      expect(() => backend.simulateEndDrag(sourceHandle)).to.throwError();
+    });
+
+    it('throws if dropping when canDrop() returns false', () => {
       const source = new NormalSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
       const target = new NonDroppableTarget();
       const targetHandle = manager.addTarget(Types.FOO, target);
 
       backend.simulateBeginDrag(sourceHandle);
-      backend.simulateDrop(targetHandle);
-      expect(context.didDrop()).to.equal(false);
+      expect(context.canDrop(targetHandle)).to.equal(false);
+      expect(() => backend.simulateDrop(targetHandle)).to.throwError();
+    });
 
-      backend.simulateEndDrag();
-      expect(context.isDragging()).to.equal(false);
-      expect(context.didDrop()).to.equal(false);
-      expect(source.endDragArgument).to.equal(false);
+    it('throws if dropping when outside a drag operation', () => {
+      const target = new NormalTarget();
+      const targetHandle = manager.addTarget(Types.BAR, target);
+
+      expect(context.canDrop(targetHandle)).to.equal(false);
+      expect(() => backend.simulateDrop(targetHandle)).to.throwError();
+    });
+
+    it('throws if dropping when target has a different type', () => {
+      const source = new NormalSource();
+      const sourceHandle = manager.addSource(Types.FOO, source);
+      const target = new NormalTarget();
+      const targetHandle = manager.addTarget(Types.BAR, target);
+
+      backend.simulateBeginDrag(sourceHandle);
+      expect(context.canDrop(targetHandle)).to.equal(false);
+      expect(() => backend.simulateDrop(targetHandle)).to.throwError();
     });
   });
 });
