@@ -23,6 +23,13 @@ function validateTargetContract(target) {
   invariant(typeof target.drop === 'function', 'Expected beginDrag to be a function.');
 }
 
+function validateType(type) {
+  invariant(
+    typeof type === 'string' || typeof type === 'symbol',
+    'Type can only be a string or a symbol.'
+  );
+}
+
 function makePath({ role, type, id }: handle) {
   return [role, type, id];
 }
@@ -49,12 +56,16 @@ export default class DragDropManager {
   }
 
   addSource(type, source) {
+    validateType(type);
     validateSourceContract(source);
+
     return this._addHandler(HandlerRoles.SOURCE, type, source);
   }
 
   addTarget(type, source) {
+    validateType(type);
     validateTargetContract(source);
+
     return this._addHandler(HandlerRoles.TARGET, type, source);
   }
 
@@ -68,11 +79,15 @@ export default class DragDropManager {
   }
 
   getSource(handle) {
+    invariant(handle.role === HandlerRoles.SOURCE, 'Expected to receive a source handle');
+
     const path = makePath(handle);
     return getIn(this._handlers, path);
   }
 
   getTarget(handle) {
+    invariant(handle.role === HandlerRoles.TARGET, 'Expected to receive a target handle');
+
     const path = makePath(handle);
     return getIn(this._handlers, path);
   }

@@ -5,10 +5,10 @@ import toKey from './toKey';
 export default function setIn(obj, path, value) {
   while (path.length > 0) {
     const key = toKey(path.shift());
-    if (obj[key]) {
-      obj = obj[key];
+    if (path.length > 0) {
+      obj = obj[key] = obj[key] || {};
     } else {
-      obj = obj[key] = path.length ? {} : value;
+      obj = obj[key] = value;
     }
   }
 }
