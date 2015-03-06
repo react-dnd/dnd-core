@@ -25,3 +25,9 @@ export class NonDraggableSource extends DragSource {
     return {};
   }
 }
+
+export class BadItemSource extends DragSource {
+  beginDrag() {
+    return 42;
+  }
+}

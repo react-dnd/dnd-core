@@ -1,3 +1,5 @@
+'use strict';
+
 import { DropTarget } from '..';
 
 export class NormalTarget extends DropTarget {
@@ -17,4 +19,10 @@ export class NonDroppableTarget extends DropTarget {
 }
 
 export class TargetWithNoDropResult extends DropTarget {
+}
+
+export class BadResultTarget extends DropTarget {
+  drop() {
+    return 42;
+  }
 }

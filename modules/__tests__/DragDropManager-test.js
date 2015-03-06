@@ -2,8 +2,8 @@
 
 import expect from 'expect.js';
 import Types from './types';
-import { NormalSource, NonDraggableSource } from './sources';
-import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult } from './targets';
+import { NormalSource, NonDraggableSource, BadItemSource } from './sources';
+import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult, BadResultTarget } from './targets';
 import { DragDropManager, TestBackend } from '..';
 
 describe('DragDropManager', () => {
@@ -64,6 +64,12 @@ describe('DragDropManager', () => {
   describe('drag source and target contract', () => {
     it('throws in beginDrag() if canDrag() returns false', () => {
       const source = new NonDraggableSource();
+      const sourceHandle = manager.addSource(Types.FOO, source);
+      expect(() => backend.simulateBeginDrag(sourceHandle)).to.throwError();
+    });
+
+    it('throws if beginDrag() returns non-object', () => {
+      const source = new BadItemSource();
       const sourceHandle = manager.addSource(Types.FOO, source);
       expect(() => backend.simulateBeginDrag(sourceHandle)).to.throwError();
     });
@@ -163,6 +169,16 @@ describe('DragDropManager', () => {
       const sourceHandle = manager.addSource(Types.FOO, source);
       const target = new NormalTarget();
       const targetHandle = manager.addTarget(Types.BAR, target);
+
+      backend.simulateBeginDrag(sourceHandle);
+      expect(() => backend.simulateDrop(targetHandle)).to.throwError();
+    });
+
+    it('throws if drop() returns something that is neither undefined nor an object', () => {
+      const source = new NormalSource();
+      const sourceHandle = manager.addSource(Types.FOO, source);
+      const target = new BadResultTarget();
+      const targetHandle = manager.addTarget(Types.FOO, target);
 
       backend.simulateBeginDrag(sourceHandle);
       expect(() => backend.simulateDrop(targetHandle)).to.throwError();
