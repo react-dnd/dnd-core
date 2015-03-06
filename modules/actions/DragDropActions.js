@@ -6,4 +6,8 @@ export default class DragDropActions extends Actions {
   beginDrag({ itemType, item }) {
     return { itemType, item };
   }
+
+  endDrag() {
+    return {};
+  }
 }

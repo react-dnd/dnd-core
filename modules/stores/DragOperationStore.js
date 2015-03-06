@@ -7,7 +7,9 @@ export default class DragOperationStore extends Store {
     super();
 
     const actionIds = flux.getDragDropActionIds();
+
     this.register(actionIds.beginDrag, this.handleBeginDrag);
+    this.register(actionIds.endDrag, this.handleEndDrag);
 
     this.state = {
       draggedItemType: null
@@ -17,6 +19,12 @@ export default class DragOperationStore extends Store {
   handleBeginDrag({ itemType }) {
     this.setState({
       draggedItemType: itemType
+    });
+  }
+
+  handleEndDrag() {
+    this.setState({
+      draggedItemType: null
     });
   }
 
