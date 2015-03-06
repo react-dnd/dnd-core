@@ -1,8 +1,8 @@
 'use strict';
 
-import Flux from './Flux';
 import invariant from 'invariant';
 import keyMirror from 'keymirror';
+import Flux from './Flux';
 import DragDropContext from './DragDropContext';
 import getNextUniqueId from './utils/getNextUniqueId';
 import getIn from './utils/getIn';
@@ -76,11 +76,11 @@ export default class DragDropManager {
     return handle;
   }
 
-  addTarget(type, source) {
+  addTarget(type, target) {
     validateType(type);
-    validateTargetContract(source);
+    validateTargetContract(target);
 
-    const handle = this._addHandler(HandlerRoles.TARGET, type, source);
+    const handle = this._addHandler(HandlerRoles.TARGET, type, target);
     validateTargetHandle(handle);
     return handle;
   }

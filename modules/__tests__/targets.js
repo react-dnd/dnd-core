@@ -1,10 +1,8 @@
-export class NormalTarget {
+import { DropTarget } from '..';
+
+export class NormalTarget extends DropTarget {
   constructor(dropResult) {
     this.dropResult = dropResult || { foo: 'bar' };
-  }
-
-  canDrop() {
-    return true;
   }
 
   drop() {
@@ -12,20 +10,11 @@ export class NormalTarget {
   }
 };
 
-export class NonDroppableTarget {
+export class NonDroppableTarget extends DropTarget {
   canDrop() {
     return false;
   }
-
-  drop() {
-  }
 }
 
-export class TargetWithNoDropResult {
-  canDrop() {
-    return true;
-  }
-
-  drop() {
-  }
-};
+export class TargetWithNoDropResult extends DropTarget {
+}

@@ -1,10 +1,8 @@
-export class NormalSource {
+import { DragSource } from '..';
+
+export class NormalSource extends DragSource {
   constructor(item) {
     this.item = item || { baz: 42 };
-  }
-
-  canDrag() {
-    return true;
   }
 
   beginDrag() {
@@ -16,15 +14,12 @@ export class NormalSource {
   }
 };
 
-export class NonDraggableSource {
+export class NonDraggableSource extends DragSource {
   canDrag() {
     return false;
   }
 
   beginDrag() {
     return {};
-  }
-
-  endDrag() {
   }
 };
