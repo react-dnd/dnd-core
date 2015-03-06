@@ -77,7 +77,7 @@ describe('DragDropManager', () => {
     expect(context.isDragging()).to.equal(true);
   });
 
-  it('dropping on a target passes drop() return value to endDrag()', () => {
+  it('passes drop() return value to endDrag() if dropped on a target', () => {
     const source = new NormalSource();
     const sourceHandle = manager.addSource(Types.FOO, source);
     const target = new NormalTarget();
@@ -92,7 +92,7 @@ describe('DragDropManager', () => {
     expect(source.endDragArgument.foo).to.equal('bar');
   });
 
-  it('dropping on a target passes true to endDrag() by default', () => {
+  it('passes true to endDrag() by default if dropped on a target', () => {
     const source = new NormalSource();
     const sourceHandle = manager.addSource(Types.FOO, source);
     const target = new TargetWithNoDropResult();
@@ -107,7 +107,7 @@ describe('DragDropManager', () => {
     expect(source.endDragArgument).to.equal(true);
   });
 
-  it('dropping outside a target passes false to endDrag()', () => {
+  it('passes false to endDrag() if dropped outside a target', () => {
     const source = new NormalSource();
     const sourceHandle = manager.addSource(Types.FOO, source);
 
