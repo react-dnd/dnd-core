@@ -76,6 +76,23 @@ describe('DragDropManager', () => {
     expect(context.didDrop()).to.equal(false);
   });
 
+  it('throws if beginDrag() is called twice during one operation', () => {
+    const source = new NormalSource();
+    const sourceHandle = manager.addSource(Types.FOO, source);
+
+    backend.simulateBeginDrag(sourceHandle);
+    expect(() => backend.simulateBeginDrag(sourceHandle)).to.throwError();
+  });
+
+  it('lets beginDrag() be called again in a next operation', () => {
+    const source = new NormalSource();
+    const sourceHandle = manager.addSource(Types.FOO, source);
+
+    backend.simulateBeginDrag(sourceHandle);
+    backend.simulateEndDrag(sourceHandle);
+    expect(() => backend.simulateBeginDrag(sourceHandle)).to.not.throwError();
+  });
+
   it('passes drop() return value to endDrag() if dropped on a target', () => {
     const source = new NormalSource();
     const sourceHandle = manager.addSource(Types.FOO, source);
