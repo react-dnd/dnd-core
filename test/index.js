@@ -36,7 +36,7 @@ describe('DragDropContext', () => {
     const source = new NormalSource();
     const sourceHandle = manager.addSource(Types.FOO, source);
     const target = new NormalTarget();
-    const targetHandle = manager.addTarget(Types.FOO, target);
+    manager.addTarget(Types.FOO, target);
 
     backend.simulateBeginDrag(sourceHandle);
     expect(context.isDragging()).to.equal(true);
@@ -85,6 +85,7 @@ describe('DragDropManager', () => {
 
     backend.simulateBeginDrag(sourceHandle);
     expect(context.isDragging()).to.equal(true);
+
     backend.simulateDrop(targetHandle);
     backend.simulateEndDrag();
     expect(context.isDragging()).to.equal(false);
@@ -99,6 +100,7 @@ describe('DragDropManager', () => {
 
     backend.simulateBeginDrag(sourceHandle);
     expect(context.isDragging()).to.equal(true);
+
     backend.simulateDrop(targetHandle);
     backend.simulateEndDrag();
     expect(context.isDragging()).to.equal(false);
@@ -111,6 +113,7 @@ describe('DragDropManager', () => {
 
     backend.simulateBeginDrag(sourceHandle);
     expect(context.isDragging()).to.equal(true);
+
     backend.simulateEndDrag();
     expect(context.isDragging()).to.equal(false);
     expect(source.endDragArgument).to.equal(false);
