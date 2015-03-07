@@ -7,8 +7,16 @@ export default class TestBackend {
     this.actions.beginDrag(sourceHandle);
   }
 
-  simulateDrop(targetHandle) {
-    this.actions.drop(targetHandle);
+  simulateEnter(targetHandle) {
+    this.actions.enter(targetHandle);
+  }
+
+  simulateLeave(targetHandle) {
+    this.actions.leave(targetHandle);
+  }
+
+  simulateDrop() {
+    this.actions.drop();
   }
 
   simulateEndDrag() {

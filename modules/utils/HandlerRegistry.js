@@ -42,8 +42,10 @@ function makePath({ role, type, id }: handle) {
 export default class HandlerRegistry extends EventEmitter {
   constructor() {
     this.handlers = {};
-    this.pinnedSourceHandle = null;
-    this.pinnedSource = null;
+
+    this.activeSourceHandle = null;
+    this.activeSource = null;
+    this.activeTargetHandles = [];
   }
 
   addSource(type, source) {
@@ -77,20 +79,22 @@ export default class HandlerRegistry extends EventEmitter {
     return handle;
   }
 
-  getSource(handle, allowPinned) {
+  getSource(handle, includeActive) {
     validateSourceHandle(handle);
 
     const path = makePath(handle);
-    const usePinned = allowPinned && handle === this.pinnedSourceHandle;
-    const source = usePinned ?
-      this.pinnedSource :
-      getIn(this.handlers, path);
+    const isActive = includeActive && handle === this.activeSourceHandle;
+    const source = isActive ? this.activeSource : getIn(this.handlers, path);
 
     return source;
   }
 
-  getPinnedSource() {
-    return this.pinnedSource;
+  getActiveSource() {
+    return this.activeSource;
+  }
+
+  getActiveSourceHandle() {
+    return this.activeSourceHandle;
   }
 
   getTarget(handle) {
@@ -100,20 +104,20 @@ export default class HandlerRegistry extends EventEmitter {
     return getIn(this.handlers, path);
   }
 
-  pinSource(handle) {
+  setActiveSource(handle) {
     const source = this.getSource(handle);
-    invariant(source, 'Cannot pin a source that was not added.');
+    invariant(source, 'Cannot activate a source that was not added.');
 
-    this.pinnedSourceHandle = handle;
-    this.pinnedSource = source;
+    this.activeSourceHandle = handle;
+    this.activeSource = source;
     this.emit('change');
   }
 
-  unpinSource() {
-    invariant(this.pinnedSource, 'Cannot unpin a source that was not pinned.');
+  clearActiveSource() {
+    invariant(this.activeSource, 'Cannot deactivate a source that was not pinned.');
 
-    this.pinnedSourceHandle = null;
-    this.pinnedSource = null;
+    this.activeSourceHandle = null;
+    this.activeSource = null;
     this.emit('change');
   }
 
@@ -132,6 +136,42 @@ export default class HandlerRegistry extends EventEmitter {
 
     const path = makePath(handle);
     setIn(this.handlers, path, null);
+
+    if (this.isActiveTarget(handle)) {
+      this.popActiveTarget(handle);
+    }
+
     this.emit('change');
+  }
+
+  pushActiveTarget(handle) {
+    invariant(
+      !this.isActiveTarget(handle),
+      'Cannot push an active target twice.'
+    );
+
+    this.activeTargetHandles.push(handle);
+  }
+
+  popActiveTarget(handle) {
+    invariant(
+      this.isActiveTarget(handle),
+      'Cannot pop an inactive target from active list.'
+    );
+
+    const index = this.activeTargetHandles.indexOf(handle);
+    this.activeTargetHandles.length = index;
+  }
+
+  clearActiveTarget() {
+   this.activeTargetHandles.length = 0;
+  }
+
+  isActiveTarget(handle) {
+    return this.activeTargetHandles.indexOf(handle) > -1;
+  }
+
+  getActiveTargetHandles() {
+    return this.activeTargetHandles.slice(0);
   }
 }

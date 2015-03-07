@@ -67,7 +67,7 @@ export default class DragDropContext {
   }
 
   isDraggedSource(source) {
-    return source === this.registry.getPinnedSource();
+    return source === this.registry.getActiveSource();
   }
 
   getDraggedItemType() {
