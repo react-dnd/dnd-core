@@ -1,5 +1,3 @@
-'use strict';
-
 import invariant from 'invariant';
 import keyMirror from 'keymirror';
 import getIn from './getIn';

@@ -1,5 +1,3 @@
-'use strict';
-
 export default class TestBackend {
   constructor(actions) {
     this.actions = actions;

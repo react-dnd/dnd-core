@@ -1,5 +1,3 @@
-'use strict';
-
 import invariant from 'invariant';
 
 export default class DragDropContext {

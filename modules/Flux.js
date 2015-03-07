@@ -1,5 +1,3 @@
-'use strict';
-
 import { Flummox } from 'flummox';
 import DragDropActions from './actions/DragDropActions';
 import DragOperationStore from './stores/DragOperationStore';

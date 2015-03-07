@@ -1,5 +1,3 @@
-'use strict';
-
 import { DropTarget } from '..';
 
 export class NormalTarget extends DropTarget {

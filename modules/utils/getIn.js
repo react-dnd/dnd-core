@@ -1,5 +1,3 @@
-'use strict';
-
 import toKey from './toKey';
 import isObject from 'lodash/lang/isObject';
 

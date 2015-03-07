@@ -1,5 +1,3 @@
-'use strict';
-
 import Flux from './Flux';
 import DragDropContext from './DragDropContext';
 import HandlerRegistry from './utils/HandlerRegistry'

@@ -1,5 +1,3 @@
-'use strict';
-
 import toKey from './toKey';
 
 export default function setIn(obj, path, value) {

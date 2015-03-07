@@ -1,5 +1,3 @@
-'use strict';
-
 import { DragSource } from '..';
 
 export class NormalSource extends DragSource {
