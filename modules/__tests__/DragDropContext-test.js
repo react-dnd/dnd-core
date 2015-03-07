@@ -3,7 +3,6 @@ import Types from './types';
 import { NormalSource, NonDraggableSource, NumberSource } from './sources';
 import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult } from './targets';
 import { DragDropManager, TestBackend } from '..';
-import once from 'lodash/function/once';
 
 describe('DragDropContext', () => {
   let manager;
@@ -23,7 +22,7 @@ describe('DragDropContext', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
 
-      context.addChangeListener(once(done));
+      context.addChangeListener(done);
       backend.simulateBeginDrag(sourceHandle);
     });
 
@@ -34,7 +33,7 @@ describe('DragDropContext', () => {
       registry.addTarget(Types.FOO, target);
 
       backend.simulateBeginDrag(sourceHandle);
-      context.addChangeListener(once(done));
+      context.addChangeListener(done);
       backend.simulateEndDrag();
     });
 

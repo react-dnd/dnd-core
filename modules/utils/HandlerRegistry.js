@@ -110,7 +110,6 @@ export default class HandlerRegistry extends EventEmitter {
 
     this.activeSourceHandle = handle;
     this.activeSource = source;
-    this.emit('change');
   }
 
   clearActiveSource() {
@@ -118,7 +117,6 @@ export default class HandlerRegistry extends EventEmitter {
 
     this.activeSourceHandle = null;
     this.activeSource = null;
-    this.emit('change');
   }
 
   removeSource(handle) {
