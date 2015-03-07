@@ -106,7 +106,6 @@ export default class HandlerRegistry extends EventEmitter {
 
     this.pinnedSourceHandle = handle;
     this.pinnedSource = source;
-    this.emit('change');
   }
 
   unpinSource() {
@@ -114,7 +113,6 @@ export default class HandlerRegistry extends EventEmitter {
 
     this.pinnedSourceHandle = null;
     this.pinnedSource = null;
-    this.emit('change');
   }
 
   removeSource(handle) {
