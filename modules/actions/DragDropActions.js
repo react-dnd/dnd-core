@@ -54,10 +54,9 @@ export default class DragDropActions extends Actions {
       'Cannot call endDrag now. Check context.canEndDrag() first.'
     );
 
-    const sourceHandle = context.getDraggedSourceHandle();
-    const source = registry.getPinnedSource(sourceHandle);
+    const source = registry.getPinnedSource();
     source.endDrag(context);
-    registry.unpinSource(sourceHandle);
+    registry.unpinSource();
 
     return {};
   }

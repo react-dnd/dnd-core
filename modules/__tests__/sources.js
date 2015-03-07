@@ -33,32 +33,23 @@ export class BadItemSource extends DragSource {
 }
 
 export class NumberSource extends DragSource {
-  constructor(number) {
+  constructor(number, allowDrag) {
     this.number = number;
+    this.allowDrag = allowDrag;
+  }
+
+  canDrag() {
+    return this.allowDrag;
+  }
+
+  isDragging(context) {
+    const item = context.getDraggedItem();
+    return item.number === this.number;
   }
 
   beginDrag() {
     return {
       number: this.number
     };
-  }
-}
-
-export class NumberPredicateMirrorSource extends DragSource {
-  constructor(predicate) {
-    this.predicate = predicate;
-  }
-
-  canDrag() {
-    return false;
-  }
-
-  isDragging(context) {
-    const item = context.getDraggedItem();
-    return this.predicate(item.number);
-  }
-
-  beginDrag() {
-    return {};
   }
 }

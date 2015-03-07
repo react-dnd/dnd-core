@@ -48,12 +48,28 @@ export default class DragDropContext {
     return this.isDragging();
   }
 
-  isDragging() {
-    return this.dragOperationStore.isDragging();
+  isDragging(sourceHandle) {
+    const isDragging = this.dragOperationStore.isDragging();
+    if (!isDragging || typeof sourceHandle === 'undefined') {
+      return isDragging;
+    }
+
+    const { type: sourceType } = sourceHandle;
+    const draggedItemType = this.getDraggedItemType();
+    if (sourceType !== draggedItemType) {
+      return false;
+    }
+
+    let source = this.registry.getSource(sourceHandle, true);
+    if (!source) {
+      return false;
+    }
+
+    return source.isDragging(this);
   }
 
-  getDraggedSourceHandle() {
-    return this.dragOperationStore.getDraggedSourceHandle();
+  isDraggedSource(source) {
+    return source === this.registry.getPinnedSource();
   }
 
   getDraggedItemType() {

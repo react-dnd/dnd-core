@@ -44,7 +44,8 @@ function makePath({ role, type, id }: handle) {
 export default class HandlerRegistry extends EventEmitter {
   constructor() {
     this.handlers = {};
-    this.pinned = {};
+    this.pinnedSourceHandle = null;
+    this.pinnedSource = null;
   }
 
   addSource(type, source) {
@@ -78,18 +79,20 @@ export default class HandlerRegistry extends EventEmitter {
     return handle;
   }
 
-  getSource(handle) {
+  getSource(handle, allowPinned) {
     validateSourceHandle(handle);
 
     const path = makePath(handle);
-    return getIn(this.handlers, path);
+    const usePinned = allowPinned && handle === this.pinnedSourceHandle;
+    const source = usePinned ?
+      this.pinnedSource :
+      getIn(this.handlers, path);
+
+    return source;
   }
 
-  getPinnedSource(handle) {
-    validateSourceHandle(handle);
-
-    const path = makePath(handle);
-    return getIn(this.pinned, path);
+  getPinnedSource() {
+    return this.pinnedSource;
   }
 
   getTarget(handle) {
@@ -100,19 +103,20 @@ export default class HandlerRegistry extends EventEmitter {
   }
 
   pinSource(handle) {
-    const path = makePath(handle);
-    const handler = this.getSource(handle);
-    invariant(handler, 'Cannot pin a source that was not added.');
+    const source = this.getSource(handle);
+    invariant(source, 'Cannot pin a source that was not added.');
 
-    setIn(this.pinned, path, handler);
+    this.pinnedSourceHandle = handle;
+    this.pinnedSource = source;
+    this.emit('change');
   }
 
-  unpinSource(handle) {
-    validateSourceHandle(handle);
-    invariant(this.getPinnedSource(handle), 'Cannot unpin a source that was not pinned.');
+  unpinSource() {
+    invariant(this.pinnedSource, 'Cannot unpin a source that was not pinned.');
 
-    const path = makePath(handle);
-    setIn(this.pinned, path, null);
+    this.pinnedSourceHandle = null;
+    this.pinnedSource = null;
+    this.emit('change');
   }
 
   removeSource(handle) {
