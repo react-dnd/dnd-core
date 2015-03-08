@@ -232,6 +232,16 @@ describe('DragDropManager', () => {
       expect(() => backend.simulateLeave(targetHandle)).to.throwError();
     });
 
+    it('throws in leave() if it is not entered', () => {
+      const target = new NormalTarget();
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const targetHandle = registry.addTarget(Types.BAR, target);
+
+      backend.simulateBeginDrag(sourceHandle);
+      expect(() => backend.simulateLeave(targetHandle)).to.throwError();
+    });
+
     it('ignores drop() if no drop targets entered', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
