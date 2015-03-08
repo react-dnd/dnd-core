@@ -115,6 +115,7 @@ describe('DragDropManager', () => {
       backend.simulateEnter(targetHandle);
       backend.simulateDrop();
       backend.simulateEndDrag();
+      expect(target.didCallDrop).to.equal(true);
       expect(source.recordedDropResult.foo).to.equal('bar');
     });
 
@@ -158,14 +159,16 @@ describe('DragDropManager', () => {
       expect(() => backend.simulateEndDrag(sourceHandle)).to.throwError();
     });
 
-    it.skip('throws in drop() if canDrop() returns false', () => {
+    it('ignores drop() if canDrop() returns false', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
       const target = new NonDroppableTarget();
       const targetHandle = registry.addTarget(Types.FOO, target);
 
       backend.simulateBeginDrag(sourceHandle);
-      expect(() => backend.simulateDrop(targetHandle)).to.throwError();
+      backend.simulateEnter(targetHandle);
+      backend.simulateDrop();
+      expect(target.didCallDrop).to.equal(false);
     });
 
     it.skip('throws in drop() if it is called outside a drag operation', () => {

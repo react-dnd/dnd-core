@@ -39,17 +39,19 @@ export default class DragDropActions extends Actions {
 
   drop() {
     const { context, registry } = this.manager;
-    const targetHandles = registry.getActiveTargetHandles();
     invariant(
-      targetHandles.length > 0,
-      'Cannot call drop before any targets have entered.'
+      context.isDragging(),
+      'Cannot call drop while not dragging.'
     );
 
+    const targetHandles = registry.getActiveTargetHandles();
+    if (!targetHandles.length) {
+      return;
+    }
     const targetHandle = targetHandles[targetHandles.length - 1];
-    invariant(
-      context.canDrop(targetHandle),
-      'Cannot call drop now. Check context.canDrop(targetHandle) first.'
-    );
+    if (!context.canDrop(targetHandle)) {
+      return;
+    }
 
     const target = registry.getTarget(targetHandle);
     let dropResult = target.drop(context);
