@@ -67,6 +67,7 @@ export default class DragDropActions extends Actions {
       'Cannot call drop while not dragging.'
     );
 
+    const { drop: dropActionId } = this.getActionIds();
     const targetHandles = context
       .getTargetHandles()
       .filter(context.canDrop, context);
@@ -81,11 +82,12 @@ export default class DragDropActions extends Actions {
         'Drop result must either be an object or undefined.'
       );
       if (typeof dropResult === 'undefined') {
-        dropResult = index === 0 ? true : context.getDropResult();
+        dropResult = index === 0 ?
+          true :
+          context.getDropResult();
       }
 
-      const actionId = this.getActionIds().drop;
-      this.dispatch(actionId, { dropResult });
+      this.dispatch(dropActionId, { dropResult });
     });
   }
 
