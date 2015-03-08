@@ -42,10 +42,6 @@ export default class DragDropContext {
            target.canDrop(this);
   }
 
-  canEndDrag() {
-    return this.isDragging();
-  }
-
   isDragging(sourceHandle) {
     const isDragging = this.dragOperationStore.isDragging();
     if (!isDragging || typeof sourceHandle === 'undefined') {

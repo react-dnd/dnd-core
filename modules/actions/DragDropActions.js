@@ -11,9 +11,12 @@ export default class DragDropActions extends Actions {
   beginDrag(sourceHandle) {
     const { context, registry } = this.manager;
     invariant(
-      context.canDrag(sourceHandle),
-      'Cannot call beginDrag now. Check context.canDrag(sourceHandle) first.'
+      !context.isDragging(),
+      'Cannot call beginDrag while dragging.'
     );
+    if (!context.canDrag(sourceHandle)) {
+      return;
+    }
 
     const source = registry.getSource(sourceHandle);
     const item = source.beginDrag(context);
@@ -66,8 +69,8 @@ export default class DragDropActions extends Actions {
   endDrag() {
     const { context, registry } = this.manager;
     invariant(
-      context.canEndDrag(),
-      'Cannot call endDrag now. Check context.canEndDrag() first.'
+      context.isDragging(),
+      'Cannot call endDrag while not dragging.'
     );
 
     const source = registry.getActiveSource();

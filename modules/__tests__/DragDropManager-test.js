@@ -62,22 +62,27 @@ describe('DragDropManager', () => {
   });
 
   describe('drag source and target contract', () => {
-    it('throws in beginDrag() if canDrag() returns false', () => {
+    it('ignores beginDrag() if canDrag() returns false', () => {
       const source = new NonDraggableSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
-      expect(() => backend.simulateBeginDrag(sourceHandle)).to.throwError();
+
+      backend.simulateBeginDrag(sourceHandle);
+      expect(source.didCallBeginDrag).to.equal(false);
     });
 
     it('throws if beginDrag() returns non-object', () => {
       const source = new BadItemSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
+
       expect(() => backend.simulateBeginDrag(sourceHandle)).to.throwError();
     });
 
     it('begins drag if canDrag() returns true', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
-      expect(() => backend.simulateBeginDrag(sourceHandle)).to.not.throwError();
+
+      backend.simulateBeginDrag(sourceHandle);
+      expect(source.didCallBeginDrag).to.equal(true);
     });
 
     it('throws in beginDrag() if it is called twice during one operation', () => {
@@ -94,7 +99,10 @@ describe('DragDropManager', () => {
 
       backend.simulateBeginDrag(sourceHandle);
       backend.simulateEndDrag(sourceHandle);
+
+      source.didCallBeginDrag = false;
       expect(() => backend.simulateBeginDrag(sourceHandle)).to.not.throwError();
+      expect(source.didCallBeginDrag).to.equal(true);
     });
 
     it('endDrag() sees drop() return value as drop result if dropped on a target', () => {

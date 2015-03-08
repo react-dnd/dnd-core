@@ -3,9 +3,11 @@ import { DragSource } from '..';
 export class NormalSource extends DragSource {
   constructor(item) {
     this.item = item || { baz: 42 };
+    this.didCallBeginDrag = false;
   }
 
   beginDrag() {
+    this.didCallBeginDrag = true;
     return this.item;
   }
 
@@ -15,11 +17,16 @@ export class NormalSource extends DragSource {
 }
 
 export class NonDraggableSource extends DragSource {
+  constructor() {
+    this.didCallBeginDrag = false;
+  }
+
   canDrag() {
     return false;
   }
 
   beginDrag() {
+    this.didCallBeginDrag = true;
     return {};
   }
 }

@@ -153,7 +153,7 @@ describe('DragDropContext', () => {
       expect(context.canDrop(targetDHandle)).to.equal(false);
     });
 
-    it('returns true from canEndDrag and isDragging only while dragging', () => {
+    it('returns true from isDragging only while dragging', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
       const other = new NormalSource();
@@ -161,32 +161,27 @@ describe('DragDropContext', () => {
       const target = new NormalTarget();
       const targetHandle = registry.addTarget(Types.FOO, target);
 
-      expect(context.canEndDrag()).to.equal(false);
       expect(context.isDragging()).to.equal(false);
       expect(context.isDragging(sourceHandle)).to.equal(false);
       expect(context.isDragging(otherHandle)).to.equal(false);
 
       backend.simulateBeginDrag(sourceHandle);
-      expect(context.canEndDrag()).to.equal(true);
       expect(context.isDragging()).to.equal(true);
       expect(context.isDragging(sourceHandle)).to.equal(true);
       expect(context.isDragging(otherHandle)).to.equal(false);
 
       backend.simulateEnter(targetHandle);
       backend.simulateDrop();
-      expect(context.canEndDrag()).to.equal(true);
       expect(context.isDragging()).to.equal(true);
       expect(context.isDragging(sourceHandle)).to.equal(true);
       expect(context.isDragging(otherHandle)).to.equal(false);
 
       backend.simulateEndDrag();
-      expect(context.canEndDrag()).to.equal(false);
       expect(context.isDragging()).to.equal(false);
       expect(context.isDragging(sourceHandle)).to.equal(false);
       expect(context.isDragging(otherHandle)).to.equal(false);
 
       backend.simulateBeginDrag(otherHandle);
-      expect(context.canEndDrag()).to.equal(true);
       expect(context.isDragging()).to.equal(true);
       expect(context.isDragging(sourceHandle)).to.equal(false);
       expect(context.isDragging(otherHandle)).to.equal(true);
