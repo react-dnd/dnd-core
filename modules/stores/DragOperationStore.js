@@ -4,12 +4,13 @@ export default class DragOperationStore extends Store {
   constructor(flux) {
     super();
 
-    const { dragDropActionIds } = flux;
+    const { dragDropActionIds, registryActionIds } = flux;
     this.register(dragDropActionIds.beginDrag, this.handleBeginDrag);
     this.register(dragDropActionIds.enter, this.handleEnter);
     this.register(dragDropActionIds.leave, this.handleLeave);
     this.register(dragDropActionIds.endDrag, this.handleEndDrag);
     this.register(dragDropActionIds.drop, this.handleDrop);
+    this.register(registryActionIds.removeTarget, this.handleRemoveTarget);
 
     this.state = {
       itemType: null,
@@ -46,6 +47,12 @@ export default class DragOperationStore extends Store {
     this.setState({
       targetHandles: targetHandles.slice(0, index)
     });
+  }
+
+  handleRemoveTarget({ targetHandle }) {
+    if (this.getTargetHandles().indexOf(targetHandle) > -1) {
+      this.handleLeave({ targetHandle });
+    }
   }
 
   handleDrop({ dropResult }) {

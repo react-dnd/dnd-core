@@ -3,7 +3,6 @@ import keyMirror from 'keymirror';
 import getIn from './getIn';
 import setIn from './setIn';
 import getNextUniqueId from './getNextUniqueId';
-import EventEmitter from 'eventemitter3';
 
 const HandlerRoles = keyMirror({
   SOURCE: null,
@@ -39,9 +38,10 @@ function makePath({ role, type, id }: handle) {
   return [role, type, id];
 }
 
-export default class HandlerRegistry extends EventEmitter {
-  constructor(flux) {
-    this.flux = flux;
+export default class HandlerRegistry {
+  constructor(actions) {
+    this.actions = actions;
+
     this.handlers = {};
     this.pinnedSourceHandle = null;
     this.pinnedSource = null;
@@ -51,22 +51,22 @@ export default class HandlerRegistry extends EventEmitter {
     validateType(type);
     validateSourceContract(source);
 
-    const handle = this.addHandler(HandlerRoles.SOURCE, type, source);
-    validateSourceHandle(handle);
+    const sourceHandle = this.addHandler(HandlerRoles.SOURCE, type, source);
+    validateSourceHandle(sourceHandle);
 
-    this.emit('change');
-    return handle;
+    this.actions.addSource(sourceHandle);
+    return sourceHandle;
   }
 
   addTarget(type, target) {
     validateType(type);
     validateTargetContract(target);
 
-    const handle = this.addHandler(HandlerRoles.TARGET, type, target);
-    validateTargetHandle(handle);
+    const targetHandle = this.addHandler(HandlerRoles.TARGET, type, target);
+    validateTargetHandle(targetHandle);
 
-    this.emit('change');
-    return handle;
+    this.actions.addTarget(targetHandle);
+    return targetHandle;
   }
 
   addHandler(role, type, handler) {
@@ -78,44 +78,39 @@ export default class HandlerRegistry extends EventEmitter {
     return handle;
   }
 
-  getSource(handle, includePinned) {
-    validateSourceHandle(handle);
+  getSource(sourceHandle, includePinned) {
+    validateSourceHandle(sourceHandle);
 
-    const path = makePath(handle);
-    const isPinned = includePinned && handle === this.pinnedSourceHandle;
+    const path = makePath(sourceHandle);
+    const isPinned = includePinned && sourceHandle === this.pinnedSourceHandle;
     const source = isPinned ? this.pinnedSource : getIn(this.handlers, path);
 
     return source;
   }
 
-  getTarget(handle) {
-    validateTargetHandle(handle);
+  getTarget(targetHandle) {
+    validateTargetHandle(targetHandle);
 
-    const path = makePath(handle);
+    const path = makePath(targetHandle);
     return getIn(this.handlers, path);
   }
 
-  removeSource(handle) {
-    validateSourceHandle(handle);
-    invariant(this.getSource(handle), 'Cannot remove a source that was not added.');
+  removeSource(sourceHandle) {
+    validateSourceHandle(sourceHandle);
+    invariant(this.getSource(sourceHandle), 'Cannot remove a source that was not added.');
 
-    const path = makePath(handle);
+    const path = makePath(sourceHandle);
     setIn(this.handlers, path, null);
-    this.emit('change');
+    this.actions.removeSource(sourceHandle);
   }
 
-  removeTarget(handle) {
-    validateTargetHandle(handle);
-    invariant(this.getTarget(handle), 'Cannot remove a target that was not added.');
+  removeTarget(targetHandle) {
+    validateTargetHandle(targetHandle);
+    invariant(this.getTarget(targetHandle), 'Cannot remove a target that was not added.');
 
-    const { dragDropActions, dragOperationStore } = this.flux;
-    if (dragOperationStore.getTargetHandles().indexOf(handle) > -1) {
-      dragDropActions.leave(handle);
-    }
-
-    const path = makePath(handle);
+    const path = makePath(targetHandle);
     setIn(this.handlers, path, null);
-    this.emit('change');
+    this.actions.removeTarget(targetHandle);
   }
 
   pinSource(handle) {

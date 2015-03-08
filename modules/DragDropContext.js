@@ -8,12 +8,10 @@ export default class DragDropContext {
 
   addChangeListener(listener, context) {
     this.dragOperationStore.addListener('change', listener, context);
-    this.registry.addListener('change', listener, context);
   }
 
   removeChangeListener(listener, context) {
     this.dragOperationStore.removeListener('change', listener, context);
-    this.registry.removeListener('change', listener, context);
   }
 
   canDrag(sourceHandle) {

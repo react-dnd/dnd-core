@@ -7,7 +7,7 @@ export default class DragDropManager {
     const flux = new Flux(this);
 
     this.flux = flux;
-    this.registry = new HandlerRegistry(flux);
+    this.registry = new HandlerRegistry(flux.registryActions);
     this.context = new DragDropContext(flux, this.registry);
     this.backend = new Backend(flux.dragDropActions);
   }

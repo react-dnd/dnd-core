@@ -36,34 +36,6 @@ describe('DragDropContext', () => {
       context.addChangeListener(done);
       backend.simulateEndDrag();
     });
-
-    it('raises change event when adding a source', (done) => {
-      const source = new NormalSource();
-      context.addChangeListener(done);
-      registry.addSource(Types.FOO, source);
-    });
-
-    it('raises change event when adding a target', (done) => {
-      const target = new NormalTarget();
-      context.addChangeListener(done);
-      registry.addTarget(Types.FOO, target);
-    });
-
-    it('raises change event when removing a source', (done) => {
-      const source = new NormalSource();
-      const sourceHandle = registry.addSource(Types.FOO, source);
-
-      context.addChangeListener(done);
-      registry.removeSource(sourceHandle);
-    });
-
-    it('raises change event when removing a target', (done) => {
-      const target = new NormalTarget();
-      const targetHandle = registry.addTarget(Types.FOO, target);
-
-      context.addChangeListener(done);
-      registry.removeTarget(targetHandle);
-    });
   });
 
   describe('state tracking', () => {
