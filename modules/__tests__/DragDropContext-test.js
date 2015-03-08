@@ -189,7 +189,7 @@ describe('DragDropContext', () => {
       expect(context.isDragging(otherHandle)).to.equal(true);
     });
 
-    it('keeps track of dragged item and type', () => {
+    it('keeps track of dragged item, type and source handle', () => {
       const sourceA = new NormalSource({ a: 123 });
       const sourceAHandle = registry.addSource(Types.FOO, sourceA);
       const sourceB = new NormalSource({ a: 456 });
@@ -199,22 +199,28 @@ describe('DragDropContext', () => {
 
       expect(context.getDraggedItem()).to.equal(null);
       expect(context.getDraggedItemType()).to.equal(null);
+      expect(context.getDraggedSourceHandle()).to.equal(null);
 
       backend.simulateBeginDrag(sourceAHandle);
       expect(context.getDraggedItem().a).to.equal(123);
       expect(context.getDraggedItemType()).to.equal(Types.FOO);
+      expect(context.getDraggedSourceHandle()).to.equal(sourceAHandle);
 
       backend.simulateDrop(targetHandle);
       expect(context.getDraggedItem().a).to.equal(123);
       expect(context.getDraggedItemType()).to.equal(Types.FOO);
+      expect(context.getDraggedSourceHandle()).to.equal(sourceAHandle);
 
       backend.simulateEndDrag();
       expect(context.getDraggedItem()).to.equal(null);
       expect(context.getDraggedItemType()).to.equal(null);
+      expect(context.getDraggedSourceHandle()).to.equal(null);
 
       backend.simulateBeginDrag(sourceBHandle);
+      registry.removeSource(sourceBHandle);
       expect(context.getDraggedItem().a).to.equal(456);
       expect(context.getDraggedItemType()).to.equal(Types.BAR);
+      expect(context.getDraggedSourceHandle()).to.equal(sourceBHandle);
     });
 
     it('keeps track of drop result and whether it occured', () => {

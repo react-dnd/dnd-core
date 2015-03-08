@@ -89,10 +89,6 @@ export default class HandlerRegistry extends EventEmitter {
     return source;
   }
 
-  getPinnedSource() {
-    return this.pinnedSource;
-  }
-
   getTarget(handle) {
     validateTargetHandle(handle);
 
