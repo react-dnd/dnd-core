@@ -8,11 +8,13 @@ describe('DragDropManager', () => {
   let manager;
   let backend;
   let registry;
+  let context;
 
   beforeEach(() => {
     manager = new DragDropManager(TestBackend);
     backend = manager.getBackend();
     registry = manager.getRegistry();
+    context = manager.getContext();
   });
 
   describe('handler registration', () => {
@@ -151,6 +153,22 @@ describe('DragDropManager', () => {
 
       backend.simulateEndDrag();
       expect(source.recordedDropResult).to.equal(false);
+    });
+
+    it('removing an entered drop target midflight has the same effect as calling leave on it', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+
+      const target = new NormalTarget();
+      const targetHandle = registry.addTarget(Types.FOO, target);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetHandle);
+      let handles = context.getTargetHandles();
+      expect(handles.length).to.be(1);
+      registry.removeTarget(targetHandle);
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(0);
     });
 
     it('throws in endDrag() if it is called outside a drag operation', () => {
