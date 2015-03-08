@@ -215,6 +215,17 @@ describe('DragDropManager', () => {
       expect(() => backend.simulateEnter(targetHandle)).to.throwError();
     });
 
+    it('throws in enter() if it is already in an entered target', () => {
+      const target = new NormalTarget();
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const targetHandle = registry.addTarget(Types.BAR, target);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetHandle);
+      expect(() => backend.simulateEnter(targetHandle)).to.throwError();
+    });
+
     it('throws in leave() if it is called outside a drag operation', () => {
       const target = new NormalTarget();
       const targetHandle = registry.addTarget(Types.BAR, target);
