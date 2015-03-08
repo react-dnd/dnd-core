@@ -159,6 +159,18 @@ describe('DragDropManager', () => {
       expect(() => backend.simulateEndDrag(sourceHandle)).to.throwError();
     });
 
+    it('throws in enter() if it is called outside a drag operation', () => {
+      const target = new NormalTarget();
+      const targetHandle = registry.addTarget(Types.BAR, target);
+      expect(() => backend.simulateEnter(targetHandle)).to.throwError();
+    });
+
+    it('throws in leave() if it is called outside a drag operation', () => {
+      const target = new NormalTarget();
+      const targetHandle = registry.addTarget(Types.BAR, target);
+      expect(() => backend.simulateLeave(targetHandle)).to.throwError();
+    });
+
     it('ignores drop() if canDrop() returns false', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
@@ -171,30 +183,32 @@ describe('DragDropManager', () => {
       expect(target.didCallDrop).to.equal(false);
     });
 
-    it.skip('throws in drop() if it is called outside a drag operation', () => {
-      const target = new NormalTarget();
-      const targetHandle = registry.addTarget(Types.BAR, target);
-      expect(() => backend.simulateDrop(targetHandle)).to.throwError();
-    });
-
-    it.skip('throws in drop() if target has a different type', () => {
+    it('ignores drop() if target has a different type', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
       const target = new NormalTarget();
       const targetHandle = registry.addTarget(Types.BAR, target);
 
       backend.simulateBeginDrag(sourceHandle);
-      expect(() => backend.simulateDrop(targetHandle)).to.throwError();
+      backend.simulateEnter(targetHandle);
+      backend.simulateDrop();
+      expect(target.didCallDrop).to.equal(false);
     });
 
-    it.skip('throws if drop() returns something that is neither undefined nor an object', () => {
+    it('throws in drop() if it is called outside a drag operation', () => {
+      const target = new NormalTarget();
+      expect(() => backend.simulateDrop()).to.throwError();
+    });
+
+    it('throws in drop() if it returns something that is neither undefined nor an object', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
       const target = new BadResultTarget();
       const targetHandle = registry.addTarget(Types.FOO, target);
 
       backend.simulateBeginDrag(sourceHandle);
-      expect(() => backend.simulateDrop(targetHandle)).to.throwError();
+      backend.simulateEnter(targetHandle);
+      expect(() => backend.simulateDrop()).to.throwError();
     });
   });
 });

@@ -30,6 +30,11 @@ export default class DragDropActions extends Actions {
 
   enter(targetHandle) {
     const { context } = this.manager;
+    invariant(
+      context.isDragging(),
+      'Cannot call enter while not dragging.'
+    );
+
     const targetHandles = context.getTargetHandles();
     invariant(
       targetHandles.indexOf(targetHandle) === -1,
@@ -41,6 +46,11 @@ export default class DragDropActions extends Actions {
 
   leave(targetHandle) {
     const { context } = this.manager;
+    invariant(
+      context.isDragging(),
+      'Cannot call leave while not dragging.'
+    );
+
     const targetHandles = context.getTargetHandles();
     invariant(
       targetHandles.indexOf(targetHandle) !== -1,
