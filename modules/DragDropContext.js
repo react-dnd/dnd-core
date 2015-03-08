@@ -36,7 +36,7 @@ export default class DragDropContext {
     }
 
     const { type: targetType } = targetHandle;
-    const draggedItemType = this.getDraggedItemType();
+    const draggedItemType = this.getItemType();
 
     return targetType === draggedItemType &&
            target.canDrop(this, targetHandle);
@@ -49,7 +49,7 @@ export default class DragDropContext {
     }
 
     const { type: sourceType } = sourceHandle;
-    const draggedItemType = this.getDraggedItemType();
+    const draggedItemType = this.getItemType();
     if (sourceType !== draggedItemType) {
       return false;
     }
@@ -62,16 +62,20 @@ export default class DragDropContext {
     return source.isDragging(this, sourceHandle);
   }
 
-  getDraggedItemType() {
-    return this.dragOperationStore.getDraggedItemType();
+  getItemType() {
+    return this.dragOperationStore.getItemType();
   }
 
-  getDraggedItem() {
-    return this.dragOperationStore.getDraggedItem();
+  getItem() {
+    return this.dragOperationStore.getItem();
   }
 
-  getDraggedSourceHandle() {
-    return this.dragOperationStore.getDraggedSourceHandle();
+  getSourceHandle() {
+    return this.dragOperationStore.getSourceHandle();
+  }
+
+  getTargetHandles() {
+    return this.dragOperationStore.getTargetHandles();
   }
 
   getDropResult() {

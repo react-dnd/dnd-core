@@ -22,19 +22,32 @@ export default class DragDropActions extends Actions {
     const item = source.beginDrag(context, sourceHandle);
     invariant(isObject(item), 'Item must be an object.');
 
-    registry.setActiveSource(sourceHandle);
+    registry.pinSource(sourceHandle);
+
     const { type: itemType } = sourceHandle;
     return { itemType, item, sourceHandle };
   }
 
   enter(targetHandle) {
-    const { registry } = this.manager;
-    registry.pushActiveTarget(targetHandle);
+    const { context } = this.manager;
+    const targetHandles = context.getTargetHandles();
+    invariant(
+      targetHandles.indexOf(targetHandle) === -1,
+      'Cannot enter the same target twice.'
+    );
+
+    return { targetHandle };
   }
 
   leave(targetHandle) {
-    const { registry } = this.manager;
-    registry.popActiveTarget(targetHandle);
+    const { context } = this.manager;
+    const targetHandles = context.getTargetHandles();
+    invariant(
+      targetHandles.indexOf(targetHandle) !== -1,
+      'Cannot leave a target that was not entered.'
+    );
+
+    return { targetHandle };
   }
 
   drop() {
@@ -44,7 +57,7 @@ export default class DragDropActions extends Actions {
       'Cannot call drop while not dragging.'
     );
 
-    const targetHandles = registry.getActiveTargetHandles();
+    const targetHandles = context.getTargetHandles();
     if (!targetHandles.length) {
       return;
     }
@@ -63,8 +76,6 @@ export default class DragDropActions extends Actions {
       dropResult = true;
     }
 
-    registry.clearActiveTarget();
-
     return { dropResult };
   }
 
@@ -75,12 +86,11 @@ export default class DragDropActions extends Actions {
       'Cannot call endDrag while not dragging.'
     );
 
-    const sourceHandle = context.getDraggedSourceHandle();
+    const sourceHandle = context.getSourceHandle();
     const source = registry.getSource(sourceHandle, true);
-
     source.endDrag(context, sourceHandle);
-    registry.clearActiveSource();
-    registry.clearActiveTarget();
+
+    registry.unpinSource();
 
     return {};
   }

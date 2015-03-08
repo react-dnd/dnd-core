@@ -4,7 +4,7 @@ export default class DragSource {
   }
 
   isDragging(context, handle) {
-    return handle === context.getDraggedSourceHandle();
+    return handle === context.getSourceHandle();
   }
 
   endDrag() { }

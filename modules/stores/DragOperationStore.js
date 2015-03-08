@@ -6,13 +6,16 @@ export default class DragOperationStore extends Store {
 
     const { dragDropActionIds } = flux;
     this.register(dragDropActionIds.beginDrag, this.handleBeginDrag);
+    this.register(dragDropActionIds.enter, this.handleEnter);
+    this.register(dragDropActionIds.leave, this.handleLeave);
     this.register(dragDropActionIds.endDrag, this.handleEndDrag);
     this.register(dragDropActionIds.drop, this.handleDrop);
 
     this.state = {
-      draggedItemType: null,
-      draggedItem: null,
-      draggedSourceHandle: null,
+      itemType: null,
+      item: null,
+      sourceHandle: null,
+      targetHandles: [],
       dropResult: null,
       didDrop: false
     };
@@ -20,45 +23,68 @@ export default class DragOperationStore extends Store {
 
   handleBeginDrag({ itemType, item, sourceHandle }) {
     this.setState({
-      draggedItemType: itemType,
-      draggedItem: item,
-      draggedSourceHandle: sourceHandle,
+      itemType,
+      item,
+      sourceHandle,
+      targetHandles: [],
       dropResult: false,
       didDrop: false
+    });
+  }
+
+  handleEnter({ targetHandle }) {
+    const { targetHandles } = this.state;
+    this.setState({
+      targetHandles: targetHandles.concat([targetHandle])
+    });
+  }
+
+  handleLeave({ targetHandle }) {
+    const { targetHandles } = this.state;
+    const index = targetHandles.indexOf(targetHandle);
+
+    this.setState({
+      targetHandles: targetHandles.slice(0, index)
     });
   }
 
   handleDrop({ dropResult }) {
     this.setState({
       dropResult,
-      didDrop: true
+      didDrop: true,
+      targetHandles: []
     });
   }
 
   handleEndDrag() {
     this.setState({
-      draggedItemType: null,
-      draggedItem: null,
-      draggedSourceHandle: null,
+      itemType: null,
+      item: null,
+      sourceHandle: null,
+      targetHandles: [],
       dropResult: null,
       didDrop: false
     });
   }
 
   isDragging() {
-    return Boolean(this.getDraggedItemType());
+    return Boolean(this.getItemType());
   }
 
-  getDraggedItemType() {
-    return this.state.draggedItemType;
+  getItemType() {
+    return this.state.itemType;
   }
 
-  getDraggedSourceHandle() {
-    return this.state.draggedSourceHandle;
+  getSourceHandle() {
+    return this.state.sourceHandle;
   }
 
-  getDraggedItem() {
-    return this.state.draggedItem;
+  getTargetHandles() {
+    return this.state.targetHandles;
+  }
+
+  getItem() {
+    return this.state.item;
   }
 
   getDropResult() {

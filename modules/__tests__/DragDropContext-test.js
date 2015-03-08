@@ -195,31 +195,31 @@ describe('DragDropContext', () => {
       const target = new NormalTarget();
       const targetHandle = registry.addTarget(Types.FOO, target);
 
-      expect(context.getDraggedItem()).to.equal(null);
-      expect(context.getDraggedItemType()).to.equal(null);
-      expect(context.getDraggedSourceHandle()).to.equal(null);
+      expect(context.getItem()).to.equal(null);
+      expect(context.getItemType()).to.equal(null);
+      expect(context.getSourceHandle()).to.equal(null);
 
       backend.simulateBeginDrag(sourceAHandle);
-      expect(context.getDraggedItem().a).to.equal(123);
-      expect(context.getDraggedItemType()).to.equal(Types.FOO);
-      expect(context.getDraggedSourceHandle()).to.equal(sourceAHandle);
+      expect(context.getItem().a).to.equal(123);
+      expect(context.getItemType()).to.equal(Types.FOO);
+      expect(context.getSourceHandle()).to.equal(sourceAHandle);
 
       backend.simulateEnter(targetHandle);
       backend.simulateDrop();
-      expect(context.getDraggedItem().a).to.equal(123);
-      expect(context.getDraggedItemType()).to.equal(Types.FOO);
-      expect(context.getDraggedSourceHandle()).to.equal(sourceAHandle);
+      expect(context.getItem().a).to.equal(123);
+      expect(context.getItemType()).to.equal(Types.FOO);
+      expect(context.getSourceHandle()).to.equal(sourceAHandle);
 
       backend.simulateEndDrag();
-      expect(context.getDraggedItem()).to.equal(null);
-      expect(context.getDraggedItemType()).to.equal(null);
-      expect(context.getDraggedSourceHandle()).to.equal(null);
+      expect(context.getItem()).to.equal(null);
+      expect(context.getItemType()).to.equal(null);
+      expect(context.getSourceHandle()).to.equal(null);
 
       backend.simulateBeginDrag(sourceBHandle);
       registry.removeSource(sourceBHandle);
-      expect(context.getDraggedItem().a).to.equal(456);
-      expect(context.getDraggedItemType()).to.equal(Types.BAR);
-      expect(context.getDraggedSourceHandle()).to.equal(sourceBHandle);
+      expect(context.getItem().a).to.equal(456);
+      expect(context.getItemType()).to.equal(Types.BAR);
+      expect(context.getSourceHandle()).to.equal(sourceBHandle);
     });
 
     it('keeps track of drop result and whether it occured', () => {

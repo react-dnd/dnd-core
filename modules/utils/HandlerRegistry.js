@@ -40,12 +40,11 @@ function makePath({ role, type, id }: handle) {
 }
 
 export default class HandlerRegistry extends EventEmitter {
-  constructor() {
+  constructor(flux) {
+    this.flux = flux;
     this.handlers = {};
-
-    this.activeSourceHandle = null;
-    this.activeSource = null;
-    this.activeTargetHandles = [];
+    this.pinnedSourceHandle = null;
+    this.pinnedSource = null;
   }
 
   addSource(type, source) {
@@ -79,18 +78,14 @@ export default class HandlerRegistry extends EventEmitter {
     return handle;
   }
 
-  getSource(handle, includeActive) {
+  getSource(handle, includePinned) {
     validateSourceHandle(handle);
 
     const path = makePath(handle);
-    const isActive = includeActive && handle === this.activeSourceHandle;
-    const source = isActive ? this.activeSource : getIn(this.handlers, path);
+    const isPinned = includePinned && handle === this.pinnedSourceHandle;
+    const source = isPinned ? this.pinnedSource : getIn(this.handlers, path);
 
     return source;
-  }
-
-  getActiveSourceHandle() {
-    return this.activeSourceHandle;
   }
 
   getTarget(handle) {
@@ -98,21 +93,6 @@ export default class HandlerRegistry extends EventEmitter {
 
     const path = makePath(handle);
     return getIn(this.handlers, path);
-  }
-
-  setActiveSource(handle) {
-    const source = this.getSource(handle);
-    invariant(source, 'Cannot activate a source that was not added.');
-
-    this.activeSourceHandle = handle;
-    this.activeSource = source;
-  }
-
-  clearActiveSource() {
-    invariant(this.activeSource, 'Cannot deactivate a source that was not pinned.');
-
-    this.activeSourceHandle = null;
-    this.activeSource = null;
   }
 
   removeSource(handle) {
@@ -128,44 +108,28 @@ export default class HandlerRegistry extends EventEmitter {
     validateTargetHandle(handle);
     invariant(this.getTarget(handle), 'Cannot remove a target that was not added.');
 
-    const path = makePath(handle);
-    setIn(this.handlers, path, null);
-
-    if (this.isActiveTarget(handle)) {
-      this.popActiveTarget(handle);
+    const { dragDropActions, dragOperationStore } = this.flux;
+    if (dragOperationStore.getTargetHandles().indexOf(handle) > -1) {
+      dragDropActions.leave(handle);
     }
 
+    const path = makePath(handle);
+    setIn(this.handlers, path, null);
     this.emit('change');
   }
 
-  pushActiveTarget(handle) {
-    invariant(
-      !this.isActiveTarget(handle),
-      'Cannot push an active target twice.'
-    );
+  pinSource(handle) {
+    const source = this.getSource(handle);
+    invariant(source, 'Cannot pin a source that was not added.');
 
-    this.activeTargetHandles.push(handle);
+    this.pinnedSourceHandle = handle;
+    this.pinnedSource = source;
   }
 
-  popActiveTarget(handle) {
-    invariant(
-      this.isActiveTarget(handle),
-      'Cannot pop an inactive target from active list.'
-    );
+  unpinSource() {
+    invariant(this.pinnedSource, 'No source is pinned at the time.');
 
-    const index = this.activeTargetHandles.indexOf(handle);
-    this.activeTargetHandles.length = index;
-  }
-
-  clearActiveTarget() {
-   this.activeTargetHandles.length = 0;
-  }
-
-  isActiveTarget(handle) {
-    return this.activeTargetHandles.indexOf(handle) > -1;
-  }
-
-  getActiveTargetHandles() {
-    return this.activeTargetHandles.slice(0);
+    this.pinnedSourceHandle = null;
+    this.pinnedSource = null;
   }
 }

@@ -48,7 +48,7 @@ export class NumberSource extends DragSource {
   }
 
   isDragging(context) {
-    const item = context.getDraggedItem();
+    const item = context.getItem();
     return item.number === this.number;
   }
 
