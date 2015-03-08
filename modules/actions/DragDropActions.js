@@ -67,26 +67,26 @@ export default class DragDropActions extends Actions {
       'Cannot call drop while not dragging.'
     );
 
-    const targetHandles = context.getTargetHandles();
-    if (!targetHandles.length) {
-      return;
-    }
-    const targetHandle = targetHandles[targetHandles.length - 1];
-    if (!context.canDrop(targetHandle)) {
-      return;
-    }
+    const targetHandles = context
+      .getTargetHandles()
+      .filter(context.canDrop, context);
 
-    const target = registry.getTarget(targetHandle);
-    let dropResult = target.drop(context, targetHandle);
-    invariant(
-      typeof dropResult === 'undefined' || isObject(dropResult),
-      'Drop result must either be an object or undefined.'
-    );
-    if (typeof dropResult === 'undefined') {
-      dropResult = true;
-    }
+    targetHandles.reverse();
+    targetHandles.forEach((targetHandle, index) => {
+      const target = registry.getTarget(targetHandle);
 
-    return { dropResult };
+      let dropResult = target.drop(context, targetHandle);
+      invariant(
+        typeof dropResult === 'undefined' || isObject(dropResult),
+        'Drop result must either be an object or undefined.'
+      );
+      if (typeof dropResult === 'undefined') {
+        dropResult = index === 0 ? true : context.getDropResult();
+      }
+
+      const actionId = this.getActionIds().drop;
+      this.dispatch(actionId, { dropResult });
+    });
   }
 
   endDrag() {

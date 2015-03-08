@@ -1,7 +1,7 @@
 import expect from 'expect.js';
 import Types from './types';
 import { NormalSource, NonDraggableSource, BadItemSource } from './sources';
-import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult, BadResultTarget } from './targets';
+import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult, BadResultTarget, TransformResultTarget } from './targets';
 import { DragDropManager, TestBackend } from '..';
 
 describe('DragDropManager', () => {
@@ -229,6 +229,150 @@ describe('DragDropManager', () => {
         backend.simulateBeginDrag(sourceHandle);
         backend.simulateEnter(targetHandle);
         expect(() => backend.simulateDrop()).to.throwError();
+      });
+
+      describe('nested drop targets', () => {
+        it('uses child result if parents have no drop result', () => {
+          const source = new NormalSource();
+          const sourceHandle = registry.addSource(Types.FOO, source);
+          const targetA = new TargetWithNoDropResult();
+          const targetAHandle = registry.addTarget(Types.FOO, targetA);
+          const targetB = new NormalTarget({ number: 16 });
+          const targetBHandle = registry.addTarget(Types.FOO, targetB);
+          const targetC = new NormalTarget({ number: 42 });
+          const targetCHandle = registry.addTarget(Types.FOO, targetC);
+
+          backend.simulateBeginDrag(sourceHandle);
+          backend.simulateEnter(targetAHandle);
+          backend.simulateEnter(targetBHandle);
+          backend.simulateEnter(targetCHandle);
+          backend.simulateDrop();
+          backend.simulateEndDrag();
+          expect(targetA.didCallDrop).to.equal(true);
+          expect(targetB.didCallDrop).to.equal(true);
+          expect(targetC.didCallDrop).to.equal(true);
+          expect(source.recordedDropResult.number).to.equal(16);
+        });
+
+        it('excludes targets of different type when dispatching drop', () => {
+          const source = new NormalSource();
+          const sourceHandle = registry.addSource(Types.FOO, source);
+          const targetA = new TargetWithNoDropResult();
+          const targetAHandle = registry.addTarget(Types.FOO, targetA);
+          const targetB = new NormalTarget({ number: 16 });
+          const targetBHandle = registry.addTarget(Types.BAR, targetB);
+          const targetC = new NormalTarget({ number: 42 });
+          const targetCHandle = registry.addTarget(Types.FOO, targetC);
+
+          backend.simulateBeginDrag(sourceHandle);
+          backend.simulateEnter(targetAHandle);
+          backend.simulateEnter(targetBHandle);
+          backend.simulateEnter(targetCHandle);
+          backend.simulateDrop();
+          backend.simulateEndDrag();
+          expect(targetA.didCallDrop).to.equal(true);
+          expect(targetB.didCallDrop).to.equal(false);
+          expect(targetC.didCallDrop).to.equal(true);
+          expect(source.recordedDropResult.number).to.equal(42);
+        });
+
+        it('excludes non-droppable targets when dispatching drop', () => {
+          const source = new NormalSource();
+          const sourceHandle = registry.addSource(Types.FOO, source);
+          const targetA = new TargetWithNoDropResult();
+          const targetAHandle = registry.addTarget(Types.FOO, targetA);
+          const targetB = new TargetWithNoDropResult();
+          const targetBHandle = registry.addTarget(Types.FOO, targetB);
+          const targetC = new NonDroppableTarget({ number: 16 });
+          const targetCHandle = registry.addTarget(Types.BAR, targetC);
+
+          backend.simulateBeginDrag(sourceHandle);
+          backend.simulateEnter(targetAHandle);
+          backend.simulateEnter(targetBHandle);
+          backend.simulateEnter(targetCHandle);
+          backend.simulateDrop();
+          backend.simulateEndDrag();
+          expect(targetA.didCallDrop).to.equal(true);
+          expect(targetB.didCallDrop).to.equal(true);
+          expect(targetC.didCallDrop).to.equal(false);
+          expect(source.recordedDropResult).to.equal(true);
+        });
+
+        it('lets parent drop targets transform child results', () => {
+          const source = new NormalSource();
+          const sourceHandle = registry.addSource(Types.FOO, source);
+          const targetA = new TargetWithNoDropResult();
+          const targetAHandle = registry.addTarget(Types.FOO, targetA);
+          const targetB = new TransformResultTarget(dropResult => ({ number: dropResult.number * 2 }));
+          const targetBHandle = registry.addTarget(Types.FOO, targetB);
+          const targetC = new NonDroppableTarget();
+          const targetCHandle = registry.addTarget(Types.FOO, targetC);
+          const targetD = new TransformResultTarget(dropResult => ({ number: dropResult.number + 1 }));
+          const targetDHandle = registry.addTarget(Types.FOO, targetD);
+          const targetE = new NormalTarget({ number: 42 });
+          const targetEHandle = registry.addTarget(Types.FOO, targetE);
+          const targetF = new TransformResultTarget(dropResult => ({ number: dropResult.number / 2 }));
+          const targetFHandle = registry.addTarget(Types.BAR, targetF);
+          const targetG = new NormalTarget({ number: 100 });
+          const targetGHandle = registry.addTarget(Types.BAR, targetG);
+
+          backend.simulateBeginDrag(sourceHandle);
+          backend.simulateEnter(targetAHandle);
+          backend.simulateEnter(targetBHandle);
+          backend.simulateEnter(targetCHandle);
+          backend.simulateEnter(targetDHandle);
+          backend.simulateEnter(targetEHandle);
+          backend.simulateEnter(targetFHandle);
+          backend.simulateEnter(targetGHandle);
+          backend.simulateDrop();
+          backend.simulateEndDrag();
+          expect(targetA.didCallDrop).to.equal(true);
+          expect(targetB.didCallDrop).to.equal(true);
+          expect(targetC.didCallDrop).to.equal(false);
+          expect(targetD.didCallDrop).to.equal(true);
+          expect(targetE.didCallDrop).to.equal(true);
+          expect(targetF.didCallDrop).to.equal(false);
+          expect(targetG.didCallDrop).to.equal(false);
+          expect(source.recordedDropResult.number).to.equal((42 + 1) * 2);
+        });
+
+        it('always chooses parent drop result', () => {
+          const source = new NormalSource();
+          const sourceHandle = registry.addSource(Types.FOO, source);
+          const targetA = new NormalTarget({ number: 12345 });
+          const targetAHandle = registry.addTarget(Types.FOO, targetA);
+          const targetB = new TransformResultTarget(dropResult => ({ number: dropResult.number * 2 }));
+          const targetBHandle = registry.addTarget(Types.FOO, targetB);
+          const targetC = new NonDroppableTarget();
+          const targetCHandle = registry.addTarget(Types.FOO, targetC);
+          const targetD = new TransformResultTarget(dropResult => ({ number: dropResult.number + 1 }));
+          const targetDHandle = registry.addTarget(Types.FOO, targetD);
+          const targetE = new NormalTarget({ number: 42 });
+          const targetEHandle = registry.addTarget(Types.FOO, targetE);
+          const targetF = new TransformResultTarget(dropResult => ({ number: dropResult.number / 2 }));
+          const targetFHandle = registry.addTarget(Types.BAR, targetF);
+          const targetG = new NormalTarget({ number: 100 });
+          const targetGHandle = registry.addTarget(Types.BAR, targetG);
+
+          backend.simulateBeginDrag(sourceHandle);
+          backend.simulateEnter(targetAHandle);
+          backend.simulateEnter(targetBHandle);
+          backend.simulateEnter(targetCHandle);
+          backend.simulateEnter(targetDHandle);
+          backend.simulateEnter(targetEHandle);
+          backend.simulateEnter(targetFHandle);
+          backend.simulateEnter(targetGHandle);
+          backend.simulateDrop();
+          backend.simulateEndDrag();
+          expect(targetA.didCallDrop).to.equal(true);
+          expect(targetB.didCallDrop).to.equal(true);
+          expect(targetC.didCallDrop).to.equal(false);
+          expect(targetD.didCallDrop).to.equal(true);
+          expect(targetE.didCallDrop).to.equal(true);
+          expect(targetF.didCallDrop).to.equal(false);
+          expect(targetG.didCallDrop).to.equal(false);
+          expect(source.recordedDropResult.number).to.equal(12345);
+        });
       });
     });
 
