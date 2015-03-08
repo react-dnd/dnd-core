@@ -233,6 +233,152 @@ describe('DragDropContext', () => {
     });
   });
 
+  describe('target handle tracking', () => {
+    it('treats removing an entered drop target midflight as calling leave() on it', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const target = new NormalTarget();
+      const targetHandle = registry.addTarget(Types.FOO, target);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetHandle);
+      expect(context.getTargetHandles().length).to.be(1);
+      expect(context.isOver(targetHandle)).to.equal(true);
+      expect(context.isOver(targetHandle, true)).to.equal(true);
+
+      registry.removeTarget(targetHandle);
+      expect(context.getTargetHandles().length).to.be(0);
+      expect(context.isOver(targetHandle)).to.equal(false);
+      expect(context.isOver(targetHandle, true)).to.equal(false);
+    });
+
+    it('leaves nested drop zones when parent leaves', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const targetA = new NormalTarget();
+      const targetAHandle = registry.addTarget(Types.FOO, targetA);
+      const targetB = new NormalTarget();
+      const targetBHandle = registry.addTarget(Types.FOO, targetB);
+      const targetC = new NormalTarget();
+      const targetCHandle = registry.addTarget(Types.BAR, targetC);
+      const targetD = new NormalTarget();
+      const targetDHandle = registry.addTarget(Types.FOO, targetD);
+      let handles;
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetAHandle);
+      backend.simulateEnter(targetBHandle);
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(2);
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(context.isOver(targetAHandle)).to.equal(true);
+      expect(context.isOver(targetAHandle, true)).to.equal(false);
+      expect(handles[1]).to.equal(targetBHandle);
+      expect(context.isOver(targetBHandle)).to.equal(true);
+      expect(context.isOver(targetBHandle, true)).to.equal(true);
+
+      backend.simulateEnter(targetCHandle);
+      backend.simulateEnter(targetDHandle);
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(4);
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(context.isOver(targetAHandle)).to.equal(true);
+      expect(context.isOver(targetAHandle, true)).to.equal(false);
+      expect(handles[1]).to.equal(targetBHandle);
+      expect(context.isOver(targetBHandle)).to.equal(true);
+      expect(context.isOver(targetBHandle, true)).to.equal(false);
+      expect(handles[2]).to.equal(targetCHandle);
+      expect(context.isOver(targetCHandle)).to.equal(true);
+      expect(context.isOver(targetCHandle, true)).to.equal(false);
+      expect(handles[3]).to.equal(targetDHandle);
+      expect(context.isOver(targetDHandle)).to.equal(true);
+      expect(context.isOver(targetDHandle, true)).to.equal(true);
+
+      backend.simulateLeave(targetBHandle);
+      handles = context.getTargetHandles();
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(handles.length).to.be(1);
+      expect(context.isOver(targetAHandle)).to.equal(true);
+      expect(context.isOver(targetAHandle, true)).to.equal(true);
+    });
+
+    it('reset target handles on drop', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const targetA = new NormalTarget();
+      const targetAHandle = registry.addTarget(Types.FOO, targetA);
+      const targetB = new NormalTarget();
+      const targetBHandle = registry.addTarget(Types.FOO, targetB);
+      let handles;
+
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(0);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetAHandle);
+      backend.simulateEnter(targetBHandle);
+      handles = context.getTargetHandles();
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(context.isOver(targetAHandle)).to.equal(true);
+      expect(context.isOver(targetAHandle, true)).to.equal(false);
+      expect(handles[1]).to.equal(targetBHandle);
+      expect(context.isOver(targetBHandle)).to.equal(true);
+      expect(context.isOver(targetBHandle, true)).to.equal(true);
+      expect(handles.length).to.be(2);
+
+      backend.simulateDrop();
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(0);
+      expect(context.isOver(targetAHandle)).to.equal(false);
+      expect(context.isOver(targetAHandle, true)).to.equal(false);
+      expect(context.isOver(targetBHandle)).to.equal(false);
+      expect(context.isOver(targetBHandle, true)).to.equal(false);
+
+      backend.simulateEndDrag();
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(0);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetAHandle);
+      handles = context.getTargetHandles();
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(context.isOver(targetAHandle)).to.equal(true);
+      expect(context.isOver(targetAHandle, true)).to.equal(true);
+      expect(handles.length).to.be(1);
+    });
+
+    it('reset target handles on endDrag', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const targetA = new NormalTarget();
+      const targetAHandle = registry.addTarget(Types.FOO, targetA);
+      const targetB = new NormalTarget();
+      const targetBHandle = registry.addTarget(Types.FOO, targetB);
+      let handles;
+
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(0);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetAHandle);
+      backend.simulateEnter(targetBHandle);
+      handles = context.getTargetHandles();
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(handles[1]).to.equal(targetBHandle);
+      expect(handles.length).to.be(2);
+
+      backend.simulateEndDrag();
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(0);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetAHandle);
+      handles = context.getTargetHandles();
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(handles.length).to.be(1);
+    });
+  });
+
   describe('mirror drag sources', () => {
     it('uses custom isDragging functions', () => {
       const sourceA = new NumberSource(1, true);
