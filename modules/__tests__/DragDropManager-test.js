@@ -171,6 +171,16 @@ describe('DragDropManager', () => {
       expect(() => backend.simulateLeave(targetHandle)).to.throwError();
     });
 
+    it('ignores drop() if no drop targets entered', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateDrop();
+      backend.simulateEndDrag();
+      expect(source.recordedDropResult).to.equal(false);
+    });
+
     it('ignores drop() if canDrop() returns false', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
@@ -196,7 +206,6 @@ describe('DragDropManager', () => {
     });
 
     it('throws in drop() if it is called outside a drag operation', () => {
-      const target = new NormalTarget();
       expect(() => backend.simulateDrop()).to.throwError();
     });
 
