@@ -19,7 +19,7 @@ export default class DragDropActions extends Actions {
     }
 
     const source = registry.getSource(sourceHandle);
-    const item = source.beginDrag(context);
+    const item = source.beginDrag(context, sourceHandle);
     invariant(isObject(item), 'Item must be an object.');
 
     registry.setActiveSource(sourceHandle);
@@ -54,7 +54,7 @@ export default class DragDropActions extends Actions {
     }
 
     const target = registry.getTarget(targetHandle);
-    let dropResult = target.drop(context);
+    let dropResult = target.drop(context, targetHandle);
     invariant(
       typeof dropResult === 'undefined' || isObject(dropResult),
       'Drop result must either be an object or undefined.'
@@ -75,9 +75,10 @@ export default class DragDropActions extends Actions {
       'Cannot call endDrag while not dragging.'
     );
 
-    const source = registry.getActiveSource();
-    source.endDrag(context);
+    const sourceHandle = context.getDraggedSourceHandle();
+    const source = registry.getSource(sourceHandle, true);
 
+    source.endDrag(context, sourceHandle);
     registry.clearActiveSource();
     registry.clearActiveTarget();
 

@@ -89,10 +89,6 @@ export default class HandlerRegistry extends EventEmitter {
     return source;
   }
 
-  getActiveSource() {
-    return this.activeSource;
-  }
-
   getActiveSourceHandle() {
     return this.activeSourceHandle;
   }
