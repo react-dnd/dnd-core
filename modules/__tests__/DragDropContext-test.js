@@ -233,7 +233,7 @@ describe('DragDropContext', () => {
     });
   });
 
-  describe('enter and leave', () => {
+  describe('target handle tracking', () => {
     it('treats removing an entered drop target midflight as calling leave() on it', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
@@ -274,6 +274,72 @@ describe('DragDropContext', () => {
       expect(handles[3]).to.equal(targetDHandle);
 
       backend.simulateLeave(targetBHandle);
+      handles = context.getTargetHandles();
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(handles.length).to.be(1);
+    });
+
+    it('reset target handles on drop', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const targetA = new NormalTarget();
+      const targetAHandle = registry.addTarget(Types.FOO, targetA);
+      const targetB = new NormalTarget();
+      const targetBHandle = registry.addTarget(Types.FOO, targetB);
+      let handles;
+
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(0);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetAHandle);
+      backend.simulateEnter(targetBHandle);
+      handles = context.getTargetHandles();
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(handles[1]).to.equal(targetBHandle);
+      expect(handles.length).to.be(2);
+
+      backend.simulateDrop();
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(0);
+
+      backend.simulateEndDrag();
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(0);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetAHandle);
+      handles = context.getTargetHandles();
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(handles.length).to.be(1);
+    });
+
+    it('reset target handles on endDrag', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const targetA = new NormalTarget();
+      const targetAHandle = registry.addTarget(Types.FOO, targetA);
+      const targetB = new NormalTarget();
+      const targetBHandle = registry.addTarget(Types.FOO, targetB);
+      let handles;
+
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(0);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetAHandle);
+      backend.simulateEnter(targetBHandle);
+      handles = context.getTargetHandles();
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(handles[1]).to.equal(targetBHandle);
+      expect(handles.length).to.be(2);
+
+      backend.simulateEndDrag();
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(0);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetAHandle);
       handles = context.getTargetHandles();
       expect(handles[0]).to.equal(targetAHandle);
       expect(handles.length).to.be(1);

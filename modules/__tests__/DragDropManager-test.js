@@ -62,7 +62,7 @@ describe('DragDropManager', () => {
   });
 
   describe('drag source and target contract', () => {
-    describe('beginDrag', () => {
+    describe('beginDrag() and canDrag()', () => {
       it('ignores beginDrag() if canDrag() returns false', () => {
         const source = new NonDraggableSource();
         const sourceHandle = registry.addSource(Types.FOO, source);
@@ -107,7 +107,7 @@ describe('DragDropManager', () => {
       });
     });
 
-    describe('drop() and endDrag()', () => {
+    describe('drop(), canDrop() and endDrag()', () => {
       it('endDrag() sees drop() return value as drop result if dropped on a target', () => {
         const source = new NormalSource();
         const sourceHandle = registry.addSource(Types.FOO, source);
