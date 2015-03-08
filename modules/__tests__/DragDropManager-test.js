@@ -181,6 +181,26 @@ describe('DragDropManager', () => {
       expect(source.recordedDropResult).to.equal(false);
     });
 
+    it('ignores drop() if drop targets entered and left', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const targetA = new NormalTarget();
+      const targetAHandle = registry.addTarget(Types.FOO, targetA);
+      const targetB = new NormalTarget();
+      const targetBHandle = registry.addTarget(Types.FOO, targetB);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetAHandle);
+      backend.simulateEnter(targetBHandle);
+      backend.simulateLeave(targetBHandle);
+      backend.simulateLeave(targetAHandle);
+      backend.simulateDrop();
+      backend.simulateEndDrag();
+      expect(targetA.didCallDrop).to.equal(false);
+      expect(targetB.didCallDrop).to.equal(false);
+      expect(source.recordedDropResult).to.equal(false);
+    });
+
     it('ignores drop() if canDrop() returns false', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
