@@ -233,6 +233,53 @@ describe('DragDropContext', () => {
     });
   });
 
+  describe('enter and leave', () => {
+    it('treats removing an entered drop target midflight as calling leave() on it', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const target = new NormalTarget();
+      const targetHandle = registry.addTarget(Types.FOO, target);
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetHandle);
+      expect(context.getTargetHandles().length).to.be(1);
+
+      registry.removeTarget(targetHandle);
+      expect(context.getTargetHandles().length).to.be(0);
+    });
+
+    it('leaves nested drop zones when parent leaves', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const targetA = new NormalTarget();
+      const targetAHandle = registry.addTarget(Types.FOO, targetA);
+      const targetB = new NormalTarget();
+      const targetBHandle = registry.addTarget(Types.FOO, targetB);
+      const targetC = new NormalTarget();
+      const targetCHandle = registry.addTarget(Types.BAR, targetC);
+      const targetD = new NormalTarget();
+      const targetDHandle = registry.addTarget(Types.FOO, targetD);
+      let handles;
+
+      backend.simulateBeginDrag(sourceHandle);
+      backend.simulateEnter(targetAHandle);
+      backend.simulateEnter(targetBHandle);
+      backend.simulateEnter(targetCHandle);
+      backend.simulateEnter(targetDHandle);
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(4);
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(handles[1]).to.equal(targetBHandle);
+      expect(handles[2]).to.equal(targetCHandle);
+      expect(handles[3]).to.equal(targetDHandle);
+
+      backend.simulateLeave(targetBHandle);
+      handles = context.getTargetHandles();
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(handles.length).to.be(1);
+    });
+  });
+
   describe('mirror drag sources', () => {
     it('uses custom isDragging functions', () => {
       const sourceA = new NumberSource(1, true);

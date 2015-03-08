@@ -8,13 +8,11 @@ describe('DragDropManager', () => {
   let manager;
   let backend;
   let registry;
-  let context;
 
   beforeEach(() => {
     manager = new DragDropManager(TestBackend);
     backend = manager.getBackend();
     registry = manager.getRegistry();
-    context = manager.getContext();
   });
 
   describe('handler registration', () => {
@@ -153,54 +151,6 @@ describe('DragDropManager', () => {
 
       backend.simulateEndDrag();
       expect(source.recordedDropResult).to.equal(false);
-    });
-
-    it('removing an entered drop target midflight has the same effect as calling leave on it', () => {
-      const source = new NormalSource();
-      const sourceHandle = registry.addSource(Types.FOO, source);
-
-      const target = new NormalTarget();
-      const targetHandle = registry.addTarget(Types.FOO, target);
-
-      backend.simulateBeginDrag(sourceHandle);
-      backend.simulateEnter(targetHandle);
-      let handles = context.getTargetHandles();
-      expect(handles.length).to.be(1);
-      registry.removeTarget(targetHandle);
-      handles = context.getTargetHandles();
-      expect(handles.length).to.be(0);
-    });
-
-    it('enter() A, B, C, D and leave B keeps A active, but B, C and D inactive', () => {
-      const source = new NormalSource();
-      const sourceHandle = registry.addSource(Types.FOO, source);
-      const targetA = new NormalTarget();
-      const targetAHandle = registry.addTarget(Types.FOO, targetA);
-      const targetB = new NormalTarget();
-      const targetBHandle = registry.addTarget(Types.FOO, targetB);
-      const targetC = new NormalTarget();
-      const targetCHandle = registry.addTarget(Types.BAR, targetC);
-      const targetD = new NormalTarget();
-      const targetDHandle = registry.addTarget(Types.FOO, targetD);
-
-      backend.simulateBeginDrag(sourceHandle);
-      backend.simulateEnter(targetAHandle);
-      backend.simulateEnter(targetBHandle);
-      backend.simulateEnter(targetCHandle);
-      backend.simulateEnter(targetDHandle);
-
-      let handles = context.getTargetHandles();
-      expect(handles.length).to.be(4);
-      expect(handles[0]).to.equal(targetAHandle);
-      expect(handles[1]).to.equal(targetBHandle);
-      expect(handles[2]).to.equal(targetCHandle);
-      expect(handles[3]).to.equal(targetDHandle);
-
-      backend.simulateLeave(targetBHandle);
-
-      handles = context.getTargetHandles();
-      expect(handles[0]).to.equal(targetAHandle);
-      expect(handles.length).to.be(1);
     });
 
     it('throws in endDrag() if it is called outside a drag operation', () => {
