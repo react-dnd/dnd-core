@@ -60,6 +60,20 @@ export default class DragDropContext {
     return source.isDragging(this, sourceHandle);
   }
 
+  isOver(targetHandle, shallow = false) {
+    const targetHandles = this.getTargetHandles();
+    if (!targetHandles.length) {
+      return false;
+    }
+
+    const index = targetHandles.indexOf(targetHandle);
+    if (shallow) {
+      return index === targetHandles.length - 1;
+    } else {
+      return index > -1;
+    }
+  }
+
   getItemType() {
     return this.dragOperationStore.getItemType();
   }

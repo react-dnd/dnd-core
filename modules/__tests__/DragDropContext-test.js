@@ -243,9 +243,13 @@ describe('DragDropContext', () => {
       backend.simulateBeginDrag(sourceHandle);
       backend.simulateEnter(targetHandle);
       expect(context.getTargetHandles().length).to.be(1);
+      expect(context.isOver(targetHandle)).to.equal(true);
+      expect(context.isOver(targetHandle, true)).to.equal(true);
 
       registry.removeTarget(targetHandle);
       expect(context.getTargetHandles().length).to.be(0);
+      expect(context.isOver(targetHandle)).to.equal(false);
+      expect(context.isOver(targetHandle, true)).to.equal(false);
     });
 
     it('leaves nested drop zones when parent leaves', () => {
@@ -264,19 +268,38 @@ describe('DragDropContext', () => {
       backend.simulateBeginDrag(sourceHandle);
       backend.simulateEnter(targetAHandle);
       backend.simulateEnter(targetBHandle);
+      handles = context.getTargetHandles();
+      expect(handles.length).to.be(2);
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(context.isOver(targetAHandle)).to.equal(true);
+      expect(context.isOver(targetAHandle, true)).to.equal(false);
+      expect(handles[1]).to.equal(targetBHandle);
+      expect(context.isOver(targetBHandle)).to.equal(true);
+      expect(context.isOver(targetBHandle, true)).to.equal(true);
+
       backend.simulateEnter(targetCHandle);
       backend.simulateEnter(targetDHandle);
       handles = context.getTargetHandles();
       expect(handles.length).to.be(4);
       expect(handles[0]).to.equal(targetAHandle);
+      expect(context.isOver(targetAHandle)).to.equal(true);
+      expect(context.isOver(targetAHandle, true)).to.equal(false);
       expect(handles[1]).to.equal(targetBHandle);
+      expect(context.isOver(targetBHandle)).to.equal(true);
+      expect(context.isOver(targetBHandle, true)).to.equal(false);
       expect(handles[2]).to.equal(targetCHandle);
+      expect(context.isOver(targetCHandle)).to.equal(true);
+      expect(context.isOver(targetCHandle, true)).to.equal(false);
       expect(handles[3]).to.equal(targetDHandle);
+      expect(context.isOver(targetDHandle)).to.equal(true);
+      expect(context.isOver(targetDHandle, true)).to.equal(true);
 
       backend.simulateLeave(targetBHandle);
       handles = context.getTargetHandles();
       expect(handles[0]).to.equal(targetAHandle);
       expect(handles.length).to.be(1);
+      expect(context.isOver(targetAHandle)).to.equal(true);
+      expect(context.isOver(targetAHandle, true)).to.equal(true);
     });
 
     it('reset target handles on drop', () => {
@@ -296,12 +319,20 @@ describe('DragDropContext', () => {
       backend.simulateEnter(targetBHandle);
       handles = context.getTargetHandles();
       expect(handles[0]).to.equal(targetAHandle);
+      expect(context.isOver(targetAHandle)).to.equal(true);
+      expect(context.isOver(targetAHandle, true)).to.equal(false);
       expect(handles[1]).to.equal(targetBHandle);
+      expect(context.isOver(targetBHandle)).to.equal(true);
+      expect(context.isOver(targetBHandle, true)).to.equal(true);
       expect(handles.length).to.be(2);
 
       backend.simulateDrop();
       handles = context.getTargetHandles();
       expect(handles.length).to.be(0);
+      expect(context.isOver(targetAHandle)).to.equal(false);
+      expect(context.isOver(targetAHandle, true)).to.equal(false);
+      expect(context.isOver(targetBHandle)).to.equal(false);
+      expect(context.isOver(targetBHandle, true)).to.equal(false);
 
       backend.simulateEndDrag();
       handles = context.getTargetHandles();
@@ -311,6 +342,8 @@ describe('DragDropContext', () => {
       backend.simulateEnter(targetAHandle);
       handles = context.getTargetHandles();
       expect(handles[0]).to.equal(targetAHandle);
+      expect(context.isOver(targetAHandle)).to.equal(true);
+      expect(context.isOver(targetAHandle, true)).to.equal(true);
       expect(handles.length).to.be(1);
     });
 
