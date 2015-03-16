@@ -11,8 +11,8 @@ export class NormalSource extends DragSource {
     return this.item;
   }
 
-  endDrag(context) {
-    this.recordedDropResult = context.getDropResult();
+  endDrag(monitor) {
+    this.recordedDropResult = monitor.getDropResult();
   }
 }
 
@@ -47,8 +47,8 @@ export class NumberSource extends DragSource {
     return this.allowDrag;
   }
 
-  isDragging(context) {
-    const item = context.getItem();
+  isDragging(monitor) {
+    const item = monitor.getItem();
     return item.number === this.number;
   }
 

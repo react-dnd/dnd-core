@@ -48,9 +48,9 @@ export class TransformResultTarget extends DropTarget {
     this.didCallDrop = false;
   }
 
-  drop(context) {
+  drop(monitor) {
     this.didCallDrop = true;
-    const dropResult = context.getDropResult();
+    const dropResult = monitor.getDropResult();
     return this.transform(dropResult);
   }
 }

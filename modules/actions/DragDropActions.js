@@ -9,17 +9,19 @@ export default class DragDropActions extends Actions {
   }
 
   beginDrag(sourceHandle) {
-    const { context, registry } = this.manager;
+    const monitor = this.manager.getMonitor();
+    const registry = this.manager.getRegistry();
+
     invariant(
-      !context.isDragging(),
+      !monitor.isDragging(),
       'Cannot call beginDrag while dragging.'
     );
-    if (!context.canDrag(sourceHandle)) {
+    if (!monitor.canDrag(sourceHandle)) {
       return;
     }
 
     const source = registry.getSource(sourceHandle);
-    const item = source.beginDrag(context, sourceHandle);
+    const item = source.beginDrag(monitor, sourceHandle);
     invariant(isObject(item), 'Item must be an object.');
 
     registry.pinSource(sourceHandle);
@@ -29,13 +31,13 @@ export default class DragDropActions extends Actions {
   }
 
   enter(targetHandle) {
-    const { context } = this.manager;
+    const monitor = this.manager.getMonitor();
     invariant(
-      context.isDragging(),
+      monitor.isDragging(),
       'Cannot call enter while not dragging.'
     );
 
-    const targetHandles = context.getTargetHandles();
+    const targetHandles = monitor.getTargetHandles();
     invariant(
       targetHandles.indexOf(targetHandle) === -1,
       'Cannot enter the same target twice.'
@@ -45,13 +47,13 @@ export default class DragDropActions extends Actions {
   }
 
   leave(targetHandle) {
-    const { context } = this.manager;
+    const monitor = this.manager.getMonitor();
     invariant(
-      context.isDragging(),
+      monitor.isDragging(),
       'Cannot call leave while not dragging.'
     );
 
-    const targetHandles = context.getTargetHandles();
+    const targetHandles = monitor.getTargetHandles();
     invariant(
       targetHandles.indexOf(targetHandle) !== -1,
       'Cannot leave a target that was not entered.'
@@ -61,22 +63,23 @@ export default class DragDropActions extends Actions {
   }
 
   drop() {
-    const { context, registry } = this.manager;
+    const monitor = this.manager.getMonitor();
+    const registry = this.manager.getRegistry();
     invariant(
-      context.isDragging(),
+      monitor.isDragging(),
       'Cannot call drop while not dragging.'
     );
 
     const { drop: dropActionId } = this.getActionIds();
-    const targetHandles = context
+    const targetHandles = monitor
       .getTargetHandles()
-      .filter(context.canDrop, context);
+      .filter(monitor.canDrop, monitor);
 
     targetHandles.reverse();
     targetHandles.forEach((targetHandle, index) => {
       const target = registry.getTarget(targetHandle);
 
-      let dropResult = target.drop(context, targetHandle);
+      let dropResult = target.drop(monitor, targetHandle);
       invariant(
         typeof dropResult === 'undefined' || isObject(dropResult),
         'Drop result must either be an object or undefined.'
@@ -84,7 +87,7 @@ export default class DragDropActions extends Actions {
       if (typeof dropResult === 'undefined') {
         dropResult = index === 0 ?
           true :
-          context.getDropResult();
+          monitor.getDropResult();
       }
 
       this.dispatch(dropActionId, { dropResult });
@@ -92,15 +95,16 @@ export default class DragDropActions extends Actions {
   }
 
   endDrag() {
-    const { context, registry } = this.manager;
+    const monitor = this.manager.getMonitor();
+    const registry = this.manager.getRegistry();
     invariant(
-      context.isDragging(),
+      monitor.isDragging(),
       'Cannot call endDrag while not dragging.'
     );
 
-    const sourceHandle = context.getSourceHandle();
+    const sourceHandle = monitor.getSourceHandle();
     const source = registry.getSource(sourceHandle, true);
-    source.endDrag(context, sourceHandle);
+    source.endDrag(monitor, sourceHandle);
 
     registry.unpinSource();
 

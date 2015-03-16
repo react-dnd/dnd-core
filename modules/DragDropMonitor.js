@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 
-export default class DragDropContext {
+export default class DragDropMonitor {
   constructor(flux, registry) {
     this.dragOperationStore = flux.dragOperationStore;
     this.registry = registry;

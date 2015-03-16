@@ -1,5 +1,5 @@
 import Flux from './Flux';
-import DragDropContext from './DragDropContext';
+import DragDropMonitor from './DragDropMonitor';
 import HandlerRegistry from './utils/HandlerRegistry'
 
 export default class DragDropManager {
@@ -8,12 +8,12 @@ export default class DragDropManager {
 
     this.flux = flux;
     this.registry = new HandlerRegistry(flux.registryActions);
-    this.context = new DragDropContext(flux, this.registry);
+    this.monitor = new DragDropMonitor(flux, this.registry);
     this.backend = new Backend(flux.dragDropActions);
   }
 
-  getContext() {
-    return this.context;
+  getMonitor() {
+    return this.monitor;
   }
 
   getBackend() {

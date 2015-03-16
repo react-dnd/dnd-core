@@ -3,8 +3,8 @@ export default class DragSource {
     return true;
   }
 
-  isDragging(context, handle) {
-    return handle === context.getSourceHandle();
+  isDragging(monitor, handle) {
+    return handle === monitor.getSourceHandle();
   }
 
   endDrag() { }
