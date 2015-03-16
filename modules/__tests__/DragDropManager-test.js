@@ -36,6 +36,16 @@ describe('DragDropManager', () => {
       expect(() => registry.removeTarget(targetHandle)).to.throwError();
     });
 
+    it('registers and unregisters multi-type drop targets', () => {
+      const target = new NormalTarget();
+      const targetHandle = registry.addTarget([Types.FOO, Types.BAR], target);
+      expect(registry.getTarget(targetHandle)).to.equal(target);
+
+      registry.removeTarget(targetHandle);
+      expect(registry.getTarget(targetHandle)).to.equal(null);
+      expect(() => registry.removeTarget(targetHandle)).to.throwError();
+    });
+
     it('knows the difference between sources and targets', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
@@ -55,9 +65,13 @@ describe('DragDropManager', () => {
       expect(() => registry.addSource(null, source)).to.throwError();
       expect(() => registry.addSource(undefined, source)).to.throwError();
       expect(() => registry.addSource(23, source)).to.throwError();
+      expect(() => registry.addSource(['yo'], source)).to.throwError();
       expect(() => registry.addTarget(null, target)).to.throwError();
       expect(() => registry.addTarget(undefined, target)).to.throwError();
       expect(() => registry.addTarget(23, target)).to.throwError();
+      expect(() => registry.addTarget([23], target)).to.throwError();
+      expect(() => registry.addTarget(['yo', null], target)).to.throwError();
+      expect(() => registry.addTarget([['yo']], target)).to.throwError();
     });
   });
 

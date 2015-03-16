@@ -233,6 +233,46 @@ describe('DragDropMonitor', () => {
     });
   });
 
+  describe('multi-type targets', () => {
+    it('takes all types into consideration', () => {
+      const sourceA = new NormalSource();
+      const sourceAHandle = registry.addSource(Types.FOO, sourceA);
+      const sourceB = new NormalSource();
+      const sourceBHandle = registry.addSource(Types.BAZ, sourceB);
+      const targetA = new NormalTarget();
+      const targetAHandle = registry.addTarget([Types.FOO, Types.BAR], targetA);
+      const targetB = new NormalTarget();
+      const targetBHandle = registry.addTarget([Types.BAR, Types.BAZ], targetB);
+      const targetC = new NormalTarget();
+      const targetCHandle = registry.addTarget([Types.FOO, Types.BAR, Types.BAZ], targetC);
+
+      expect(monitor.canDrop(targetAHandle)).to.equal(false);
+      expect(monitor.canDrop(targetBHandle)).to.equal(false);
+      expect(monitor.canDrop(targetCHandle)).to.equal(false);
+
+      backend.simulateBeginDrag(sourceAHandle);
+      expect(monitor.canDrop(targetAHandle)).to.equal(true);
+      expect(monitor.canDrop(targetBHandle)).to.equal(false);
+      expect(monitor.canDrop(targetCHandle)).to.equal(true);
+
+      backend.simulateEnter(targetAHandle);
+      backend.simulateDrop();
+      expect(monitor.canDrop(targetAHandle)).to.equal(false);
+      expect(monitor.canDrop(targetBHandle)).to.equal(false);
+      expect(monitor.canDrop(targetCHandle)).to.equal(false);
+
+      backend.simulateEndDrag();
+      expect(monitor.canDrop(targetAHandle)).to.equal(false);
+      expect(monitor.canDrop(targetBHandle)).to.equal(false);
+      expect(monitor.canDrop(targetCHandle)).to.equal(false);
+
+      backend.simulateBeginDrag(sourceBHandle);
+      expect(monitor.canDrop(targetAHandle)).to.equal(false);
+      expect(monitor.canDrop(targetBHandle)).to.equal(true);
+      expect(monitor.canDrop(targetCHandle)).to.equal(true);
+    });
+  });
+
   describe('target handle tracking', () => {
     it('treats removing an entered drop target midflight as calling leave() on it', () => {
       const source = new NormalSource();

@@ -1,5 +1,6 @@
 import invariant from 'invariant';
 import keyMirror from 'keymirror';
+import isArray from 'lodash/lang/isArray';
 import getIn from './getIn';
 import setIn from './setIn';
 import getNextUniqueId from './getNextUniqueId';
@@ -27,10 +28,17 @@ function validateTargetHandle(handle) {
   invariant(handle.role === HandlerRoles.TARGET, 'Expected to receive a target handle');
 }
 
-function validateType(type) {
+function validateType(type, allowArray) {
+  if (allowArray && isArray(type)) {
+    type.forEach(t => validateType(t, false));
+    return;
+  }
+
   invariant(
     typeof type === 'string' || typeof type === 'symbol',
-    'Type can only be a string or a symbol.'
+    allowArray ?
+      'Type can only be a string, a symbol, or an array of them.' :
+      'Type can only be a string or a symbol.'
   );
 }
 
@@ -59,7 +67,7 @@ export default class HandlerRegistry {
   }
 
   addTarget(type, target) {
-    validateType(type);
+    validateType(type, true);
     validateTargetContract(target);
 
     const targetHandle = this.addHandler(HandlerRoles.TARGET, type, target);
