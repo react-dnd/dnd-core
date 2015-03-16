@@ -5,7 +5,7 @@
   "main": "dist-modules/index.js",
   "scripts": {
     "build": "./scripts/build",
-    "test": "./scripts/test",
+    "test": "./scripts/test-cov",
     "prepublish": "npm run build"
   },
   "repository": {
