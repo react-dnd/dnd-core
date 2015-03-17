@@ -193,7 +193,7 @@ describe('DragDropManager', () => {
         const targetHandle = registry.addTarget(Types.FOO, target);
 
         backend.simulateBeginDrag(sourceHandle);
-        backend.simulateEnter(targetHandle);
+        backend.simulateHover([targetHandle]);
         backend.simulateDrop();
         backend.simulateEndDrag();
         expect(target.didCallDrop).to.equal(true);
@@ -207,7 +207,7 @@ describe('DragDropManager', () => {
         const targetHandle = registry.addTarget(Types.FOO, target);
 
         backend.simulateBeginDrag(sourceHandle);
-        backend.simulateEnter(targetHandle);
+        backend.simulateHover([targetHandle]);
         backend.simulateDrop();
         backend.simulateEndDrag();
         expect(source.recordedDropResult).to.equal(true);
@@ -259,10 +259,10 @@ describe('DragDropManager', () => {
         const targetBHandle = registry.addTarget(Types.FOO, targetB);
 
         backend.simulateBeginDrag(sourceHandle);
-        backend.simulateEnter(targetAHandle);
-        backend.simulateEnter(targetBHandle);
-        backend.simulateLeave(targetBHandle);
-        backend.simulateLeave(targetAHandle);
+        backend.simulateHover([targetAHandle]);
+        backend.simulateHover([targetAHandle, targetBHandle]);
+        backend.simulateHover([targetAHandle]);
+        backend.simulateHover([]);
         backend.simulateDrop();
         backend.simulateEndDrag();
         expect(targetA.didCallDrop).to.equal(false);
@@ -277,7 +277,7 @@ describe('DragDropManager', () => {
         const targetHandle = registry.addTarget(Types.FOO, target);
 
         backend.simulateBeginDrag(sourceHandle);
-        backend.simulateEnter(targetHandle);
+        backend.simulateHover([targetHandle]);
         backend.simulateDrop();
         expect(target.didCallDrop).to.equal(false);
       });
@@ -289,7 +289,7 @@ describe('DragDropManager', () => {
         const targetHandle = registry.addTarget(Types.BAR, target);
 
         backend.simulateBeginDrag(sourceHandle);
-        backend.simulateEnter(targetHandle);
+        backend.simulateHover([targetHandle]);
         backend.simulateDrop();
         expect(target.didCallDrop).to.equal(false);
       });
@@ -305,7 +305,7 @@ describe('DragDropManager', () => {
         const targetHandle = registry.addTarget(Types.FOO, target);
 
         backend.simulateBeginDrag(sourceHandle);
-        backend.simulateEnter(targetHandle);
+        backend.simulateHover([targetHandle]);
         expect(() => backend.simulateDrop()).to.throwError();
       });
 
@@ -321,9 +321,7 @@ describe('DragDropManager', () => {
           const targetCHandle = registry.addTarget(Types.FOO, targetC);
 
           backend.simulateBeginDrag(sourceHandle);
-          backend.simulateEnter(targetAHandle);
-          backend.simulateEnter(targetBHandle);
-          backend.simulateEnter(targetCHandle);
+          backend.simulateHover([targetAHandle, targetBHandle, targetCHandle]);
           backend.simulateDrop();
           backend.simulateEndDrag();
           expect(targetA.didCallDrop).to.equal(true);
@@ -343,9 +341,7 @@ describe('DragDropManager', () => {
           const targetCHandle = registry.addTarget(Types.FOO, targetC);
 
           backend.simulateBeginDrag(sourceHandle);
-          backend.simulateEnter(targetAHandle);
-          backend.simulateEnter(targetBHandle);
-          backend.simulateEnter(targetCHandle);
+          backend.simulateHover([targetAHandle, targetBHandle, targetCHandle]);
           backend.simulateDrop();
           backend.simulateEndDrag();
           expect(targetA.didCallDrop).to.equal(true);
@@ -365,9 +361,7 @@ describe('DragDropManager', () => {
           const targetCHandle = registry.addTarget(Types.BAR, targetC);
 
           backend.simulateBeginDrag(sourceHandle);
-          backend.simulateEnter(targetAHandle);
-          backend.simulateEnter(targetBHandle);
-          backend.simulateEnter(targetCHandle);
+          backend.simulateHover([targetAHandle, targetBHandle, targetCHandle]);
           backend.simulateDrop();
           backend.simulateEndDrag();
           expect(targetA.didCallDrop).to.equal(true);
@@ -395,13 +389,10 @@ describe('DragDropManager', () => {
           const targetGHandle = registry.addTarget(Types.BAR, targetG);
 
           backend.simulateBeginDrag(sourceHandle);
-          backend.simulateEnter(targetAHandle);
-          backend.simulateEnter(targetBHandle);
-          backend.simulateEnter(targetCHandle);
-          backend.simulateEnter(targetDHandle);
-          backend.simulateEnter(targetEHandle);
-          backend.simulateEnter(targetFHandle);
-          backend.simulateEnter(targetGHandle);
+          backend.simulateHover([
+            targetAHandle, targetBHandle, targetCHandle, targetDHandle,
+            targetEHandle, targetFHandle, targetGHandle
+          ]);
           backend.simulateDrop();
           backend.simulateEndDrag();
           expect(targetA.didCallDrop).to.equal(true);
@@ -433,13 +424,10 @@ describe('DragDropManager', () => {
           const targetGHandle = registry.addTarget(Types.BAR, targetG);
 
           backend.simulateBeginDrag(sourceHandle);
-          backend.simulateEnter(targetAHandle);
-          backend.simulateEnter(targetBHandle);
-          backend.simulateEnter(targetCHandle);
-          backend.simulateEnter(targetDHandle);
-          backend.simulateEnter(targetEHandle);
-          backend.simulateEnter(targetFHandle);
-          backend.simulateEnter(targetGHandle);
+          backend.simulateHover([
+            targetAHandle, targetBHandle, targetCHandle, targetDHandle,
+            targetEHandle, targetFHandle, targetGHandle
+          ]);
           backend.simulateDrop();
           backend.simulateEndDrag();
           expect(targetA.didCallDrop).to.equal(true);
@@ -451,41 +439,116 @@ describe('DragDropManager', () => {
           expect(targetG.didCallDrop).to.equal(false);
           expect(source.recordedDropResult.number).to.equal(12345);
         });
+
+        it('excludes removed targets when dispatching drop', () => {
+          const source = new NormalSource();
+          const sourceHandle = registry.addSource(Types.FOO, source);
+          const targetA = new NormalTarget();
+          const targetAHandle = registry.addTarget(Types.FOO, targetA);
+          const targetB = new NormalTarget();
+          const targetBHandle = registry.addTarget(Types.FOO, targetB);
+          const targetC = new NormalTarget();
+          const targetCHandle = registry.addTarget(Types.FOO, targetC);
+
+          backend.simulateBeginDrag(sourceHandle);
+          backend.simulateHover([targetAHandle, targetBHandle, targetCHandle]);
+          registry.removeTarget(targetBHandle);
+          backend.simulateDrop();
+          backend.simulateEndDrag();
+          expect(targetA.didCallDrop).to.equal(true);
+          expect(targetB.didCallDrop).to.equal(false);
+          expect(targetC.didCallDrop).to.equal(true);
+        });
       });
     });
 
-    describe('enter() and leave()', () => {
-      it('throws in enter() if it is called outside a drag operation', () => {
-        const target = new NormalTarget();
-        const targetHandle = registry.addTarget(Types.BAR, target);
-        expect(() => backend.simulateEnter(targetHandle)).to.throwError();
-      });
-
-      it('throws in enter() if it is already in an entered target', () => {
-        const target = new NormalTarget();
+    describe('hover()', () => {
+      it('lets hover() be called any time', () => {
         const source = new NormalSource();
         const sourceHandle = registry.addSource(Types.FOO, source);
+        const target = new NormalTarget();
+        const targetHandle = registry.addTarget(Types.BAR, target);
+
+        expect(() => backend.simulateHover([targetHandle])).to.not.throwError();
+
+        backend.simulateBeginDrag(sourceHandle);
+        expect(() => backend.simulateHover([targetHandle])).to.not.throwError();
+
+        backend.simulateDrop();
+        expect(() => backend.simulateHover([targetHandle])).to.not.throwError();
+
+        backend.simulateEndDrag();
+        expect(() => backend.simulateHover([targetHandle])).to.not.throwError();
+
+        backend.simulateBeginDrag(sourceHandle);
+        expect(() => backend.simulateHover([targetHandle])).to.not.throwError();
+      });
+
+      it('throws in hover() if it contains the same target twice', () => {
+        const source = new NormalSource();
+        const sourceHandle = registry.addSource(Types.FOO, source);
+        const targetA = new NormalTarget();
+        const targetAHandle = registry.addTarget(Types.BAR, targetA);
+        const targetB = new NormalTarget();
+        const targetBHandle = registry.addTarget(Types.BAR, targetB);
+
+        backend.simulateBeginDrag(sourceHandle);
+        expect(() => backend.simulateHover([targetAHandle, targetBHandle, targetAHandle])).to.throwError();
+      });
+
+      it('throws in hover() if it is called with a non-array', () => {
+        const source = new NormalSource();
+        const sourceHandle = registry.addSource(Types.FOO, source);
+        const target = new NormalTarget();
         const targetHandle = registry.addTarget(Types.BAR, target);
 
         backend.simulateBeginDrag(sourceHandle);
-        backend.simulateEnter(targetHandle);
-        expect(() => backend.simulateEnter(targetHandle)).to.throwError();
+        expect(() => backend.simulateHover(null)).to.throwError();
+        expect(() => backend.simulateHover('yo')).to.throwError();
+        expect(() => backend.simulateHover(targetHandle)).to.throwError();
       });
 
-      it('throws in leave() if it is called outside a drag operation', () => {
-        const target = new NormalTarget();
-        const targetHandle = registry.addTarget(Types.BAR, target);
-        expect(() => backend.simulateLeave(targetHandle)).to.throwError();
-      });
-
-      it('throws in leave() if it is not entered', () => {
-        const target = new NormalTarget();
+      it('throws in hover() if it contains an invalid drop target', () => {
         const source = new NormalSource();
         const sourceHandle = registry.addSource(Types.FOO, source);
+        const target = new NormalTarget();
         const targetHandle = registry.addTarget(Types.BAR, target);
 
         backend.simulateBeginDrag(sourceHandle);
-        expect(() => backend.simulateLeave(targetHandle)).to.throwError();
+        expect(() => backend.simulateHover([targetHandle, null])).to.throwError();
+        expect(() => backend.simulateHover([targetHandle, 'yo'])).to.throwError();
+        expect(() => backend.simulateHover([targetHandle, sourceHandle])).to.throwError();
+      });
+
+      it('throws in hover() if it contains a removed drop target', () => {
+        const source = new NormalSource();
+        const sourceHandle = registry.addSource(Types.FOO, source);
+        const targetA = new NormalTarget();
+        let targetAHandle = registry.addTarget(Types.BAR, targetA);
+        const targetB = new NormalTarget();
+        let targetBHandle = registry.addTarget(Types.FOO, targetB);
+
+        backend.simulateBeginDrag(sourceHandle);
+        expect(() => backend.simulateHover([targetAHandle, targetBHandle])).to.not.throwError();
+
+        backend.simulateHover([targetAHandle, targetBHandle]);
+        registry.removeTarget(targetAHandle);
+        expect(() => backend.simulateHover([targetBHandle, targetAHandle])).to.throwError();
+        expect(() => backend.simulateHover([targetAHandle, targetBHandle])).to.throwError();
+        expect(() => backend.simulateHover([targetBHandle])).to.not.throwError();
+
+        backend.simulateHover([targetBHandle]);
+        registry.removeTarget(targetBHandle);
+        expect(() => backend.simulateHover([targetBHandle, targetAHandle])).to.throwError();
+        expect(() => backend.simulateHover([targetBHandle])).to.throwError();
+        expect(() => backend.simulateHover([targetAHandle])).to.throwError();
+
+        targetAHandle = registry.addTarget(Types.FOO, targetA);
+        expect(() => backend.simulateHover([targetAHandle])).to.not.throwError();
+
+        backend.simulateHover([targetAHandle]);
+        targetBHandle = registry.addTarget(Types.BAR, targetB);
+        expect(() => backend.simulateHover([targetAHandle, targetBHandle])).to.not.throwError();
       });
     });
   });
