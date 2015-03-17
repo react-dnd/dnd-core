@@ -23,7 +23,7 @@ describe('DragDropManager', () => {
       expect(registry.getSource(sourceHandle)).to.equal(source);
 
       registry.removeSource(sourceHandle);
-      expect(registry.getSource(sourceHandle)).to.equal(null);
+      expect(registry.getSource(sourceHandle)).to.equal(undefined);
       expect(() => registry.removeSource(sourceHandle)).to.throwError();
     });
 
@@ -33,7 +33,7 @@ describe('DragDropManager', () => {
       expect(registry.getTarget(targetHandle)).to.equal(target);
 
       registry.removeTarget(targetHandle);
-      expect(registry.getTarget(targetHandle)).to.equal(null);
+      expect(registry.getTarget(targetHandle)).to.equal(undefined);
       expect(() => registry.removeTarget(targetHandle)).to.throwError();
     });
 
@@ -43,7 +43,7 @@ describe('DragDropManager', () => {
       expect(registry.getTarget(targetHandle)).to.equal(target);
 
       registry.removeTarget(targetHandle);
-      expect(registry.getTarget(targetHandle)).to.equal(null);
+      expect(registry.getTarget(targetHandle)).to.equal(undefined);
       expect(() => registry.removeTarget(targetHandle)).to.throwError();
     });
 
@@ -73,6 +73,23 @@ describe('DragDropManager', () => {
       expect(() => registry.addTarget([23], target)).to.throwError();
       expect(() => registry.addTarget(['yo', null], target)).to.throwError();
       expect(() => registry.addTarget([['yo']], target)).to.throwError();
+    });
+
+    it('throws on adding the same source twice', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+
+      expect(() => registry.addSource(Types.FOO, source)).to.throwError();
+      expect(() => registry.addSource(Types.BAR, source)).to.throwError();
+    });
+
+    it('throws on adding the same target twice', () => {
+      const target = new NormalTarget();
+      const targetHandle = registry.addTarget(Types.FOO, target);
+
+      expect(() => registry.addTarget(Types.FOO, target)).to.throwError();
+      expect(() => registry.addTarget(Types.BAR, target)).to.throwError();
+      expect(() => registry.addTarget([Types.FOO, Types.BAR], target)).to.throwError();
     });
 
     it('calls setup() and teardown() on backend', () => {
@@ -197,7 +214,7 @@ describe('DragDropManager', () => {
 
         backend.simulateBeginDrag(sourceHandle);
         registry.removeSource(sourceHandle);
-        expect(registry.getSource(sourceHandle)).to.equal(null);
+        expect(registry.getSource(sourceHandle)).to.equal(undefined);
 
         backend.simulateEndDrag();
         expect(source.recordedDropResult).to.equal(false);

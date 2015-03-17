@@ -428,7 +428,7 @@ describe('DragDropMonitor', () => {
       const sourceC = new NumberSource(3, true);
       const sourceCHandle = registry.addSource(Types.BAR, sourceC);
       const sourceD = new NumberSource(4, false);
-      const sourceDHandle = registry.addSource(Types.FOO, sourceC);
+      const sourceDHandle = registry.addSource(Types.FOO, sourceD);
       const target = new NormalTarget();
       const targetHandle = registry.addTarget(Types.FOO, target);
 

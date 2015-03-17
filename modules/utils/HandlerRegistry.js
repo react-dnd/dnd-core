@@ -95,8 +95,14 @@ export default class HandlerRegistry {
     const id = getNextUniqueId().toString();
     const handle = makeHandle({ role, type, id });
 
+    invariant(!this.containsHandler(handler), 'Cannot add the same handler instance twice.');
     this.handlers[handle] = handler;
+
     return handle;
+  }
+
+  containsHandler(handler) {
+    return Object.keys(this.handlers).some(key => this.handlers[key] === handler);
   }
 
   getSource(sourceHandle, includePinned) {
@@ -129,7 +135,7 @@ export default class HandlerRegistry {
     validateSourceHandle(sourceHandle);
     invariant(this.getSource(sourceHandle), 'Cannot remove a source that was not added.');
 
-    this.handlers[sourceHandle] = null;
+    delete this.handlers[sourceHandle];
     this.actions.removeSource(sourceHandle);
   }
 
@@ -137,7 +143,7 @@ export default class HandlerRegistry {
     validateTargetHandle(targetHandle);
     invariant(this.getTarget(targetHandle), 'Cannot remove a target that was not added.');
 
-    this.handlers[targetHandle] = null;
+    delete this.handlers[targetHandle];
     this.actions.removeTarget(targetHandle);
   }
 
