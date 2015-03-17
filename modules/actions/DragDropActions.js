@@ -11,7 +11,6 @@ export default class DragDropActions extends Actions {
   beginDrag(sourceHandle) {
     const monitor = this.manager.getMonitor();
     const registry = this.manager.getRegistry();
-
     invariant(
       !monitor.isDragging(),
       'Cannot call beginDrag while dragging.'
