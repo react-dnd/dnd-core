@@ -31,4 +31,4 @@ export default class TestBackend {
   simulateEndDrag() {
     this.actions.endDrag();
   }
-};
+}

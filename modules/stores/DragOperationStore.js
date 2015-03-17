@@ -101,4 +101,4 @@ export default class DragOperationStore extends Store {
   didDrop() {
     return this.state.didDrop;
   }
-};
+}

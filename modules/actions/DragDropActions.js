@@ -1,4 +1,4 @@
-import { Actions } from 'flummox'
+import { Actions } from 'flummox';
 import invariant from 'invariant';
 import isObject from 'lodash/lang/isObject';
 

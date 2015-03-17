@@ -84,7 +84,7 @@ describe('DragDropManager', () => {
       const targetHandle = registry.addTarget(Types.FOO, new NormalTarget());
       expect(backend.isActive).to.equal(true);
 
-      registry.removeSource(sourceHandle)
+      registry.removeSource(sourceHandle);
       expect(backend.isActive).to.equal(true);
 
       registry.removeTarget(targetHandle);

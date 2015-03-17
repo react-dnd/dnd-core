@@ -1,6 +1,6 @@
 import Flux from './Flux';
 import DragDropMonitor from './DragDropMonitor';
-import HandlerRegistry from './utils/HandlerRegistry'
+import HandlerRegistry from './utils/HandlerRegistry';
 
 export default class DragDropManager {
   constructor(Backend) {

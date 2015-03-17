@@ -1,4 +1,4 @@
-import { Actions } from 'flummox'
+import { Actions } from 'flummox';
 
 export default class RegistryActions extends Actions {
   addSource(sourceHandle) {
