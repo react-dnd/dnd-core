@@ -73,6 +73,25 @@ describe('DragDropManager', () => {
       expect(() => registry.addTarget(['yo', null], target)).to.throwError();
       expect(() => registry.addTarget([['yo']], target)).to.throwError();
     });
+
+    it('calls setup() and teardown() on backend', () => {
+      expect(backend.isActive).to.equal(undefined);
+
+      const sourceHandle = registry.addSource(Types.FOO, new NormalSource());
+      expect(backend.isActive).to.equal(true);
+
+      const targetHandle = registry.addTarget(Types.FOO, new NormalTarget());
+      expect(backend.isActive).to.equal(true);
+
+      registry.removeSource(sourceHandle)
+      expect(backend.isActive).to.equal(true);
+
+      registry.removeTarget(targetHandle);
+      expect(backend.isActive).to.equal(false);
+
+      registry.addTarget(Types.BAR, new NormalTarget());
+      expect(backend.isActive).to.equal(true);
+    });
   });
 
   describe('drag source and target contract', () => {
