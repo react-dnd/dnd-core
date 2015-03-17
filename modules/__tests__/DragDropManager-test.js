@@ -3,6 +3,7 @@ import Types from './types';
 import { NormalSource, NonDraggableSource, BadItemSource } from './sources';
 import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult, BadResultTarget, TransformResultTarget } from './targets';
 import { DragDropManager, TestBackend } from '..';
+import isString from 'lodash/lang/isString';
 
 describe('DragDropManager', () => {
   let manager;
@@ -91,6 +92,19 @@ describe('DragDropManager', () => {
 
       registry.addTarget(Types.BAR, new NormalTarget());
       expect(backend.isActive).to.equal(true);
+    });
+
+    it('returns string handles', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const targetA = new NormalTarget();
+      const targetAHandle = registry.addTarget(Types.FOO, targetA);
+      const targetB = new NormalTarget();
+      const targetBHandle = registry.addTarget([Types.FOO, Types.BAR], targetB);
+
+      expect(isString(sourceHandle)).to.equal(true);
+      expect(isString(targetAHandle)).to.equal(true);
+      expect(isString(targetBHandle)).to.equal(true);
     });
   });
 

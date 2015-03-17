@@ -25,7 +25,7 @@ export default class DragDropActions extends Actions {
 
     registry.pinSource(sourceHandle);
 
-    const { type: itemType } = sourceHandle;
+    const itemType = registry.getSourceType(sourceHandle);
     return { itemType, item, sourceHandle };
   }
 

@@ -42,9 +42,8 @@ export default class DragDropMonitor {
       return false;
     }
 
-    const { type: targetType } = targetHandle;
+    const targetType = this.registry.getTargetType(targetHandle);
     const draggedItemType = this.getItemType();
-
     return matchesType(targetType, draggedItemType) &&
            target.canDrop(this, targetHandle);
   }
@@ -55,7 +54,7 @@ export default class DragDropMonitor {
       return isDragging;
     }
 
-    const { type: sourceType } = sourceHandle;
+    const sourceType = this.registry.getSourceType(sourceHandle);
     const draggedItemType = this.getItemType();
     if (sourceType !== draggedItemType) {
       return false;
