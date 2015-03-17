@@ -2,6 +2,7 @@ import { Flummox } from 'flummox';
 import DragDropActions from './actions/DragDropActions';
 import RegistryActions from './actions/RegistryActions';
 import DragOperationStore from './stores/DragOperationStore';
+import RefCountStore from './stores/RefCountStore';
 
 export default class Flux extends Flummox {
   constructor(manager) {
@@ -17,5 +18,8 @@ export default class Flux extends Flummox {
 
     this.createStore('dragOperationStore', DragOperationStore, this);
     this.dragOperationStore = this.getStore('dragOperationStore');
+
+    this.createStore('refCountStore', RefCountStore, this);
+    this.refCountStore = this.getStore('refCountStore');
   }
 }

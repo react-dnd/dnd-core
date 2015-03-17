@@ -10,6 +10,16 @@ export default class DragDropManager {
     this.registry = new HandlerRegistry(flux.registryActions);
     this.monitor = new DragDropMonitor(flux, this.registry);
     this.backend = new Backend(flux.dragDropActions);
+
+    flux.refCountStore.addListener('change', this.handleRefCountChange, this);
+  }
+
+  handleRefCountChange() {
+    if (this.flux.refCountStore.hasRefs()) {
+      this.backend.setup();
+    } else {
+      this.backend.teardown();
+    }
   }
 
   getMonitor() {
