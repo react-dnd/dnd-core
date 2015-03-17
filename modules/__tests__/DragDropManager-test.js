@@ -158,6 +158,20 @@ describe('DragDropManager', () => {
         expect(() => backend.simulateBeginDrag(sourceHandle)).to.throwError();
       });
 
+      it('throws in beginDrag() if it is called with an invalid handle', () => {
+        const source = new NormalSource();
+        const sourceHandle = registry.addSource(Types.FOO, source);
+        const target = new NormalTarget();
+        const targetHandle = registry.addTarget(Types.FOO, target);
+
+        expect(() => backend.simulateBeginDrag(null)).to.throwError();
+        expect(() => backend.simulateBeginDrag('yo')).to.throwError();
+        expect(() => backend.simulateBeginDrag(targetHandle)).to.throwError();
+
+        registry.removeSource(sourceHandle);
+        expect(() => backend.simulateBeginDrag(sourceHandle)).to.throwError();
+      });
+
       it('lets beginDrag() be called again in a next operation', () => {
         const source = new NormalSource();
         const sourceHandle = registry.addSource(Types.FOO, source);
