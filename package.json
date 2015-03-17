@@ -1,6 +1,6 @@
 {
   "name": "dnd-core",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Drag and drop sans the GUI",
   "main": "dist-modules/index.js",
   "scripts": {
