@@ -8,8 +8,8 @@ const HandlerRoles = keyMirror({
   TARGET: null
 });
 
-const HANDLE_SEPARATOR = '🐲';
-const TYPE_SEPARATOR = '💧';
+const HANDLE_SEPARATOR = '\ud83d\udc32';
+const TYPE_SEPARATOR = '\ud83d\udca7';
 
 function parseHandle(handle) {
   let [type, role, id] = handle.split(HANDLE_SEPARATOR);
