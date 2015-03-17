@@ -1,5 +1,6 @@
 import { Actions } from 'flummox';
 import invariant from 'invariant';
+import isArray from 'lodash/lang/isArray';
 import isObject from 'lodash/lang/isObject';
 
 export default class DragDropActions extends Actions {
@@ -29,36 +30,23 @@ export default class DragDropActions extends Actions {
     return { itemType, item, sourceHandle };
   }
 
-  enter(targetHandle) {
-    const monitor = this.manager.getMonitor();
-    invariant(
-      monitor.isDragging(),
-      'Cannot call enter while not dragging.'
-    );
+  hover(targetHandles) {
+    invariant(isArray(targetHandles), 'Target handles must be an array.');
+    targetHandles = targetHandles.slice(0);
 
-    const targetHandles = monitor.getTargetHandles();
-    invariant(
-      targetHandles.indexOf(targetHandle) === -1,
-      'Cannot enter the same target twice.'
-    );
+    const registry = this.manager.getRegistry();
+    for (let i = 0; i < targetHandles.length; i++) {
+      invariant(
+        targetHandles.lastIndexOf(targetHandles[i]) === i,
+        'Target handles should be unique in the passed array.'
+      );
+      invariant(
+        registry.getTarget(targetHandles[i]),
+        'All hovered target handles must be registered.'
+      );
+    }
 
-    return { targetHandle };
-  }
-
-  leave(targetHandle) {
-    const monitor = this.manager.getMonitor();
-    invariant(
-      monitor.isDragging(),
-      'Cannot call leave while not dragging.'
-    );
-
-    const targetHandles = monitor.getTargetHandles();
-    invariant(
-      targetHandles.indexOf(targetHandle) !== -1,
-      'Cannot leave a target that was not entered.'
-    );
-
-    return { targetHandle };
+    return { targetHandles };
   }
 
   drop() {

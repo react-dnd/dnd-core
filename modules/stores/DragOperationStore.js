@@ -1,4 +1,5 @@
 import { Store } from 'flummox';
+import without from 'lodash/array/without';
 
 export default class DragOperationStore extends Store {
   constructor(flux) {
@@ -6,8 +7,7 @@ export default class DragOperationStore extends Store {
 
     const { dragDropActionIds, registryActionIds } = flux;
     this.register(dragDropActionIds.beginDrag, this.handleBeginDrag);
-    this.register(dragDropActionIds.enter, this.handleEnter);
-    this.register(dragDropActionIds.leave, this.handleLeave);
+    this.register(dragDropActionIds.hover, this.handleHover);
     this.register(dragDropActionIds.endDrag, this.handleEndDrag);
     this.register(dragDropActionIds.drop, this.handleDrop);
     this.register(registryActionIds.removeTarget, this.handleRemoveTarget);
@@ -27,39 +27,28 @@ export default class DragOperationStore extends Store {
       itemType,
       item,
       sourceHandle,
-      targetHandles: [],
       dropResult: false,
       didDrop: false
     });
   }
 
-  handleEnter({ targetHandle }) {
-    const { targetHandles } = this.state;
-    this.setState({
-      targetHandles: targetHandles.concat([targetHandle])
-    });
-  }
-
-  handleLeave({ targetHandle }) {
-    const { targetHandles } = this.state;
-    const index = targetHandles.indexOf(targetHandle);
-
-    this.setState({
-      targetHandles: targetHandles.slice(0, index)
-    });
+  handleHover({ targetHandles }) {
+    this.setState({ targetHandles });
   }
 
   handleRemoveTarget({ targetHandle }) {
-    if (this.getTargetHandles().indexOf(targetHandle) > -1) {
-      this.handleLeave({ targetHandle });
+    const { targetHandles } = this.state;
+    if (targetHandles.indexOf(targetHandle) > -1) {
+      this.setState({
+        targetHandles: without(targetHandles, targetHandle)
+      });
     }
   }
 
   handleDrop({ dropResult }) {
     this.setState({
       dropResult,
-      didDrop: true,
-      targetHandles: []
+      didDrop: true
     });
   }
 
@@ -68,7 +57,6 @@ export default class DragOperationStore extends Store {
       itemType: null,
       item: null,
       sourceHandle: null,
-      targetHandles: [],
       dropResult: null,
       didDrop: false
     });
@@ -87,7 +75,7 @@ export default class DragOperationStore extends Store {
   }
 
   getTargetHandles() {
-    return this.state.targetHandles;
+    return this.state.targetHandles.slice(0);
   }
 
   getItem() {
