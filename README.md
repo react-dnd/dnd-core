@@ -1,5 +1,7 @@
 # dnd-core
 
+[![Join the chat at https://gitter.im/gaearon/dnd-core](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gaearon/dnd-core?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Drag and drop sans the GUI.  
 Work in progress.
 
