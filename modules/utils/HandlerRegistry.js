@@ -53,10 +53,10 @@ function validateType(type, allowArray) {
   }
 
   invariant(
-    typeof type === 'string' || typeof type === 'symbol',
+    typeof type === 'string',
     allowArray ?
-      'Type can only be a string, a symbol, or an array of them.' :
-      'Type can only be a string or a symbol.'
+      'Type can only be a string or an array of them.' :
+      'Type can only be a string.'
   );
 }
 
