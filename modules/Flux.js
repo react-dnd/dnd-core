@@ -8,18 +8,18 @@ export default class Flux extends Flummox {
   constructor(manager) {
     super();
 
-    this.createActions('dragDropActions', DragDropActions, manager);
-    this.dragDropActions = this.getActions('dragDropActions');
+    this.dragDropActions =
+      this.createActions('dragDropActions', DragDropActions, manager);
     this.dragDropActionIds = this.getActionIds('dragDropActions');
 
-    this.createActions('registryActions', RegistryActions);
-    this.registryActions = this.getActions('registryActions');
+    this.registryActions =
+      this.createActions('registryActions', RegistryActions);
     this.registryActionIds = this.getActionIds('registryActions');
 
-    this.createStore('dragOperationStore', DragOperationStore, this);
-    this.dragOperationStore = this.getStore('dragOperationStore');
+    this.dragOperationStore =
+      this.createStore('dragOperationStore', DragOperationStore, this);
 
-    this.createStore('refCountStore', RefCountStore, this);
-    this.refCountStore = this.getStore('refCountStore');
+    this.refCountStore =
+      this.createStore('refCountStore', RefCountStore, this);
   }
 }
