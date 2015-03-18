@@ -9,7 +9,7 @@ export default class DragDropManager {
     this.flux = flux;
     this.registry = new HandlerRegistry(flux.registryActions);
     this.monitor = new DragDropMonitor(flux, this.registry);
-    this.backend = new Backend(flux.dragDropActions);
+    this.backend = new Backend(flux.dragDropActions, this.monitor);
 
     flux.refCountStore.addListener('change', this.handleRefCountChange, this);
   }
