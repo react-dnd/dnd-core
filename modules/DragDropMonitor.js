@@ -60,6 +60,10 @@ export default class DragDropMonitor {
       return false;
     }
 
+    if (!this.isSourcePublic()) {
+      return false;
+    }
+
     let source = this.registry.getSource(sourceHandle, true);
     if (!source) {
       return false;
@@ -104,5 +108,9 @@ export default class DragDropMonitor {
 
   didDrop() {
     return this.dragOperationStore.didDrop();
+  }
+
+  isSourcePublic() {
+    return this.dragOperationStore.isSourcePublic();
   }
 }

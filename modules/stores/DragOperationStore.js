@@ -7,6 +7,7 @@ export default class DragOperationStore extends Store {
 
     const { dragDropActionIds, registryActionIds } = flux;
     this.register(dragDropActionIds.beginDrag, this.handleBeginDrag);
+    this.register(dragDropActionIds.publishDragSource, this.handlePublishDragSource);
     this.register(dragDropActionIds.hover, this.handleHover);
     this.register(dragDropActionIds.endDrag, this.handleEndDrag);
     this.register(dragDropActionIds.drop, this.handleDrop);
@@ -18,18 +19,24 @@ export default class DragOperationStore extends Store {
       sourceHandle: null,
       targetHandles: [],
       dropResult: null,
-      didDrop: false
+      didDrop: false,
+      isSourcePublic: null
     };
   }
 
-  handleBeginDrag({ itemType, item, sourceHandle }) {
+  handleBeginDrag({ itemType, item, sourceHandle, isSourcePublic }) {
     this.setState({
       itemType,
       item,
       sourceHandle,
+      isSourcePublic,
       dropResult: false,
       didDrop: false
     });
+  }
+
+  handlePublishDragSource() {
+    this.setState({ isSourcePublic: true });
   }
 
   handleHover({ targetHandles }) {
@@ -58,7 +65,8 @@ export default class DragOperationStore extends Store {
       item: null,
       sourceHandle: null,
       dropResult: null,
-      didDrop: false
+      didDrop: false,
+      isSourcePublic: null
     });
   }
 
@@ -88,5 +96,9 @@ export default class DragOperationStore extends Store {
 
   didDrop() {
     return this.state.didDrop;
+  }
+
+  isSourcePublic() {
+    return this.state.isSourcePublic;
   }
 }

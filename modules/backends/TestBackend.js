@@ -12,8 +12,12 @@ export default class TestBackend {
     this.isActive = false;
   }
 
-  simulateBeginDrag(sourceHandle) {
-    this.actions.beginDrag(sourceHandle);
+  simulateBeginDrag(sourceHandle, isSourcePublic) {
+    this.actions.beginDrag(sourceHandle, isSourcePublic);
+  }
+
+  simulatePublishDragSource() {
+    this.actions.publishDragSource();
   }
 
   simulateHover(targetHandles) {

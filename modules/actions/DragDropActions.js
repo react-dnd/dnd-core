@@ -9,7 +9,7 @@ export default class DragDropActions extends Actions {
     this.manager = manager;
   }
 
-  beginDrag(sourceHandle) {
+  beginDrag(sourceHandle, isSourcePublic = true) {
     const monitor = this.manager.getMonitor();
     const registry = this.manager.getRegistry();
     invariant(
@@ -27,7 +27,16 @@ export default class DragDropActions extends Actions {
     registry.pinSource(sourceHandle);
 
     const itemType = registry.getSourceType(sourceHandle);
-    return { itemType, item, sourceHandle };
+    return { itemType, item, sourceHandle, isSourcePublic };
+  }
+
+  publishDragSource() {
+    const monitor = this.manager.getMonitor();
+    if (!monitor.isDragging()) {
+      return;
+    }
+
+    return {};
   }
 
   hover(targetHandles) {

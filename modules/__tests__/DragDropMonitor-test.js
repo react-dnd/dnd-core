@@ -271,6 +271,54 @@ describe('DragDropMonitor', () => {
       expect(monitor.canDrop(targetBHandle)).to.equal(true);
       expect(monitor.canDrop(targetCHandle)).to.equal(true);
     });
+
+    it('returns false from isDragging(sourceHandle) if source is not published', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+
+      expect(monitor.isDragging()).to.equal(false);
+      expect(monitor.isDragging(sourceHandle)).to.equal(false);
+
+      backend.simulateBeginDrag(sourceHandle, false);
+      expect(monitor.isDragging()).to.equal(true);
+      expect(monitor.isDragging(sourceHandle)).to.equal(false);
+
+      backend.simulatePublishDragSource();
+      expect(monitor.isDragging()).to.equal(true);
+      expect(monitor.isDragging(sourceHandle)).to.equal(true);
+
+      backend.simulateEndDrag();
+      expect(monitor.isDragging()).to.equal(false);
+      expect(monitor.isDragging(sourceHandle)).to.equal(false);
+    });
+
+    it('ignores publishDragSource() outside dragging operation', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+
+      expect(monitor.isDragging()).to.equal(false);
+      expect(monitor.isDragging(sourceHandle)).to.equal(false);
+
+      backend.simulatePublishDragSource();
+      expect(monitor.isDragging()).to.equal(false);
+      expect(monitor.isDragging(sourceHandle)).to.equal(false);
+
+      backend.simulateBeginDrag(sourceHandle, false);
+      expect(monitor.isDragging()).to.equal(true);
+      expect(monitor.isDragging(sourceHandle)).to.equal(false);
+
+      backend.simulatePublishDragSource();
+      expect(monitor.isDragging()).to.equal(true);
+      expect(monitor.isDragging(sourceHandle)).to.equal(true);
+
+      backend.simulateEndDrag();
+      expect(monitor.isDragging()).to.equal(false);
+      expect(monitor.isDragging(sourceHandle)).to.equal(false);
+
+      backend.simulatePublishDragSource();
+      expect(monitor.isDragging()).to.equal(false);
+      expect(monitor.isDragging(sourceHandle)).to.equal(false);
+    });
   });
 
   describe('target handle tracking', () => {

@@ -77,7 +77,7 @@ describe('DragDropManager', () => {
 
     it('throws on adding the same source twice', () => {
       const source = new NormalSource();
-      const sourceHandle = registry.addSource(Types.FOO, source);
+      registry.addSource(Types.FOO, source);
 
       expect(() => registry.addSource(Types.FOO, source)).to.throwError();
       expect(() => registry.addSource(Types.BAR, source)).to.throwError();
@@ -85,7 +85,7 @@ describe('DragDropManager', () => {
 
     it('throws on adding the same target twice', () => {
       const target = new NormalTarget();
-      const targetHandle = registry.addTarget(Types.FOO, target);
+      registry.addTarget(Types.FOO, target);
 
       expect(() => registry.addTarget(Types.FOO, target)).to.throwError();
       expect(() => registry.addTarget(Types.BAR, target)).to.throwError();
