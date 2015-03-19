@@ -93,22 +93,36 @@ describe('DragDropManager', () => {
     });
 
     it('calls setup() and teardown() on backend', () => {
-      expect(backend.isActive).to.equal(undefined);
+      expect(backend.didCallSetup).to.equal(undefined);
+      expect(backend.didCallTeardown).to.equal(undefined);
 
       const sourceHandle = registry.addSource(Types.FOO, new NormalSource());
-      expect(backend.isActive).to.equal(true);
+      expect(backend.didCallSetup).to.equal(true);
+      expect(backend.didCallTeardown).to.equal(undefined);
+      backend.didCallSetup = undefined;
+      backend.didCallTeardown = undefined;
 
       const targetHandle = registry.addTarget(Types.FOO, new NormalTarget());
-      expect(backend.isActive).to.equal(true);
+      expect(backend.didCallSetup).to.equal(undefined);
+      expect(backend.didCallTeardown).to.equal(undefined);
+      backend.didCallSetup = undefined;
+      backend.didCallTeardown = undefined;
 
       registry.removeSource(sourceHandle);
-      expect(backend.isActive).to.equal(true);
+      expect(backend.didCallSetup).to.equal(undefined);
+      expect(backend.didCallTeardown).to.equal(undefined);
+      backend.didCallSetup = undefined;
+      backend.didCallTeardown = undefined;
 
       registry.removeTarget(targetHandle);
-      expect(backend.isActive).to.equal(false);
+      expect(backend.didCallSetup).to.equal(undefined);
+      expect(backend.didCallTeardown).to.equal(true);
+      backend.didCallSetup = undefined;
+      backend.didCallTeardown = undefined;
 
       registry.addTarget(Types.BAR, new NormalTarget());
-      expect(backend.isActive).to.equal(true);
+      expect(backend.didCallSetup).to.equal(true);
+      expect(backend.didCallTeardown).to.equal(undefined);
     });
 
     it('returns string handles', () => {

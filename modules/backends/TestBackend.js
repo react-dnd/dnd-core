@@ -1,15 +1,14 @@
 export default class TestBackend {
   constructor(actions) {
     this.actions = actions;
-    this.isActive = undefined;
   }
 
   setup() {
-    this.isActive = true;
+    this.didCallSetup = true;
   }
 
   teardown() {
-    this.isActive = false;
+    this.didCallTeardown = true;
   }
 
   simulateBeginDrag(sourceHandle, isSourcePublic) {

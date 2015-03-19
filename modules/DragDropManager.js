@@ -15,10 +15,13 @@ export default class DragDropManager {
   }
 
   handleRefCountChange() {
-    if (this.flux.refCountStore.hasRefs()) {
+    const shouldSetUp = this.flux.refCountStore.hasRefs();
+    if (shouldSetUp && !this.isSetUp) {
       this.backend.setup();
-    } else {
+      this.isSetUp = true;
+    } else if (!shouldSetUp && this.isSetUp) {
       this.backend.teardown();
+      this.isSetUp = false;
     }
   }
 
