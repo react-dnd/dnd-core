@@ -341,6 +341,8 @@ describe('DragDropMonitor', () => {
     });
 
     it('keeps track of target handles', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
       const targetA = new NormalTarget();
       const targetAHandle = registry.addTarget(Types.FOO, targetA);
       const targetB = new NormalTarget();
@@ -352,6 +354,17 @@ describe('DragDropMonitor', () => {
       expect(handles.length).to.be(0);
 
       backend.simulateHover([targetAHandle]);
+      handles = monitor.getTargetHandles();
+      expect(handles.length).to.be(1);
+      expect(handles[0]).to.equal(targetAHandle);
+      expect(monitor.isOver(targetAHandle)).to.equal(false);
+      expect(monitor.isOver(targetAHandle, true)).to.equal(false);
+      expect(monitor.isOver(targetBHandle)).to.equal(false);
+      expect(monitor.isOver(targetBHandle, true)).to.equal(false);
+      expect(monitor.isOver(targetCHandle)).to.equal(false);
+      expect(monitor.isOver(targetCHandle, true)).to.equal(false);
+
+      backend.simulateBeginDrag(sourceHandle);
       handles = monitor.getTargetHandles();
       expect(handles.length).to.be(1);
       expect(handles[0]).to.equal(targetAHandle);
@@ -399,6 +412,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.isOver(targetAHandle, true)).to.equal(true);
 
       backend.simulateHover([targetBHandle]);
+      backend.simulateDrop();
       handles = monitor.getTargetHandles();
       expect(handles[0]).to.equal(targetBHandle);
       expect(handles.length).to.be(1);
@@ -406,6 +420,16 @@ describe('DragDropMonitor', () => {
       expect(monitor.isOver(targetAHandle, true)).to.equal(false);
       expect(monitor.isOver(targetBHandle)).to.equal(true);
       expect(monitor.isOver(targetBHandle, true)).to.equal(true);
+      expect(monitor.isOver(targetCHandle)).to.equal(false);
+      expect(monitor.isOver(targetCHandle, true)).to.equal(false);
+
+      backend.simulateEndDrag();
+      expect(handles[0]).to.equal(targetBHandle);
+      expect(handles.length).to.be(1);
+      expect(monitor.isOver(targetAHandle)).to.equal(false);
+      expect(monitor.isOver(targetAHandle, true)).to.equal(false);
+      expect(monitor.isOver(targetBHandle)).to.equal(false);
+      expect(monitor.isOver(targetBHandle, true)).to.equal(false);
       expect(monitor.isOver(targetCHandle)).to.equal(false);
       expect(monitor.isOver(targetCHandle, true)).to.equal(false);
     });

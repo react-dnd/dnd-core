@@ -73,6 +73,10 @@ export default class DragDropMonitor {
   }
 
   isOver(targetHandle, shallow = false) {
+    if (!this.isDragging()) {
+      return false;
+    }
+
     const targetHandles = this.getTargetHandles();
     if (!targetHandles.length) {
       return false;
