@@ -36,6 +36,51 @@ describe('DragDropMonitor', () => {
       monitor.addChangeListener(done);
       backend.simulateEndDrag();
     });
+
+    it('does not raise change event if hover targets have not changed', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const targetA = new NormalTarget({ a: 123 });
+      const targetAHandle = registry.addTarget(Types.FOO, targetA);
+      const targetB = new TargetWithNoDropResult();
+      const targetBHandle = registry.addTarget(Types.FOO, targetB);
+
+      let raisedChange = false;
+      function setRaisedChange() {
+        raisedChange = true;
+      }
+
+      monitor.addChangeListener(setRaisedChange);
+
+      backend.simulateBeginDrag(sourceHandle);
+      expect(raisedChange).to.equal(true);
+      raisedChange = false;
+
+      backend.simulateHover([targetAHandle]);
+      expect(raisedChange).to.equal(true);
+      raisedChange = false;
+
+      backend.simulateHover([targetBHandle]);
+      expect(raisedChange).to.equal(true);
+      raisedChange = false;
+
+      backend.simulateHover([targetBHandle]);
+      expect(raisedChange).to.equal(false);
+
+      backend.simulateHover([targetBHandle, targetAHandle]);
+      expect(raisedChange).to.equal(true);
+      raisedChange = false;
+
+      backend.simulateHover([targetBHandle, targetAHandle]);
+      expect(raisedChange).to.equal(false);
+
+      backend.simulateHover([targetAHandle, targetBHandle]);
+      expect(raisedChange).to.equal(true);
+      raisedChange = false;
+
+      backend.simulateHover([targetAHandle, targetBHandle]);
+      expect(raisedChange).to.equal(false);
+    });
   });
 
   describe('state tracking', () => {
@@ -463,7 +508,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.getTargetHandles().length).to.be(1);
     });
 
-    it('does not let array mutation to corrupt internal state', () => {
+    it('does not let array mutation corrupt internal state', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);
       const target = new NormalTarget();

@@ -43,16 +43,35 @@ export default class DragDropActions extends Actions {
     invariant(isArray(targetHandles), 'Target handles must be an array.');
     targetHandles = targetHandles.slice(0);
 
+    const monitor = this.manager.getMonitor();
     const registry = this.manager.getRegistry();
+
+    const prevTargetHandles = monitor.getTargetHandles();
+    let didChange = false;
+
+    if (prevTargetHandles.length !== targetHandles.length) {
+      didChange = true;
+    }
+
     for (let i = 0; i < targetHandles.length; i++) {
       invariant(
         targetHandles.lastIndexOf(targetHandles[i]) === i,
         'Target handles should be unique in the passed array.'
       );
+
+      const target = registry.getTarget(targetHandles[i]);
       invariant(
-        registry.getTarget(targetHandles[i]),
+        target,
         'All hovered target handles must be registered.'
       );
+
+      if (!didChange && targetHandles[i] !== prevTargetHandles[i]) {
+        didChange = true;
+      }
+    }
+
+    if (!didChange) {
+      return;
     }
 
     return { targetHandles };
