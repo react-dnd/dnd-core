@@ -15,12 +15,12 @@ export default class DragDropMonitor {
     this.registry = registry;
   }
 
-  addChangeListener(listener, context) {
-    this.dragOperationStore.addListener('change', listener, context);
+  addChangeListener(listener) {
+    this.dragOperationStore.addListener('change', listener);
   }
 
-  removeChangeListener(listener, context) {
-    this.dragOperationStore.removeListener('change', listener, context);
+  removeChangeListener(listener) {
+    this.dragOperationStore.removeListener('change', listener);
   }
 
   canDrag(sourceHandle) {
