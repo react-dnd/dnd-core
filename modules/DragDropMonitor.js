@@ -1,13 +1,5 @@
 import invariant from 'invariant';
-import isArray from 'lodash/lang/isArray';
-
-function matchesType(targetType, draggedItemType) {
-  if (isArray(targetType)) {
-    return targetType.some(t => t === draggedItemType);
-  } else {
-    return targetType === draggedItemType;
-  }
-}
+import matchesType from './utils/matchesType';
 
 export default class DragDropMonitor {
   constructor(flux, registry) {
@@ -79,7 +71,7 @@ export default class DragDropMonitor {
 
     const targetType = this.registry.getTargetType(targetHandle);
     const draggedItemType = this.getItemType();
-    if (draggedItemType !== targetType) {
+    if (!matchesType(targetType, draggedItemType)) {
       return false;
     }
 

@@ -573,6 +573,32 @@ describe('DragDropMonitor', () => {
       expect(monitor.isOver(targetCHandle, true)).to.equal(false);
     });
 
+    it('correctly handles isOver() for multi-type targets', () => {
+      const sourceA = new NormalSource();
+      const sourceAHandle = registry.addSource(Types.FOO, sourceA);
+      const sourceB = new NormalSource();
+      const sourceBHandle = registry.addSource(Types.BAR, sourceB);
+      const sourceC = new NormalSource();
+      const sourceCHandle = registry.addSource(Types.BAZ, sourceC);
+      const target = new NormalTarget();
+      const targetHandle = registry.addTarget([Types.FOO, Types.BAR], target);
+
+      backend.simulateBeginDrag(sourceAHandle);
+      backend.simulateHover([targetHandle]);
+      expect(monitor.isOver(targetHandle)).to.equal(true);
+      expect(monitor.isOver(targetHandle, true)).to.equal(true);
+
+      backend.simulateEndDrag();
+      backend.simulateBeginDrag(sourceBHandle);
+      expect(monitor.isOver(targetHandle)).to.equal(true);
+      expect(monitor.isOver(targetHandle, true)).to.equal(true);
+
+      backend.simulateEndDrag();
+      backend.simulateBeginDrag(sourceCHandle);
+      expect(monitor.isOver(targetHandle)).to.equal(false);
+      expect(monitor.isOver(targetHandle, true)).to.equal(false);
+    });
+
     it('does not reset target handles on drop() and endDrag()', () => {
       const source = new NormalSource();
       const sourceHandle = registry.addSource(Types.FOO, source);

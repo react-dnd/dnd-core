@@ -547,12 +547,15 @@ describe('DragDropManager', () => {
         const targetBHandle = registry.addTarget(Types.BAR, targetB);
         const targetC = new NormalTarget();
         const targetCHandle = registry.addTarget(Types.FOO, targetC);
+        const targetD = new NormalTarget();
+        const targetDHandle = registry.addTarget([Types.BAZ, Types.FOO], targetD);
 
         backend.simulateBeginDrag(sourceHandle);
-        backend.simulateHover([targetAHandle, targetBHandle, targetCHandle]);
+        backend.simulateHover([targetAHandle, targetBHandle, targetCHandle, targetDHandle]);
         expect(targetA.didCallHover).to.equal(true);
         expect(targetB.didCallHover).to.equal(false);
         expect(targetC.didCallHover).to.equal(true);
+        expect(targetD.didCallHover).to.equal(true);
       });
 
       it('includes non-droppable targets when dispatching hover', () => {
