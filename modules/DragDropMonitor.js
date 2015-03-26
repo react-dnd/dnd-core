@@ -77,6 +77,12 @@ export default class DragDropMonitor {
       return false;
     }
 
+    const targetType = this.registry.getTargetType(targetHandle);
+    const draggedItemType = this.getItemType();
+    if (draggedItemType !== targetType) {
+      return false;
+    }
+
     const targetHandles = this.getTargetHandles();
     if (!targetHandles.length) {
       return false;
