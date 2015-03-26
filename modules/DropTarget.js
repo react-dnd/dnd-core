@@ -3,5 +3,7 @@ export default class DropTarget {
     return true;
   }
 
+  hover() { }
+
   drop() { }
 }

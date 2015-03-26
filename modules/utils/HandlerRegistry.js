@@ -35,6 +35,8 @@ function validateSourceContract(source) {
 }
 
 function validateTargetContract(target) {
+  invariant(typeof target.canDrop === 'function', 'Expected canDrop to be a function.');
+  invariant(typeof target.hover === 'function', 'Expected hover to be a function.');
   invariant(typeof target.drop === 'function', 'Expected beginDrag to be a function.');
 }
 

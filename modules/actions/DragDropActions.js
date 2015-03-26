@@ -45,6 +45,7 @@ export default class DragDropActions extends Actions {
 
     const monitor = this.manager.getMonitor();
     const registry = this.manager.getRegistry();
+    const draggedItemType = monitor.getItemType();
 
     const prevTargetHandles = monitor.getTargetHandles();
     let didChange = false;
@@ -54,18 +55,24 @@ export default class DragDropActions extends Actions {
     }
 
     for (let i = 0; i < targetHandles.length; i++) {
+      const targetHandle = targetHandles[i];
       invariant(
-        targetHandles.lastIndexOf(targetHandles[i]) === i,
+        targetHandles.lastIndexOf(targetHandle) === i,
         'Target handles should be unique in the passed array.'
       );
 
-      const target = registry.getTarget(targetHandles[i]);
+      const target = registry.getTarget(targetHandle);
       invariant(
         target,
         'All hovered target handles must be registered.'
       );
 
-      if (!didChange && targetHandles[i] !== prevTargetHandles[i]) {
+      const targetType = registry.getTargetType(targetHandle);
+      if (targetType === draggedItemType) {
+        target.hover(monitor, targetHandle);
+      }
+
+      if (!didChange && targetHandle !== prevTargetHandles[i]) {
         didChange = true;
       }
     }

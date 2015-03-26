@@ -515,6 +515,60 @@ describe('DragDropManager', () => {
         expect(() => backend.simulateHover([targetHandle])).to.not.throwError();
       });
 
+      it('does not call hover() outside drag operation', () => {
+        const source = new NormalSource();
+        const sourceHandle = registry.addSource(Types.FOO, source);
+        const target = new NormalTarget();
+        const targetHandle = registry.addTarget(Types.FOO, target);
+
+        backend.simulateHover([targetHandle]);
+        expect(target.didCallHover).to.equal(false);
+
+        backend.simulateBeginDrag(sourceHandle);
+        backend.simulateHover([targetHandle]);
+        expect(target.didCallHover).to.equal(true);
+
+        target.didCallHover = false;
+        backend.simulateHover([targetHandle]);
+        expect(target.didCallHover).to.equal(true);
+
+        target.didCallHover = false;
+        backend.simulateEndDrag();
+        backend.simulateHover([targetHandle]);
+        expect(target.didCallHover).to.equal(false);
+      });
+
+      it('excludes targets of different type when dispatching hover', () => {
+        const source = new NormalSource();
+        const sourceHandle = registry.addSource(Types.FOO, source);
+        const targetA = new NormalTarget();
+        const targetAHandle = registry.addTarget(Types.FOO, targetA);
+        const targetB = new NormalTarget();
+        const targetBHandle = registry.addTarget(Types.BAR, targetB);
+        const targetC = new NormalTarget();
+        const targetCHandle = registry.addTarget(Types.FOO, targetC);
+
+        backend.simulateBeginDrag(sourceHandle);
+        backend.simulateHover([targetAHandle, targetBHandle, targetCHandle]);
+        expect(targetA.didCallHover).to.equal(true);
+        expect(targetB.didCallHover).to.equal(false);
+        expect(targetC.didCallHover).to.equal(true);
+      });
+
+      it('includes non-droppable targets when dispatching hover', () => {
+        const source = new NormalSource();
+        const sourceHandle = registry.addSource(Types.FOO, source);
+        const targetA = new TargetWithNoDropResult();
+        const targetAHandle = registry.addTarget(Types.FOO, targetA);
+        const targetB = new TargetWithNoDropResult();
+        const targetBHandle = registry.addTarget(Types.FOO, targetB);
+
+        backend.simulateBeginDrag(sourceHandle);
+        backend.simulateHover([targetAHandle, targetBHandle]);
+        expect(targetA.didCallHover).to.equal(true);
+        expect(targetB.didCallHover).to.equal(true);
+      });
+
       it('throws in hover() if it contains the same target twice', () => {
         const source = new NormalSource();
         const sourceHandle = registry.addSource(Types.FOO, source);
