@@ -137,6 +137,23 @@ describe('DragDropManager', () => {
       expect(isString(targetAHandle)).to.equal(true);
       expect(isString(targetBHandle)).to.equal(true);
     });
+
+    it('accurately reports handler role', () => {
+      const source = new NormalSource();
+      const sourceHandle = registry.addSource(Types.FOO, source);
+      const target = new NormalTarget();
+      const targetHandle = registry.addTarget(Types.FOO, target);
+
+      expect(registry.isSourceHandle(sourceHandle)).to.equal(true);
+      expect(registry.isSourceHandle(targetHandle)).to.equal(false);
+      expect(() => registry.isSourceHandle('something else')).to.throwError();
+      expect(() => registry.isSourceHandle(null)).to.throwError();
+
+      expect(registry.isTargetHandle(sourceHandle)).to.equal(false);
+      expect(registry.isTargetHandle(targetHandle)).to.equal(true);
+      expect(() => registry.isTargetHandle('something else')).to.throwError();
+      expect(() => registry.isTargetHandle(null)).to.throwError();
+    });
   });
 
   describe('drag source and target contract', () => {

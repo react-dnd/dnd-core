@@ -13,6 +13,8 @@ const TYPE_SEPARATOR = '💧';
 
 function parseHandle(handle) {
   let [type, role, id] = handle.split(HANDLE_SEPARATOR);
+  invariant(type && role && id, 'Invalid handle.');
+
   if (type.indexOf(TYPE_SEPARATOR) > -1) {
     type = type.split(TYPE_SEPARATOR);
   }
@@ -129,6 +131,16 @@ export default class HandlerRegistry {
     validateTargetHandle(targetHandle);
     const { type } = parseHandle(targetHandle);
     return type;
+  }
+
+  isSourceHandle(handle) {
+    const { role } = parseHandle(handle);
+    return role === HandlerRoles.SOURCE;
+  }
+
+  isTargetHandle(handle) {
+    const { role } = parseHandle(handle);
+    return role === HandlerRoles.TARGET;
   }
 
   removeSource(sourceHandle) {
