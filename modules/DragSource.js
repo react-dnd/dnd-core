@@ -4,7 +4,7 @@ export default class DragSource {
   }
 
   isDragging(monitor, handle) {
-    return handle === monitor.getSourceHandle();
+    return handle === monitor.getSourceId();
   }
 
   endDrag() { }

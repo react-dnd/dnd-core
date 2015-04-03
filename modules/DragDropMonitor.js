@@ -15,38 +15,38 @@ export default class DragDropMonitor {
     this.dragOperationStore.removeListener('change', listener);
   }
 
-  canDrag(sourceHandle) {
-    const source = this.registry.getSource(sourceHandle);
+  canDrag(sourceId) {
+    const source = this.registry.getSource(sourceId);
     invariant(source, 'Expected to find a valid source.');
 
     if (this.isDragging()) {
       return false;
     }
 
-    return source.canDrag(this, sourceHandle);
+    return source.canDrag(this, sourceId);
   }
 
-  canDrop(targetHandle) {
-    const target = this.registry.getTarget(targetHandle);
+  canDrop(targetId) {
+    const target = this.registry.getTarget(targetId);
     invariant(target, 'Expected to find a valid target.');
 
     if (!this.isDragging() || this.didDrop()) {
       return false;
     }
 
-    const targetType = this.registry.getTargetType(targetHandle);
+    const targetType = this.registry.getTargetType(targetId);
     const draggedItemType = this.getItemType();
     return matchesType(targetType, draggedItemType) &&
-           target.canDrop(this, targetHandle);
+           target.canDrop(this, targetId);
   }
 
-  isDragging(sourceHandle) {
+  isDragging(sourceId) {
     const isDragging = this.dragOperationStore.isDragging();
-    if (!isDragging || typeof sourceHandle === 'undefined') {
+    if (!isDragging || typeof sourceId === 'undefined') {
       return isDragging;
     }
 
-    const sourceType = this.registry.getSourceType(sourceHandle);
+    const sourceType = this.registry.getSourceType(sourceId);
     const draggedItemType = this.getItemType();
     if (sourceType !== draggedItemType) {
       return false;
@@ -56,33 +56,33 @@ export default class DragDropMonitor {
       return false;
     }
 
-    let source = this.registry.getSource(sourceHandle, true);
+    let source = this.registry.getSource(sourceId, true);
     if (!source) {
       return false;
     }
 
-    return source.isDragging(this, sourceHandle);
+    return source.isDragging(this, sourceId);
   }
 
-  isOver(targetHandle, shallow = false) {
+  isOver(targetId, shallow = false) {
     if (!this.isDragging()) {
       return false;
     }
 
-    const targetType = this.registry.getTargetType(targetHandle);
+    const targetType = this.registry.getTargetType(targetId);
     const draggedItemType = this.getItemType();
     if (!matchesType(targetType, draggedItemType)) {
       return false;
     }
 
-    const targetHandles = this.getTargetHandles();
-    if (!targetHandles.length) {
+    const targetIds = this.getTargetIds();
+    if (!targetIds.length) {
       return false;
     }
 
-    const index = targetHandles.indexOf(targetHandle);
+    const index = targetIds.indexOf(targetId);
     if (shallow) {
-      return index === targetHandles.length - 1;
+      return index === targetIds.length - 1;
     } else {
       return index > -1;
     }
@@ -96,12 +96,12 @@ export default class DragDropMonitor {
     return this.dragOperationStore.getItem();
   }
 
-  getSourceHandle() {
-    return this.dragOperationStore.getSourceHandle();
+  getSourceId() {
+    return this.dragOperationStore.getSourceId();
   }
 
-  getTargetHandles() {
-    return this.dragOperationStore.getTargetHandles();
+  getTargetIds() {
+    return this.dragOperationStore.getTargetIds();
   }
 
   getDropResult() {

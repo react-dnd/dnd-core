@@ -10,25 +10,25 @@ export default class DragDropActions extends Actions {
     this.manager = manager;
   }
 
-  beginDrag(sourceHandle, isSourcePublic = true) {
+  beginDrag(sourceId, isSourcePublic = true) {
     const monitor = this.manager.getMonitor();
     const registry = this.manager.getRegistry();
     invariant(
       !monitor.isDragging(),
       'Cannot call beginDrag while dragging.'
     );
-    if (!monitor.canDrag(sourceHandle)) {
+    if (!monitor.canDrag(sourceId)) {
       return;
     }
 
-    const source = registry.getSource(sourceHandle);
-    const item = source.beginDrag(monitor, sourceHandle);
+    const source = registry.getSource(sourceId);
+    const item = source.beginDrag(monitor, sourceId);
     invariant(isObject(item), 'Item must be an object.');
 
-    registry.pinSource(sourceHandle);
+    registry.pinSource(sourceId);
 
-    const itemType = registry.getSourceType(sourceHandle);
-    return { itemType, item, sourceHandle, isSourcePublic };
+    const itemType = registry.getSourceType(sourceId);
+    return { itemType, item, sourceId, isSourcePublic };
   }
 
   publishDragSource() {
@@ -40,40 +40,40 @@ export default class DragDropActions extends Actions {
     return {};
   }
 
-  hover(targetHandles) {
-    invariant(isArray(targetHandles), 'Target handles must be an array.');
-    targetHandles = targetHandles.slice(0);
+  hover(targetIds) {
+    invariant(isArray(targetIds), 'Target handles must be an array.');
+    targetIds = targetIds.slice(0);
 
     const monitor = this.manager.getMonitor();
     const registry = this.manager.getRegistry();
     const draggedItemType = monitor.getItemType();
 
-    const prevTargetHandles = monitor.getTargetHandles();
+    const prevTargetIds = monitor.getTargetIds();
     let didChange = false;
 
-    if (prevTargetHandles.length !== targetHandles.length) {
+    if (prevTargetIds.length !== targetIds.length) {
       didChange = true;
     }
 
-    for (let i = 0; i < targetHandles.length; i++) {
-      const targetHandle = targetHandles[i];
+    for (let i = 0; i < targetIds.length; i++) {
+      const targetId = targetIds[i];
       invariant(
-        targetHandles.lastIndexOf(targetHandle) === i,
+        targetIds.lastIndexOf(targetId) === i,
         'Target handles should be unique in the passed array.'
       );
 
-      const target = registry.getTarget(targetHandle);
+      const target = registry.getTarget(targetId);
       invariant(
         target,
         'All hovered target handles must be registered.'
       );
 
-      const targetType = registry.getTargetType(targetHandle);
+      const targetType = registry.getTargetType(targetId);
       if (matchesType(targetType, draggedItemType)) {
-        target.hover(monitor, targetHandle);
+        target.hover(monitor, targetId);
       }
 
-      if (!didChange && targetHandle !== prevTargetHandles[i]) {
+      if (!didChange && targetId !== prevTargetIds[i]) {
         didChange = true;
       }
     }
@@ -82,7 +82,7 @@ export default class DragDropActions extends Actions {
       return;
     }
 
-    return { targetHandles };
+    return { targetIds };
   }
 
   drop() {
@@ -94,15 +94,15 @@ export default class DragDropActions extends Actions {
     );
 
     const { drop: dropActionId } = this.getActionIds();
-    const targetHandles = monitor
-      .getTargetHandles()
+    const targetIds = monitor
+      .getTargetIds()
       .filter(monitor.canDrop, monitor);
 
-    targetHandles.reverse();
-    targetHandles.forEach((targetHandle, index) => {
-      const target = registry.getTarget(targetHandle);
+    targetIds.reverse();
+    targetIds.forEach((targetId, index) => {
+      const target = registry.getTarget(targetId);
 
-      let dropResult = target.drop(monitor, targetHandle);
+      let dropResult = target.drop(monitor, targetId);
       invariant(
         typeof dropResult === 'undefined' || isObject(dropResult),
         'Drop result must either be an object or undefined.'
@@ -125,9 +125,9 @@ export default class DragDropActions extends Actions {
       'Cannot call endDrag while not dragging.'
     );
 
-    const sourceHandle = monitor.getSourceHandle();
-    const source = registry.getSource(sourceHandle, true);
-    source.endDrag(monitor, sourceHandle);
+    const sourceId = monitor.getSourceId();
+    const source = registry.getSource(sourceId, true);
+    source.endDrag(monitor, sourceId);
 
     registry.unpinSource();
 

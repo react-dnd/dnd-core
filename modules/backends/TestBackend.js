@@ -11,16 +11,16 @@ export default class TestBackend {
     this.didCallTeardown = true;
   }
 
-  simulateBeginDrag(sourceHandle, isSourcePublic) {
-    this.actions.beginDrag(sourceHandle, isSourcePublic);
+  simulateBeginDrag(sourceId, isSourcePublic) {
+    this.actions.beginDrag(sourceId, isSourcePublic);
   }
 
   simulatePublishDragSource() {
     this.actions.publishDragSource();
   }
 
-  simulateHover(targetHandles) {
-    this.actions.hover(targetHandles);
+  simulateHover(targetIds) {
+    this.actions.hover(targetIds);
   }
 
   simulateDrop() {

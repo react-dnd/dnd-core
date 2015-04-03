@@ -8,26 +8,6 @@ const HandlerRoles = keyMirror({
   TARGET: null
 });
 
-const HANDLE_SEPARATOR = '🐲';
-const TYPE_SEPARATOR = '💧';
-
-function parseHandle(handle) {
-  let [type, role, id] = handle.split(HANDLE_SEPARATOR);
-  invariant(type && role && id, 'Invalid handle.');
-
-  if (type.indexOf(TYPE_SEPARATOR) > -1) {
-    type = type.split(TYPE_SEPARATOR);
-  }
-  return { type, role, id };
-}
-
-function makeHandle({ type, role, id }) {
-  if (isArray(type)) {
-    type = type.join(TYPE_SEPARATOR);
-  }
-  return [type, role, id].join(HANDLE_SEPARATOR);
-}
-
 function validateSourceContract(source) {
   invariant(typeof source.canDrag === 'function', 'Expected canDrag to be a function.');
   invariant(typeof source.beginDrag === 'function', 'Expected beginDrag to be a function.');
@@ -38,16 +18,6 @@ function validateTargetContract(target) {
   invariant(typeof target.canDrop === 'function', 'Expected canDrop to be a function.');
   invariant(typeof target.hover === 'function', 'Expected hover to be a function.');
   invariant(typeof target.drop === 'function', 'Expected beginDrag to be a function.');
-}
-
-function validateSourceHandle(handle) {
-  const { role } = parseHandle(handle);
-  invariant(role === HandlerRoles.SOURCE, 'Expected to receive a source handle');
-}
-
-function validateTargetHandle(handle) {
-  const { role } = parseHandle(handle);
-  invariant(role === HandlerRoles.TARGET, 'Expected to receive a target handle');
 }
 
 function validateType(type, allowArray) {
@@ -64,12 +34,37 @@ function validateType(type, allowArray) {
   );
 }
 
+function getNextHandlerId(role) {
+  const id = getNextUniqueId().toString();
+  switch (role) {
+  case HandlerRoles.SOURCE:
+    return `S${id}`;
+  case HandlerRoles.TARGET:
+    return `T${id}`;
+  default:
+    invariant(false, `Unknown role: ${role}`);
+  }
+}
+
+function parseRoleFromHandlerId(handlerId) {
+  switch (handlerId[0]) {
+  case 'S':
+    return HandlerRoles.SOURCE;
+  case 'T':
+    return HandlerRoles.TARGET;
+  default:
+    invariant(false, `Cannot parse handler ID: ${handlerId}`);
+  }
+}
+
 export default class HandlerRegistry {
   constructor(actions) {
     this.actions = actions;
 
+    this.types = {};
     this.handlers = {};
-    this.pinnedSourceHandle = null;
+
+    this.pinnedSourceId = null;
     this.pinnedSource = null;
   }
 
@@ -77,102 +72,100 @@ export default class HandlerRegistry {
     validateType(type);
     validateSourceContract(source);
 
-    const sourceHandle = this.addHandler(HandlerRoles.SOURCE, type, source);
-    validateSourceHandle(sourceHandle);
-
-    this.actions.addSource(sourceHandle);
-    return sourceHandle;
+    const sourceId = this.addHandler(HandlerRoles.SOURCE, type, source);
+    this.actions.addSource(sourceId);
+    return sourceId;
   }
 
   addTarget(type, target) {
     validateType(type, true);
     validateTargetContract(target);
 
-    const targetHandle = this.addHandler(HandlerRoles.TARGET, type, target);
-    validateTargetHandle(targetHandle);
-
-    this.actions.addTarget(targetHandle);
-    return targetHandle;
+    const targetId = this.addHandler(HandlerRoles.TARGET, type, target);
+    this.actions.addTarget(targetId);
+    return targetId;
   }
 
   addHandler(role, type, handler) {
-    const id = getNextUniqueId().toString();
-    const handle = makeHandle({ role, type, id });
+    if (process.env.NODE_ENV !== 'production') {
+      invariant(!this.containsHandler(handler), 'Cannot add the same handler instance twice.');
+    }
 
-    invariant(!this.containsHandler(handler), 'Cannot add the same handler instance twice.');
-    this.handlers[handle] = handler;
+    const id = getNextHandlerId(role);
+    this.types[id] = type;
+    this.handlers[id] = handler;
 
-    return handle;
+    return id;
   }
 
   containsHandler(handler) {
     return Object.keys(this.handlers).some(key => this.handlers[key] === handler);
   }
 
-  getSource(sourceHandle, includePinned) {
-    validateSourceHandle(sourceHandle);
+  getSource(sourceId, includePinned) {
+    invariant(this.isSourceId(sourceId), 'Expected a valid source ID.');
 
-    const isPinned = includePinned && sourceHandle === this.pinnedSourceHandle;
-    const source = isPinned ? this.pinnedSource : this.handlers[sourceHandle];
+    const isPinned = includePinned && sourceId === this.pinnedSourceId;
+    const source = isPinned ? this.pinnedSource : this.handlers[sourceId];
 
     return source;
   }
 
-  getTarget(targetHandle) {
-    validateTargetHandle(targetHandle);
-    return this.handlers[targetHandle];
+  getTarget(targetId) {
+    invariant(this.isTargetId(targetId), 'Expected a valid target ID.');
+    return this.handlers[targetId];
   }
 
-  getSourceType(sourceHandle) {
-    validateSourceHandle(sourceHandle);
-    const { type } = parseHandle(sourceHandle);
-    return type;
+  getSourceType(sourceId) {
+    invariant(this.isSourceId(sourceId), 'Expected a valid source ID.');
+    return this.types[sourceId];
   }
 
-  getTargetType(targetHandle) {
-    validateTargetHandle(targetHandle);
-    const { type } = parseHandle(targetHandle);
-    return type;
+  getTargetType(targetId) {
+    invariant(this.isTargetId(targetId), 'Expected a valid target ID.');
+    return this.types[targetId];
   }
 
-  isSourceHandle(handle) {
-    const { role } = parseHandle(handle);
+  isSourceId(handlerId) {
+    const role = parseRoleFromHandlerId(handlerId);
     return role === HandlerRoles.SOURCE;
   }
 
-  isTargetHandle(handle) {
-    const { role } = parseHandle(handle);
+  isTargetId(handlerId) {
+    const role = parseRoleFromHandlerId(handlerId);
     return role === HandlerRoles.TARGET;
   }
 
-  removeSource(sourceHandle) {
-    validateSourceHandle(sourceHandle);
-    invariant(this.getSource(sourceHandle), 'Cannot remove a source that was not added.');
+  removeSource(sourceId) {
+    invariant(this.getSource(sourceId), 'Expected an existing source.');
 
-    delete this.handlers[sourceHandle];
-    this.actions.removeSource(sourceHandle);
+    delete this.handlers[sourceId];
+    delete this.types[sourceId];
+
+    this.actions.removeSource(sourceId);
   }
 
-  removeTarget(targetHandle) {
-    validateTargetHandle(targetHandle);
-    invariant(this.getTarget(targetHandle), 'Cannot remove a target that was not added.');
+  removeTarget(targetId) {
+    invariant(this.getTarget(targetId), 'Expected an existing target.');
 
-    delete this.handlers[targetHandle];
-    this.actions.removeTarget(targetHandle);
+    delete this.handlers[targetId];
+    delete this.types[targetId];
+
+    this.actions.removeTarget(targetId);
   }
 
-  pinSource(handle) {
-    const source = this.getSource(handle);
-    invariant(source, 'Cannot pin a source that was not added.');
+  pinSource(sourceId) {
+    const source = this.getSource(sourceId);
+    invariant(source, 'Expected an existing source.');
 
-    this.pinnedSourceHandle = handle;
+    this.pinnedSourceId = sourceId;
     this.pinnedSource = source;
   }
 
   unpinSource() {
     invariant(this.pinnedSource, 'No source is pinned at the time.');
 
-    this.pinnedSourceHandle = null;
+    this.pinnedSourceId = null;
     this.pinnedSource = null;
   }
 }

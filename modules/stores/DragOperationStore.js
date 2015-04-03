@@ -16,19 +16,19 @@ export default class DragOperationStore extends Store {
     this.state = {
       itemType: null,
       item: null,
-      sourceHandle: null,
-      targetHandles: [],
+      sourceId: null,
+      targetIds: [],
       dropResult: null,
       didDrop: false,
       isSourcePublic: null
     };
   }
 
-  handleBeginDrag({ itemType, item, sourceHandle, isSourcePublic }) {
+  handleBeginDrag({ itemType, item, sourceId, isSourcePublic }) {
     this.setState({
       itemType,
       item,
-      sourceHandle,
+      sourceId,
       isSourcePublic,
       dropResult: false,
       didDrop: false
@@ -39,15 +39,15 @@ export default class DragOperationStore extends Store {
     this.setState({ isSourcePublic: true });
   }
 
-  handleHover({ targetHandles }) {
-    this.setState({ targetHandles });
+  handleHover({ targetIds }) {
+    this.setState({ targetIds });
   }
 
-  handleRemoveTarget({ targetHandle }) {
-    const { targetHandles } = this.state;
-    if (targetHandles.indexOf(targetHandle) > -1) {
+  handleRemoveTarget({ targetId }) {
+    const { targetIds } = this.state;
+    if (targetIds.indexOf(targetId) > -1) {
       this.setState({
-        targetHandles: without(targetHandles, targetHandle)
+        targetIds: without(targetIds, targetId)
       });
     }
   }
@@ -63,7 +63,7 @@ export default class DragOperationStore extends Store {
     this.setState({
       itemType: null,
       item: null,
-      sourceHandle: null,
+      sourceId: null,
       dropResult: null,
       didDrop: false,
       isSourcePublic: null
@@ -78,12 +78,12 @@ export default class DragOperationStore extends Store {
     return this.state.itemType;
   }
 
-  getSourceHandle() {
-    return this.state.sourceHandle;
+  getSourceId() {
+    return this.state.sourceId;
   }
 
-  getTargetHandles() {
-    return this.state.targetHandles.slice(0);
+  getTargetIds() {
+    return this.state.targetIds.slice(0);
   }
 
   getItem() {

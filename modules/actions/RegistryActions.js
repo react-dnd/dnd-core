@@ -1,19 +1,19 @@
 import { Actions } from 'flummox';
 
 export default class RegistryActions extends Actions {
-  addSource(sourceHandle) {
-    return { sourceHandle };
+  addSource(sourceId) {
+    return { sourceId };
   }
 
-  addTarget(targetHandle) {
-    return { targetHandle };
+  addTarget(targetId) {
+    return { targetId };
   }
 
-  removeSource(sourceHandle) {
-    return { sourceHandle };
+  removeSource(sourceId) {
+    return { sourceId };
   }
 
-  removeTarget(targetHandle) {
-    return { targetHandle };
+  removeTarget(targetId) {
+    return { targetId };
   }
 }
