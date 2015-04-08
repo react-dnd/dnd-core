@@ -1,2 +1,2 @@
 #!/bin/sh
-./node_modules/.bin/mocha --require ./babel ./modules/__tests__
+./node_modules/.bin/mocha --compilers js:babel/register ./modules/__tests__

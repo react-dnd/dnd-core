@@ -2,6 +2,7 @@ import { DropTarget } from '..';
 
 export class NormalTarget extends DropTarget {
   constructor(dropResult) {
+    super();
     this.didCallDrop = false;
     this.didCallHover = false;
     this.dropResult = dropResult || { foo: 'bar' };
@@ -19,6 +20,7 @@ export class NormalTarget extends DropTarget {
 
 export class NonDroppableTarget extends DropTarget {
   constructor() {
+    super();
     this.didCallDrop = false;
     this.didCallHover = false;
   }
@@ -38,6 +40,7 @@ export class NonDroppableTarget extends DropTarget {
 
 export class TargetWithNoDropResult extends DropTarget {
   constructor() {
+    super();
     this.didCallDrop = false;
     this.didCallHover = false;
   }
@@ -59,6 +62,7 @@ export class BadResultTarget extends DropTarget {
 
 export class TransformResultTarget extends DropTarget {
   constructor(transform) {
+    super();
     this.transform = transform;
     this.didCallDrop = false;
     this.didCallHover = false;
