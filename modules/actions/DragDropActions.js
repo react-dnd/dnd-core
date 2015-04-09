@@ -10,14 +10,31 @@ export default class DragDropActions extends Actions {
     this.manager = manager;
   }
 
-  beginDrag(sourceId, isSourcePublic = true) {
+  beginDrag(sourceIds, publishSource = true) {
+    invariant(isArray(sourceIds), 'Expected sourceIds to be an array.');
+
     const monitor = this.manager.getMonitor();
     const registry = this.manager.getRegistry();
     invariant(
       !monitor.isDragging(),
       'Cannot call beginDrag while dragging.'
     );
-    if (!monitor.canDrag(sourceId)) {
+
+    for (let i = 0; i < sourceIds.length; i++) {
+      invariant(
+        registry.getSource(sourceIds[i]),
+        'Expected sourceIds to be registered.'
+      );
+    }
+
+    let sourceId = null;
+    for (let i = sourceIds.length - 1; i >= 0; i--) {
+      if (monitor.canDrag(sourceIds[i])) {
+        sourceId = sourceIds[i];
+        break;
+      }
+    }
+    if (sourceId === null) {
       return;
     }
 
@@ -28,7 +45,7 @@ export default class DragDropActions extends Actions {
     registry.pinSource(sourceId);
 
     const itemType = registry.getSourceType(sourceId);
-    return { itemType, item, sourceId, isSourcePublic };
+    return { itemType, item, sourceId, isSourcePublic: publishSource };
   }
 
   publishDragSource() {
@@ -41,7 +58,7 @@ export default class DragDropActions extends Actions {
   }
 
   hover(targetIds) {
-    invariant(isArray(targetIds), 'Target handles must be an array.');
+    invariant(isArray(targetIds), 'Expected targetIds to be an array.');
     targetIds = targetIds.slice(0);
 
     const monitor = this.manager.getMonitor();
@@ -59,13 +76,13 @@ export default class DragDropActions extends Actions {
       const targetId = targetIds[i];
       invariant(
         targetIds.lastIndexOf(targetId) === i,
-        'Target handles should be unique in the passed array.'
+        'Expected targetIds to be unique in the passed array.'
       );
 
       const target = registry.getTarget(targetId);
       invariant(
         target,
-        'All hovered target handles must be registered.'
+        'Expected targetIds to be registered.'
       );
 
       const targetType = registry.getTargetType(targetId);

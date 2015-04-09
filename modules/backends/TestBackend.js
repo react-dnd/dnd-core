@@ -11,8 +11,8 @@ export default class TestBackend {
     this.didCallTeardown = true;
   }
 
-  simulateBeginDrag(sourceId, isSourcePublic) {
-    this.actions.beginDrag(sourceId, isSourcePublic);
+  simulateBeginDrag(sourceIds, publishSource) {
+    this.actions.beginDrag(sourceIds, publishSource);
   }
 
   simulatePublishDragSource() {

@@ -23,7 +23,7 @@ describe('DragDropMonitor', () => {
       const sourceId = registry.addSource(Types.FOO, source);
 
       monitor.addChangeListener(done);
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
     });
 
     it('raises change event on endDrag()', (done) => {
@@ -32,7 +32,7 @@ describe('DragDropMonitor', () => {
       const target = new NormalTarget();
       registry.addTarget(Types.FOO, target);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       monitor.addChangeListener(done);
       backend.simulateEndDrag();
     });
@@ -52,7 +52,7 @@ describe('DragDropMonitor', () => {
 
       monitor.addChangeListener(setRaisedChange);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       expect(raisedChange).to.equal(true);
       raisedChange = false;
 
@@ -101,7 +101,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.canDrag(sourceCId)).to.equal(true);
       expect(monitor.canDrag(sourceDId)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceAId);
+      backend.simulateBeginDrag([sourceAId]);
       expect(monitor.canDrag(sourceAId)).to.equal(false);
       expect(monitor.canDrag(sourceBId)).to.equal(false);
       expect(monitor.canDrag(sourceCId)).to.equal(false);
@@ -120,7 +120,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.canDrag(sourceCId)).to.equal(true);
       expect(monitor.canDrag(sourceDId)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceAId);
+      backend.simulateBeginDrag([sourceAId]);
       expect(monitor.canDrag(sourceAId)).to.equal(false);
       expect(monitor.canDrag(sourceBId)).to.equal(false);
       expect(monitor.canDrag(sourceCId)).to.equal(false);
@@ -144,7 +144,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.canDrop(targetCId)).to.equal(false);
       expect(monitor.canDrop(targetDId)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       expect(monitor.canDrop(targetAId)).to.equal(true);
       expect(monitor.canDrop(targetBId)).to.equal(true);
       expect(monitor.canDrop(targetCId)).to.equal(false);
@@ -163,7 +163,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.canDrop(targetCId)).to.equal(false);
       expect(monitor.canDrop(targetDId)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       expect(monitor.canDrop(targetAId)).to.equal(true);
       expect(monitor.canDrop(targetBId)).to.equal(true);
       expect(monitor.canDrop(targetCId)).to.equal(false);
@@ -182,7 +182,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.isDragging(sourceId)).to.equal(false);
       expect(monitor.isDragging(otherId)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       expect(monitor.isDragging()).to.equal(true);
       expect(monitor.isDragging(sourceId)).to.equal(true);
       expect(monitor.isDragging(otherId)).to.equal(false);
@@ -198,7 +198,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.isDragging(sourceId)).to.equal(false);
       expect(monitor.isDragging(otherId)).to.equal(false);
 
-      backend.simulateBeginDrag(otherId);
+      backend.simulateBeginDrag([otherId]);
       expect(monitor.isDragging()).to.equal(true);
       expect(monitor.isDragging(sourceId)).to.equal(false);
       expect(monitor.isDragging(otherId)).to.equal(true);
@@ -216,7 +216,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.getItemType()).to.equal(null);
       expect(monitor.getSourceId()).to.equal(null);
 
-      backend.simulateBeginDrag(sourceAId);
+      backend.simulateBeginDrag([sourceAId]);
       expect(monitor.getItem().a).to.equal(123);
       expect(monitor.getItemType()).to.equal(Types.FOO);
       expect(monitor.getSourceId()).to.equal(sourceAId);
@@ -232,7 +232,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.getItemType()).to.equal(null);
       expect(monitor.getSourceId()).to.equal(null);
 
-      backend.simulateBeginDrag(sourceBId);
+      backend.simulateBeginDrag([sourceBId]);
       registry.removeSource(sourceBId);
       expect(monitor.getItem().a).to.equal(456);
       expect(monitor.getItemType()).to.equal(Types.BAR);
@@ -250,7 +250,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.didDrop()).to.equal(false);
       expect(monitor.getDropResult()).to.equal(null);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       expect(monitor.didDrop()).to.equal(false);
       expect(monitor.getDropResult()).to.equal(false);
 
@@ -263,7 +263,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.didDrop()).to.equal(false);
       expect(monitor.getDropResult()).to.equal(null);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       expect(monitor.didDrop()).to.equal(false);
       expect(monitor.getDropResult()).to.equal(false);
 
@@ -295,7 +295,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.canDrop(targetBId)).to.equal(false);
       expect(monitor.canDrop(targetCId)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceAId);
+      backend.simulateBeginDrag([sourceAId]);
       expect(monitor.canDrop(targetAId)).to.equal(true);
       expect(monitor.canDrop(targetBId)).to.equal(false);
       expect(monitor.canDrop(targetCId)).to.equal(true);
@@ -311,7 +311,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.canDrop(targetBId)).to.equal(false);
       expect(monitor.canDrop(targetCId)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceBId);
+      backend.simulateBeginDrag([sourceBId]);
       expect(monitor.canDrop(targetAId)).to.equal(false);
       expect(monitor.canDrop(targetBId)).to.equal(true);
       expect(monitor.canDrop(targetCId)).to.equal(true);
@@ -324,7 +324,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.isDragging()).to.equal(false);
       expect(monitor.isDragging(sourceId)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceId, false);
+      backend.simulateBeginDrag([sourceId], false);
       expect(monitor.isDragging()).to.equal(true);
       expect(monitor.isDragging(sourceId)).to.equal(false);
 
@@ -348,7 +348,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.isDragging()).to.equal(false);
       expect(monitor.isDragging(sourceId)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceId, false);
+      backend.simulateBeginDrag([sourceId], false);
       expect(monitor.isDragging()).to.equal(true);
       expect(monitor.isDragging(sourceId)).to.equal(false);
 
@@ -373,7 +373,7 @@ describe('DragDropMonitor', () => {
       const target = new NormalTarget();
       const targetId = registry.addTarget(Types.FOO, target);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       backend.simulateHover([targetId]);
       expect(monitor.getTargetIds().length).to.be(1);
       expect(monitor.isOver(targetId)).to.equal(true);
@@ -409,7 +409,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.isOver(targetCId)).to.equal(false);
       expect(monitor.isOver(targetCId, true)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       handles = monitor.getTargetIds();
       expect(handles.length).to.be(1);
       expect(handles[0]).to.equal(targetAId);
@@ -503,7 +503,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.isOver(targetCId)).to.equal(false);
       expect(monitor.isOver(targetCId, true)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       handles = monitor.getTargetIds();
       expect(handles.length).to.be(1);
       expect(handles[0]).to.equal(targetAId);
@@ -583,18 +583,18 @@ describe('DragDropMonitor', () => {
       const target = new NormalTarget();
       const targetId = registry.addTarget([Types.FOO, Types.BAR], target);
 
-      backend.simulateBeginDrag(sourceAId);
+      backend.simulateBeginDrag([sourceAId]);
       backend.simulateHover([targetId]);
       expect(monitor.isOver(targetId)).to.equal(true);
       expect(monitor.isOver(targetId, true)).to.equal(true);
 
       backend.simulateEndDrag();
-      backend.simulateBeginDrag(sourceBId);
+      backend.simulateBeginDrag([sourceBId]);
       expect(monitor.isOver(targetId)).to.equal(true);
       expect(monitor.isOver(targetId, true)).to.equal(true);
 
       backend.simulateEndDrag();
-      backend.simulateBeginDrag(sourceCId);
+      backend.simulateBeginDrag([sourceCId]);
       expect(monitor.isOver(targetId)).to.equal(false);
       expect(monitor.isOver(targetId, true)).to.equal(false);
     });
@@ -612,7 +612,7 @@ describe('DragDropMonitor', () => {
       backend.simulateHover([targetAId, targetBId]);
       expect(monitor.getTargetIds().length).to.be(2);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       expect(monitor.getTargetIds().length).to.be(2);
 
       backend.simulateDrop();
@@ -624,7 +624,7 @@ describe('DragDropMonitor', () => {
       backend.simulateHover([targetAId]);
       expect(monitor.getTargetIds().length).to.be(1);
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       expect(monitor.getTargetIds().length).to.be(1);
     });
 
@@ -635,7 +635,7 @@ describe('DragDropMonitor', () => {
       const targetId = registry.addTarget(Types.FOO, target);
       const handles = [targetId];
 
-      backend.simulateBeginDrag(sourceId);
+      backend.simulateBeginDrag([sourceId]);
       backend.simulateHover(handles);
       expect(monitor.getTargetIds().length).to.be(1);
 
@@ -662,7 +662,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.isDragging(sourceCId)).to.equal(false);
       expect(monitor.isDragging(sourceDId)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceAId);
+      backend.simulateBeginDrag([sourceAId]);
       expect(monitor.isDragging(sourceAId)).to.equal(true);
       expect(monitor.isDragging(sourceBId)).to.equal(false);
       expect(monitor.isDragging(sourceCId)).to.equal(false);
@@ -691,7 +691,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.isDragging(sourceCId)).to.equal(false);
       expect(monitor.isDragging(sourceDId)).to.equal(false);
 
-      backend.simulateBeginDrag(sourceBId);
+      backend.simulateBeginDrag([sourceBId]);
       expect(monitor.isDragging(sourceAId)).to.equal(false);
       expect(monitor.isDragging(sourceBId)).to.equal(true);
       expect(monitor.isDragging(sourceCId)).to.equal(false);
