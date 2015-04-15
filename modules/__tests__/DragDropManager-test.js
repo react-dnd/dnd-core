@@ -75,23 +75,6 @@ describe('DragDropManager', () => {
       expect(() => registry.addTarget([['yo']], target)).to.throwError();
     });
 
-    it('throws on adding the same source twice', () => {
-      const source = new NormalSource();
-      registry.addSource(Types.FOO, source);
-
-      expect(() => registry.addSource(Types.FOO, source)).to.throwError();
-      expect(() => registry.addSource(Types.BAR, source)).to.throwError();
-    });
-
-    it('throws on adding the same target twice', () => {
-      const target = new NormalTarget();
-      registry.addTarget(Types.FOO, target);
-
-      expect(() => registry.addTarget(Types.FOO, target)).to.throwError();
-      expect(() => registry.addTarget(Types.BAR, target)).to.throwError();
-      expect(() => registry.addTarget([Types.FOO, Types.BAR], target)).to.throwError();
-    });
-
     it('calls setup() and teardown() on backend', () => {
       expect(backend.didCallSetup).to.equal(undefined);
       expect(backend.didCallTeardown).to.equal(undefined);

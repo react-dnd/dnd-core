@@ -87,10 +87,6 @@ export default class HandlerRegistry {
   }
 
   addHandler(role, type, handler) {
-    if (process.env.NODE_ENV !== 'production') {
-      invariant(!this.containsHandler(handler), 'Cannot add the same handler instance twice.');
-    }
-
     const id = getNextHandlerId(role);
     this.types[id] = type;
     this.handlers[id] = handler;

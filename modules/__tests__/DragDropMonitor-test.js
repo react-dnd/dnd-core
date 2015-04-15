@@ -17,27 +17,260 @@ describe('DragDropMonitor', () => {
     monitor = manager.getMonitor();
   });
 
-  describe('change event', () => {
-    it('raises change event on beginDrag()', (done) => {
+  describe('change subscription', () => {
+    it('throws on bad listener', () => {
+      expect(() => monitor.subscribe(() => {})).to.not.throwError();
+
+      expect(() => monitor.subscribe()).to.throwError();
+      expect(() => monitor.subscribe(42)).to.throwError();
+      expect(() => monitor.subscribe('hi')).to.throwError();
+      expect(() => monitor.subscribe({})).to.throwError();
+    });
+
+    it('throws on bad handlerIds', () => {
+      expect(() => monitor.subscribe(() => {}, [])).to.not.throwError();
+      expect(() => monitor.subscribe(() => {}, ['hi'])).to.not.throwError();
+
+      expect(() => monitor.subscribe(() => {}, {})).to.throwError();
+      expect(() => monitor.subscribe(() => {}, () => {})).to.throwError();
+      expect(() => monitor.subscribe(() => {}, 'hi')).to.throwError();
+    });
+
+    it('allows to unsubscribe', () => {
       const source = new NormalSource();
       const sourceId = registry.addSource(Types.FOO, source);
 
-      monitor.addChangeListener(done);
+      let raisedChange = false;
+      const unsubscribe = monitor.subscribe(() => {
+        raisedChange = true;
+      });
+
+      unsubscribe();
+      expect(unsubscribe).to.not.throwError();
+
+      backend.simulateBeginDrag([sourceId]);
+      expect(raisedChange).to.equal(false);
+    });
+
+    it('raises global change event on beginDrag()', (done) => {
+      const source = new NormalSource();
+      const sourceId = registry.addSource(Types.FOO, source);
+
+      monitor.subscribe(done);
       backend.simulateBeginDrag([sourceId]);
     });
 
-    it('raises change event on endDrag()', (done) => {
+    it('raises local change event on sources and targets in beginDrag()', () => {
+      const sourceA = new NormalSource();
+      const sourceAId = registry.addSource(Types.FOO, sourceA);
+      const sourceB = new NormalSource();
+      const sourceBId = registry.addSource(Types.FOO, sourceB);
+      const targetA = new NormalTarget();
+      const targetAId = registry.addTarget(Types.FOO, targetA);
+
+      let raisedChangeForSourceA = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceA = true;
+      }, [sourceAId]);
+
+      let raisedChangeForSourceB = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceB = true;
+      }, [sourceBId]);
+
+      let raisedChangeForSourceAAndB = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceAAndB = true;
+      }, [sourceAId, sourceBId]);
+
+      let raisedChangeForTargetA = false;
+      monitor.subscribe(() => {
+        raisedChangeForTargetA = true;
+      }, [targetAId]);
+
+      backend.simulateBeginDrag([sourceAId]);
+      expect(raisedChangeForSourceA).to.equal(true);
+      expect(raisedChangeForSourceB).to.equal(true);
+      expect(raisedChangeForSourceAAndB).to.equal(true);
+      expect(raisedChangeForTargetA).to.equal(true);
+    });
+
+    it('raises local change event on sources and targets in endDrag()', () => {
+      const sourceA = new NormalSource();
+      const sourceAId = registry.addSource(Types.FOO, sourceA);
+      const sourceB = new NormalSource();
+      const sourceBId = registry.addSource(Types.FOO, sourceB);
+      const targetA = new NormalTarget();
+      const targetAId = registry.addTarget(Types.FOO, targetA);
+
+      backend.simulateBeginDrag([sourceAId]);
+
+      let raisedChangeForSourceA = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceA = true;
+      }, [sourceAId]);
+
+      let raisedChangeForSourceB = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceB = true;
+      }, [sourceBId]);
+
+      let raisedChangeForSourceAAndB = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceAAndB = true;
+      }, [sourceAId, sourceBId]);
+
+      let raisedChangeForTargetA = false;
+      monitor.subscribe(() => {
+        raisedChangeForTargetA = true;
+      }, [targetAId]);
+
+      backend.simulateEndDrag();
+      expect(raisedChangeForSourceA).to.equal(true);
+      expect(raisedChangeForSourceB).to.equal(true);
+      expect(raisedChangeForSourceAAndB).to.equal(true);
+      expect(raisedChangeForTargetA).to.equal(true);
+    });
+
+    it('raises local change event on sources and targets in drop()', () => {
+      const sourceA = new NormalSource();
+      const sourceAId = registry.addSource(Types.FOO, sourceA);
+      const sourceB = new NormalSource();
+      const sourceBId = registry.addSource(Types.FOO, sourceB);
+      const targetA = new NormalTarget();
+      const targetAId = registry.addTarget(Types.FOO, targetA);
+
+      backend.simulateBeginDrag([sourceAId]);
+      backend.simulateHover([targetAId]);
+
+      let raisedChangeForSourceA = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceA = true;
+      }, [sourceAId]);
+
+      let raisedChangeForSourceB = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceB = true;
+      }, [sourceBId]);
+
+      let raisedChangeForSourceAAndB = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceAAndB = true;
+      }, [sourceAId, sourceBId]);
+
+      let raisedChangeForTargetA = false;
+      monitor.subscribe(() => {
+        raisedChangeForTargetA = true;
+      }, [targetAId]);
+
+      backend.simulateDrop();
+      expect(raisedChangeForSourceA).to.equal(true);
+      expect(raisedChangeForSourceB).to.equal(true);
+      expect(raisedChangeForSourceAAndB).to.equal(true);
+      expect(raisedChangeForTargetA).to.equal(true);
+    });
+
+    it('raises local change event only on previous and next targets in hover()', () => {
+      const sourceA = new NormalSource();
+      const sourceAId = registry.addSource(Types.FOO, sourceA);
+      const sourceB = new NormalSource();
+      const sourceBId = registry.addSource(Types.FOO, sourceB);
+      const targetA = new NormalTarget();
+      const targetAId = registry.addTarget(Types.FOO, targetA);
+      const targetB = new NormalTarget();
+      const targetBId = registry.addTarget(Types.FOO, targetB);
+      const targetC = new NormalTarget();
+      const targetCId = registry.addTarget(Types.FOO, targetC);
+      const targetD = new NormalTarget();
+      const targetDId = registry.addTarget(Types.FOO, targetD);
+      const targetE = new NormalTarget();
+      const targetEId = registry.addTarget(Types.FOO, targetE);
+
+      backend.simulateBeginDrag([sourceAId]);
+      backend.simulateHover([targetAId, targetBId]);
+
+      let raisedChangeForSourceA = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceA = true;
+      }, [sourceAId]);
+
+      let raisedChangeForSourceB = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceB = true;
+      }, [sourceBId]);
+
+      let raisedChangeForTargetA = false;
+      monitor.subscribe(() => {
+        raisedChangeForTargetA = true;
+      }, [targetAId]);
+
+      let raisedChangeForTargetB = false;
+      monitor.subscribe(() => {
+        raisedChangeForTargetB = true;
+      }, [targetBId]);
+
+      let raisedChangeForTargetC = false;
+      monitor.subscribe(() => {
+        raisedChangeForTargetC = true;
+      }, [targetCId]);
+
+      let raisedChangeForTargetD = false;
+      monitor.subscribe(() => {
+        raisedChangeForTargetD = true;
+      }, [targetDId]);
+
+      let raisedChangeForTargetE = false;
+      monitor.subscribe(() => {
+        raisedChangeForTargetE = true;
+      }, [targetEId]);
+
+      let raisedChangeForSourceBAndTargetC = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceBAndTargetC = true;
+      }, [sourceBId, targetCId]);
+
+      let raisedChangeForSourceBAndTargetE = false;
+      monitor.subscribe(() => {
+        raisedChangeForSourceBAndTargetE = true;
+      }, [sourceBId, targetEId]);
+
+      backend.simulateHover([targetDId, targetEId]);
+      expect(raisedChangeForSourceA).to.equal(false);
+      expect(raisedChangeForSourceB).to.equal(false);
+      expect(raisedChangeForTargetA).to.equal(true);
+      expect(raisedChangeForTargetB).to.equal(true);
+      expect(raisedChangeForTargetC).to.equal(false);
+      expect(raisedChangeForTargetD).to.equal(true);
+      expect(raisedChangeForTargetE).to.equal(true);
+      expect(raisedChangeForSourceBAndTargetC).to.equal(false);
+      expect(raisedChangeForSourceBAndTargetE).to.equal(true);
+    });
+
+    it('raises global change event on endDrag()', (done) => {
       const source = new NormalSource();
       const sourceId = registry.addSource(Types.FOO, source);
       const target = new NormalTarget();
       registry.addTarget(Types.FOO, target);
 
       backend.simulateBeginDrag([sourceId]);
-      monitor.addChangeListener(done);
+      monitor.subscribe(done);
       backend.simulateEndDrag();
     });
 
-    it('does not raise change event if hover targets have not changed', () => {
+    it('raises global change event on drop()', (done) => {
+      const source = new NormalSource();
+      const sourceId = registry.addSource(Types.FOO, source);
+      const target = new NormalTarget();
+      const targetId = registry.addTarget(Types.FOO, target);
+
+      backend.simulateBeginDrag([sourceId]);
+      backend.simulateHover([targetId]);
+
+      monitor.subscribe(done);
+      backend.simulateDrop();
+    });
+
+    it('does not raise global change event if hover targets have not changed', () => {
       const source = new NormalSource();
       const sourceId = registry.addSource(Types.FOO, source);
       const targetA = new NormalTarget({ a: 123 });
@@ -46,11 +279,9 @@ describe('DragDropMonitor', () => {
       const targetBId = registry.addTarget(Types.FOO, targetB);
 
       let raisedChange = false;
-      function setRaisedChange() {
+      monitor.subscribe(() => {
         raisedChange = true;
-      }
-
-      monitor.addChangeListener(setRaisedChange);
+      });
 
       backend.simulateBeginDrag([sourceId]);
       expect(raisedChange).to.equal(true);

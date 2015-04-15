@@ -1,5 +1,8 @@
 import { Store } from 'flummox';
 import without from 'lodash/array/without';
+import intersection from 'lodash/array/intersection';
+
+const ALL_DIRTY_WILDCARD = { __all__: true };
 
 export default class DragOperationStore extends Store {
   constructor(flux) {
@@ -13,6 +16,7 @@ export default class DragOperationStore extends Store {
     this.register(dragDropActionIds.drop, this.handleDrop);
     this.register(registryActionIds.removeTarget, this.handleRemoveTarget);
 
+    this.dirtyHandlerIds = [];
     this.state = {
       itemType: null,
       item: null,
@@ -22,6 +26,11 @@ export default class DragOperationStore extends Store {
       didDrop: false,
       isSourcePublic: null
     };
+  }
+
+  setState(nextState, dirtyHandlerIds = ALL_DIRTY_WILDCARD) {
+    this.dirtyHandlerIds = dirtyHandlerIds;
+    super.setState(nextState);
   }
 
   handleBeginDrag({ itemType, item, sourceId, isSourcePublic }) {
@@ -40,16 +49,19 @@ export default class DragOperationStore extends Store {
   }
 
   handleHover({ targetIds }) {
-    this.setState({ targetIds });
+    const dirtyHandlerIds = targetIds.concat(this.state.targetIds);
+    this.setState({ targetIds }, dirtyHandlerIds);
   }
 
   handleRemoveTarget({ targetId }) {
     const { targetIds } = this.state;
-    if (targetIds.indexOf(targetId) > -1) {
-      this.setState({
-        targetIds: without(targetIds, targetId)
-      });
+    if (targetIds.indexOf(targetId) === -1) {
+      return;
     }
+
+    this.setState({
+      targetIds: without(targetIds, targetId)
+    }, []);
   }
 
   handleDrop({ dropResult }) {
@@ -100,5 +112,16 @@ export default class DragOperationStore extends Store {
 
   isSourcePublic() {
     return this.state.isSourcePublic;
+  }
+
+  areDirty(handlerIds) {
+    if (this.dirtyHandlerIds === ALL_DIRTY_WILDCARD) {
+      return true;
+    }
+
+    return intersection(
+      handlerIds,
+      this.dirtyHandlerIds
+    ).length > 0;
   }
 }

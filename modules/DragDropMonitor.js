@@ -1,5 +1,7 @@
 import invariant from 'invariant';
 import matchesType from './utils/matchesType';
+import intersection from 'lodash/array/intersection';
+import isArray from 'lodash/lang/isArray';
 
 export default class DragDropMonitor {
   constructor(flux, registry) {
@@ -7,12 +9,33 @@ export default class DragDropMonitor {
     this.registry = registry;
   }
 
-  addChangeListener(listener) {
-    this.dragOperationStore.addListener('change', listener);
-  }
+  subscribe(listener, handlerIds) {
+    invariant(
+      handlerIds == null ||
+      isArray(handlerIds),
+      'handlerIds, if passed, must be an array of strings.'
+    );
+    invariant(
+      typeof listener === 'function',
+      'listener must be a function.'
+    );
 
-  removeChangeListener(listener) {
-    this.dragOperationStore.removeListener('change', listener);
+    const { dragOperationStore } = this;
+    let handleChange = listener;
+
+    if (isArray(handlerIds)) {
+      handleChange = function () {
+        if (dragOperationStore.areDirty(handlerIds)) {
+          listener();
+        }
+      };
+    }
+
+    dragOperationStore.addListener('change', handleChange);
+
+    return function dispose() {
+      dragOperationStore.removeListener('change', handleChange);
+    };
   }
 
   canDrag(sourceId) {
