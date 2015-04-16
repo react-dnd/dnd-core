@@ -2,7 +2,7 @@ import expect from 'expect.js';
 import Types from './types';
 import { NormalSource, NonDraggableSource, NumberSource } from './sources';
 import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult } from './targets';
-import { DragDropManager, TestBackend } from '..';
+import { DragDropManager, createTestBackend } from '..';
 
 describe('DragDropMonitor', () => {
   let manager;
@@ -11,7 +11,7 @@ describe('DragDropMonitor', () => {
   let monitor;
 
   beforeEach(() => {
-    manager = new DragDropManager(TestBackend);
+    manager = new DragDropManager(createTestBackend);
     backend = manager.getBackend();
     registry = manager.getRegistry();
     monitor = manager.getMonitor();

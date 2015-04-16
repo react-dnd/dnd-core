@@ -3,13 +3,13 @@ import DragDropMonitor from './DragDropMonitor';
 import HandlerRegistry from './utils/HandlerRegistry';
 
 export default class DragDropManager {
-  constructor(Backend) {
+  constructor(createBackend) {
     const flux = new Flux(this);
 
     this.flux = flux;
     this.registry = new HandlerRegistry(flux.registryActions);
     this.monitor = new DragDropMonitor(flux, this.registry);
-    this.backend = new Backend(flux.dragDropActions, this.monitor, this.registry);
+    this.backend = createBackend(this);
 
     flux.refCountStore.addListener('change', this.handleRefCountChange, this);
   }
@@ -35,5 +35,9 @@ export default class DragDropManager {
 
   getRegistry() {
     return this.registry;
+  }
+
+  getActions() {
+    return this.flux.dragDropActions;
   }
 }

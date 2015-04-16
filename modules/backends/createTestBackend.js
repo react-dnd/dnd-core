@@ -1,6 +1,6 @@
-export default class TestBackend {
-  constructor(actions) {
-    this.actions = actions;
+class TestBackend {
+  constructor(manager) {
+    this.actions = manager.getActions();
   }
 
   setup() {
@@ -30,4 +30,8 @@ export default class TestBackend {
   simulateEndDrag() {
     this.actions.endDrag();
   }
+}
+
+export default function createBackend(manager) {
+  return new TestBackend(manager);
 }
