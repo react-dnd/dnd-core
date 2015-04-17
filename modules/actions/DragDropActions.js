@@ -29,7 +29,7 @@ export default class DragDropActions extends Actions {
 
     let sourceId = null;
     for (let i = sourceIds.length - 1; i >= 0; i--) {
-      if (monitor.canDrag(sourceIds[i])) {
+      if (monitor.canDragSource(sourceIds[i])) {
         sourceId = sourceIds[i];
         break;
       }
@@ -113,7 +113,7 @@ export default class DragDropActions extends Actions {
     const { drop: dropActionId } = this.getActionIds();
     const targetIds = monitor
       .getTargetIds()
-      .filter(monitor.canDrop, monitor);
+      .filter(monitor.canDropTarget, monitor);
 
     targetIds.reverse();
     targetIds.forEach((targetId, index) => {

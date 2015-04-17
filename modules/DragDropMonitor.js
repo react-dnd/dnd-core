@@ -38,7 +38,7 @@ export default class DragDropMonitor {
     };
   }
 
-  canDrag(sourceId) {
+  canDragSource(sourceId) {
     const source = this.registry.getSource(sourceId);
     invariant(source, 'Expected to find a valid source.');
 
@@ -49,7 +49,7 @@ export default class DragDropMonitor {
     return source.canDrag(this, sourceId);
   }
 
-  canDrop(targetId) {
+  canDropTarget(targetId) {
     const target = this.registry.getTarget(targetId);
     invariant(target, 'Expected to find a valid target.');
 
@@ -63,10 +63,16 @@ export default class DragDropMonitor {
            target.canDrop(this, targetId);
   }
 
-  isDragging(sourceId) {
-    const isDragging = this.dragOperationStore.isDragging();
-    if (!isDragging || typeof sourceId === 'undefined') {
-      return isDragging;
+  isDragging() {
+    return this.dragOperationStore.isDragging();
+  }
+
+  isDraggingSource(sourceId) {
+    const source = this.registry.getSource(sourceId, true);
+    invariant(source, 'Expected to find a valid source.');
+
+    if (!this.isDragging() || !this.isSourcePublic()) {
+      return false;
     }
 
     const sourceType = this.registry.getSourceType(sourceId);
@@ -75,19 +81,10 @@ export default class DragDropMonitor {
       return false;
     }
 
-    if (!this.isSourcePublic()) {
-      return false;
-    }
-
-    let source = this.registry.getSource(sourceId, true);
-    if (!source) {
-      return false;
-    }
-
     return source.isDragging(this, sourceId);
   }
 
-  isOver(targetId, shallow = false) {
+  isOverTarget(targetId, { shallow = false }: options = {}) {
     if (!this.isDragging()) {
       return false;
     }
