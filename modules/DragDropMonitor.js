@@ -84,7 +84,9 @@ export default class DragDropMonitor {
     return source.isDragging(this, sourceId);
   }
 
-  isOverTarget(targetId, { shallow = false }: options = {}) {
+  isOverTarget(targetId, {
+    shallow = false
+  }: options = {}) {
     if (!this.isDragging()) {
       return false;
     }

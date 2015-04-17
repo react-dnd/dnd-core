@@ -10,7 +10,9 @@ export default class DragDropActions extends Actions {
     this.manager = manager;
   }
 
-  beginDrag(sourceIds, publishSource = true) {
+  beginDrag(sourceIds, {
+    publishSource = true
+  }: options = {}) {
     invariant(isArray(sourceIds), 'Expected sourceIds to be an array.');
 
     const monitor = this.manager.getMonitor();

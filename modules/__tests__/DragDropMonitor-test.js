@@ -555,7 +555,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.isDragging()).to.equal(false);
       expect(monitor.isDraggingSource(sourceId)).to.equal(false);
 
-      backend.simulateBeginDrag([sourceId], false);
+      backend.simulateBeginDrag([sourceId], { publishSource: false });
       expect(monitor.isDragging()).to.equal(true);
       expect(monitor.isDraggingSource(sourceId)).to.equal(false);
 
@@ -579,7 +579,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.isDragging()).to.equal(false);
       expect(monitor.isDraggingSource(sourceId)).to.equal(false);
 
-      backend.simulateBeginDrag([sourceId], false);
+      backend.simulateBeginDrag([sourceId], { publishSource: false });
       expect(monitor.isDragging()).to.equal(true);
       expect(monitor.isDraggingSource(sourceId)).to.equal(false);
 
