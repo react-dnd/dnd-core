@@ -483,12 +483,12 @@ describe('DragDropMonitor', () => {
 
       backend.simulateBeginDrag([sourceId]);
       expect(monitor.didDrop()).to.equal(false);
-      expect(monitor.getDropResult()).to.equal(false);
+      expect(monitor.getDropResult()).to.equal(null);
 
       backend.simulateHover([targetAId]);
       backend.simulateDrop();
       expect(monitor.didDrop()).to.equal(true);
-      expect(monitor.getDropResult().a).to.equal(123);
+      expect(monitor.getDropResult()).to.eql({ a: 123 });
 
       backend.simulateEndDrag();
       expect(monitor.didDrop()).to.equal(false);
@@ -496,12 +496,12 @@ describe('DragDropMonitor', () => {
 
       backend.simulateBeginDrag([sourceId]);
       expect(monitor.didDrop()).to.equal(false);
-      expect(monitor.getDropResult()).to.equal(false);
+      expect(monitor.getDropResult()).to.equal(null);
 
       backend.simulateHover([targetBId]);
       backend.simulateDrop();
       expect(monitor.didDrop()).to.equal(true);
-      expect(monitor.getDropResult()).to.equal(true);
+      expect(monitor.getDropResult()).to.eql({});
 
       backend.simulateEndDrag();
       expect(monitor.didDrop()).to.equal(false);

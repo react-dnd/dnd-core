@@ -39,7 +39,7 @@ export default class DragOperationStore extends Store {
       item,
       sourceId,
       isSourcePublic,
-      dropResult: false,
+      dropResult: null,
       didDrop: false
     });
   }

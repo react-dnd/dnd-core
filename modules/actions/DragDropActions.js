@@ -128,7 +128,7 @@ export default class DragDropActions extends Actions {
       );
       if (typeof dropResult === 'undefined') {
         dropResult = index === 0 ?
-          true :
+          {} :
           monitor.getDropResult();
       }
 

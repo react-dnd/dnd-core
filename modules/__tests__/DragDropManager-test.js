@@ -233,10 +233,10 @@ describe('DragDropManager', () => {
         backend.simulateDrop();
         backend.simulateEndDrag();
         expect(target.didCallDrop).to.equal(true);
-        expect(source.recordedDropResult.foo).to.equal('bar');
+        expect(source.recordedDropResult).to.eql({ foo: 'bar' });
       });
 
-      it('endDrag() sees true as drop result by default if dropped on a target', () => {
+      it('endDrag() sees {} as drop result by default if dropped on a target', () => {
         const source = new NormalSource();
         const sourceId = registry.addSource(Types.FOO, source);
         const target = new TargetWithNoDropResult();
@@ -246,16 +246,16 @@ describe('DragDropManager', () => {
         backend.simulateHover([targetId]);
         backend.simulateDrop();
         backend.simulateEndDrag();
-        expect(source.recordedDropResult).to.equal(true);
+        expect(source.recordedDropResult).to.eql({});
       });
 
-      it('endDrag() sees false as drop result if dropped outside a target', () => {
+      it('endDrag() sees null as drop result if dropped outside a target', () => {
         const source = new NormalSource();
         const sourceId = registry.addSource(Types.FOO, source);
 
         backend.simulateBeginDrag([sourceId]);
         backend.simulateEndDrag();
-        expect(source.recordedDropResult).to.equal(false);
+        expect(source.recordedDropResult).to.equal(null);
       });
 
       it('calls endDrag even if source was unregistered', () => {
@@ -267,7 +267,7 @@ describe('DragDropManager', () => {
         expect(registry.getSource(sourceId)).to.equal(undefined);
 
         backend.simulateEndDrag();
-        expect(source.recordedDropResult).to.equal(false);
+        expect(source.recordedDropResult).to.equal(null);
       });
 
       it('throws in endDrag() if it is called outside a drag operation', () => {
@@ -283,7 +283,7 @@ describe('DragDropManager', () => {
         backend.simulateBeginDrag([sourceId]);
         backend.simulateDrop();
         backend.simulateEndDrag();
-        expect(source.recordedDropResult).to.equal(false);
+        expect(source.recordedDropResult).to.equal(null);
       });
 
       it('ignores drop() if drop targets entered and left', () => {
@@ -303,7 +303,7 @@ describe('DragDropManager', () => {
         backend.simulateEndDrag();
         expect(targetA.didCallDrop).to.equal(false);
         expect(targetB.didCallDrop).to.equal(false);
-        expect(source.recordedDropResult).to.equal(false);
+        expect(source.recordedDropResult).to.equal(null);
       });
 
       it('ignores drop() if canDrop() returns false', () => {
@@ -363,7 +363,7 @@ describe('DragDropManager', () => {
           expect(targetA.didCallDrop).to.equal(true);
           expect(targetB.didCallDrop).to.equal(true);
           expect(targetC.didCallDrop).to.equal(true);
-          expect(source.recordedDropResult.number).to.equal(16);
+          expect(source.recordedDropResult).to.eql({ number: 16 });
         });
 
         it('excludes targets of different type when dispatching drop', () => {
@@ -383,7 +383,7 @@ describe('DragDropManager', () => {
           expect(targetA.didCallDrop).to.equal(true);
           expect(targetB.didCallDrop).to.equal(false);
           expect(targetC.didCallDrop).to.equal(true);
-          expect(source.recordedDropResult.number).to.equal(42);
+          expect(source.recordedDropResult).to.eql({ number: 42 });
         });
 
         it('excludes non-droppable targets when dispatching drop', () => {
@@ -403,7 +403,7 @@ describe('DragDropManager', () => {
           expect(targetA.didCallDrop).to.equal(true);
           expect(targetB.didCallDrop).to.equal(true);
           expect(targetC.didCallDrop).to.equal(false);
-          expect(source.recordedDropResult).to.equal(true);
+          expect(source.recordedDropResult).to.eql({});
         });
 
         it('lets parent drop targets transform child results', () => {
@@ -438,7 +438,7 @@ describe('DragDropManager', () => {
           expect(targetE.didCallDrop).to.equal(true);
           expect(targetF.didCallDrop).to.equal(false);
           expect(targetG.didCallDrop).to.equal(false);
-          expect(source.recordedDropResult.number).to.equal((42 + 1) * 2);
+          expect(source.recordedDropResult).to.eql({ number: (42 + 1) * 2 });
         });
 
         it('always chooses parent drop result', () => {
@@ -473,7 +473,7 @@ describe('DragDropManager', () => {
           expect(targetE.didCallDrop).to.equal(true);
           expect(targetF.didCallDrop).to.equal(false);
           expect(targetG.didCallDrop).to.equal(false);
-          expect(source.recordedDropResult.number).to.equal(12345);
+          expect(source.recordedDropResult).to.eql({ number: 12345 });
         });
 
         it('excludes removed targets when dispatching drop', () => {
