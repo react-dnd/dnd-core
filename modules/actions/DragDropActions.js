@@ -115,7 +115,7 @@ export default class DragDropActions extends Actions {
     const { drop: dropActionId } = this.getActionIds();
     const targetIds = monitor
       .getTargetIds()
-      .filter(monitor.canDropTarget, monitor);
+      .filter(monitor.canDropOnTarget, monitor);
 
     targetIds.reverse();
     targetIds.forEach((targetId, index) => {

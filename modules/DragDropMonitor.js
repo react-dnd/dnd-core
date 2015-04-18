@@ -49,7 +49,7 @@ export default class DragDropMonitor {
     return source.canDrag(this, sourceId);
   }
 
-  canDropTarget(targetId) {
+  canDropOnTarget(targetId) {
     const target = this.registry.getTarget(targetId);
     invariant(target, 'Expected to find a valid target.');
 
