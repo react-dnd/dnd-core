@@ -11,16 +11,16 @@ class TestBackend {
     this.didCallTeardown = true;
   }
 
-  simulateBeginDrag(sourceIds, publishSource) {
-    this.actions.beginDrag(sourceIds, publishSource);
+  simulateBeginDrag(sourceIds, options) {
+    this.actions.beginDrag(sourceIds, options);
   }
 
   simulatePublishDragSource() {
     this.actions.publishDragSource();
   }
 
-  simulateHover(targetIds) {
-    this.actions.hover(targetIds);
+  simulateHover(targetIds, options) {
+    this.actions.hover(targetIds, options);
   }
 
   simulateDrop() {

@@ -11,7 +11,9 @@ export default class DragDropActions extends Actions {
   }
 
   beginDrag(sourceIds, {
-    publishSource = true
+    publishSource = true,
+    clientOffset = null,
+    getSourceClientOffset
   }: options = {}) {
     invariant(isArray(sourceIds), 'Expected sourceIds to be an array.');
 
@@ -40,6 +42,15 @@ export default class DragDropActions extends Actions {
       return;
     }
 
+    let sourceClientOffset = null;
+    if (clientOffset) {
+      invariant(
+        typeof getSourceClientOffset === 'function',
+        'When clientOffset is provided, getSourceClientOffset must be a function.'
+      );
+      sourceClientOffset = getSourceClientOffset(sourceId);
+    }
+
     const source = registry.getSource(sourceId);
     const item = source.beginDrag(monitor, sourceId);
     invariant(isObject(item), 'Item must be an object.');
@@ -47,7 +58,14 @@ export default class DragDropActions extends Actions {
     registry.pinSource(sourceId);
 
     const itemType = registry.getSourceType(sourceId);
-    return { itemType, item, sourceId, isSourcePublic: publishSource };
+    return {
+      itemType,
+      item,
+      sourceId,
+      clientOffset,
+      sourceClientOffset,
+      isSourcePublic: publishSource
+    };
   }
 
   publishDragSource() {
@@ -59,21 +77,22 @@ export default class DragDropActions extends Actions {
     return {};
   }
 
-  hover(targetIds) {
+  hover(targetIds, { clientOffset = null } = {}) {
     invariant(isArray(targetIds), 'Expected targetIds to be an array.');
     targetIds = targetIds.slice(0);
 
     const monitor = this.manager.getMonitor();
     const registry = this.manager.getRegistry();
+    invariant(
+      monitor.isDragging(),
+      'Cannot call hover while not dragging.'
+    );
+    invariant(
+      !monitor.didDrop(),
+      'Cannot call hover after drop.'
+    );
+
     const draggedItemType = monitor.getItemType();
-
-    const prevTargetIds = monitor.getTargetIds();
-    let didChange = false;
-
-    if (prevTargetIds.length !== targetIds.length) {
-      didChange = true;
-    }
-
     for (let i = 0; i < targetIds.length; i++) {
       const targetId = targetIds[i];
       invariant(
@@ -91,17 +110,9 @@ export default class DragDropActions extends Actions {
       if (matchesType(targetType, draggedItemType)) {
         target.hover(monitor, targetId);
       }
-
-      if (!didChange && targetId !== prevTargetIds[i]) {
-        didChange = true;
-      }
     }
 
-    if (!didChange) {
-      return;
-    }
-
-    return { targetIds };
+    return { targetIds, clientOffset };
   }
 
   drop() {
@@ -110,6 +121,10 @@ export default class DragDropActions extends Actions {
     invariant(
       monitor.isDragging(),
       'Cannot call drop while not dragging.'
+    );
+    invariant(
+      !monitor.didDrop(),
+      'Cannot call drop twice during one drag operation.'
     );
 
     const { drop: dropActionId } = this.getActionIds();

@@ -1,4 +1,5 @@
 import { Store } from 'flummox';
+import xor from 'lodash/array/xor';
 import without from 'lodash/array/without';
 import intersection from 'lodash/array/intersection';
 
@@ -45,12 +46,32 @@ export default class DragOperationStore extends Store {
   }
 
   handlePublishDragSource() {
-    this.setState({ isSourcePublic: true });
+    this.setState({
+      isSourcePublic: true
+    });
   }
 
   handleHover({ targetIds }) {
-    const dirtyHandlerIds = targetIds.concat(this.state.targetIds);
-    this.setState({ targetIds }, dirtyHandlerIds);
+    const { targetIds: prevTargetIds } = this.state;
+    const dirtyHandlerIds = xor(targetIds, prevTargetIds);
+
+    let didChange = false;
+    if (dirtyHandlerIds.length === 0) {
+      for (let i = 0; i < targetIds.length; i++) {
+        if (targetIds[i] !== prevTargetIds[i]) {
+          didChange = true;
+          break;
+        }
+      }
+    } else {
+      didChange = true;
+    }
+
+    if (didChange) {
+      this.setState({
+        targetIds
+      }, dirtyHandlerIds);
+    }
   }
 
   handleRemoveTarget({ targetId }) {
@@ -67,7 +88,8 @@ export default class DragOperationStore extends Store {
   handleDrop({ dropResult }) {
     this.setState({
       dropResult,
-      didDrop: true
+      didDrop: true,
+      targetIds: []
     });
   }
 
@@ -78,7 +100,8 @@ export default class DragOperationStore extends Store {
       sourceId: null,
       dropResult: null,
       didDrop: false,
-      isSourcePublic: null
+      isSourcePublic: null,
+      targetIds: []
     });
   }
 

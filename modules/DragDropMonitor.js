@@ -1,29 +1,30 @@
 import invariant from 'invariant';
 import matchesType from './utils/matchesType';
-import intersection from 'lodash/array/intersection';
 import isArray from 'lodash/lang/isArray';
 
 export default class DragDropMonitor {
   constructor(flux, registry) {
     this.dragOperationStore = flux.dragOperationStore;
+    this.dragOffsetStore = flux.dragOffsetStore;
     this.registry = registry;
   }
 
-  subscribe(listener, handlerIds) {
-    invariant(
-      handlerIds == null ||
-      isArray(handlerIds),
-      'handlerIds, if passed, must be an array of strings.'
-    );
+  subscribeToStateChange(listener, {
+    handlerIds = null
+  }: options = {}) {
     invariant(
       typeof listener === 'function',
       'listener must be a function.'
     );
 
     const { dragOperationStore } = this;
-    let handleChange = listener;
 
-    if (isArray(handlerIds)) {
+    let handleChange = listener;
+    if (handlerIds) {
+      invariant(
+        isArray(handlerIds),
+        'handlerIds, when specified, must be an array of strings.'
+      );
       handleChange = function () {
         if (dragOperationStore.areDirty(handlerIds)) {
           listener();
@@ -35,6 +36,20 @@ export default class DragDropMonitor {
 
     return function dispose() {
       dragOperationStore.removeListener('change', handleChange);
+    };
+  }
+
+  subscribeToOffsetChange(listener) {
+    invariant(
+      typeof listener === 'function',
+      'listener must be a function.'
+    );
+
+    const { dragOffsetStore } = this;
+    dragOffsetStore.addListener('change', listener);
+
+    return function dispose() {
+      dragOffsetStore.removeListener('change', listener);
     };
   }
 
@@ -136,5 +151,21 @@ export default class DragDropMonitor {
 
   isSourcePublic() {
     return this.dragOperationStore.isSourcePublic();
+  }
+
+  getInitialClientOffset() {
+    return this.dragOffsetStore.getInitialClientOffset();
+  }
+
+  getInitialSourceClientOffset() {
+    return this.dragOffsetStore.getInitialSourceClientOffset();
+  }
+
+  getClientOffset() {
+    return this.dragOffsetStore.getClientOffset();
+  }
+
+  getDifferenceFromInitialOffset() {
+    return this.dragOffsetStore.getDifferenceFromInitialOffset();
   }
 }

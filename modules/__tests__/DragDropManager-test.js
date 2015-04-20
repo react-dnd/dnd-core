@@ -345,6 +345,18 @@ describe('DragDropManager', () => {
         expect(() => backend.simulateDrop()).to.throwError();
       });
 
+      it('throws in drop() if called twice', () => {
+        const source = new NormalSource();
+        const sourceId = registry.addSource(Types.FOO, source);
+        const target = new NormalTarget();
+        const targetId = registry.addTarget(Types.FOO, target);
+
+        backend.simulateBeginDrag([sourceId]);
+        backend.simulateHover([targetId]);
+        backend.simulateDrop();
+        expect(() => backend.simulateDrop()).to.throwError();
+      });
+
       describe('nested drop targets', () => {
         it('uses child result if parents have no drop result', () => {
           const source = new NormalSource();
@@ -499,48 +511,32 @@ describe('DragDropManager', () => {
     });
 
     describe('hover()', () => {
-      it('lets hover() be called any time', () => {
-        const source = new NormalSource();
-        const sourceId = registry.addSource(Types.FOO, source);
-        const target = new NormalTarget();
-        const targetId = registry.addTarget(Types.BAR, target);
-
-        expect(() => backend.simulateHover([targetId])).to.not.throwError();
-
-        backend.simulateBeginDrag([sourceId]);
-        expect(() => backend.simulateHover([targetId])).to.not.throwError();
-
-        backend.simulateDrop();
-        expect(() => backend.simulateHover([targetId])).to.not.throwError();
-
-        backend.simulateEndDrag();
-        expect(() => backend.simulateHover([targetId])).to.not.throwError();
-
-        backend.simulateBeginDrag([sourceId]);
-        expect(() => backend.simulateHover([targetId])).to.not.throwError();
-      });
-
-      it('does not call hover() outside drag operation', () => {
+      it('throws on hover after drop', () => {
         const source = new NormalSource();
         const sourceId = registry.addSource(Types.FOO, source);
         const target = new NormalTarget();
         const targetId = registry.addTarget(Types.FOO, target);
 
-        backend.simulateHover([targetId]);
-        expect(target.didCallHover).to.equal(false);
-
+        expect(() => backend.simulateHover([targetId])).to.throwError();
         backend.simulateBeginDrag([sourceId]);
         backend.simulateHover([targetId]);
-        expect(target.didCallHover).to.equal(true);
 
-        target.didCallHover = false;
+        backend.simulateDrop();
+        expect(() => backend.simulateHover([targetId])).to.throwError();
+      });
+
+      it('throws on hover outside dragging operation', () => {
+        const source = new NormalSource();
+        const sourceId = registry.addSource(Types.FOO, source);
+        const target = new NormalTarget();
+        const targetId = registry.addTarget(Types.FOO, target);
+
+        expect(() => backend.simulateHover([targetId])).to.throwError();
+        backend.simulateBeginDrag([sourceId]);
         backend.simulateHover([targetId]);
-        expect(target.didCallHover).to.equal(true);
 
-        target.didCallHover = false;
         backend.simulateEndDrag();
-        backend.simulateHover([targetId]);
-        expect(target.didCallHover).to.equal(false);
+        expect(() => backend.simulateHover([targetId])).to.throwError();
       });
 
       it('excludes targets of different type when dispatching hover', () => {
