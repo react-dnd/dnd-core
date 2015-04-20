@@ -76,6 +76,18 @@ export default class DragOffsetStore extends Store {
     return this.state.clientOffset;
   }
 
+  getSourceClientOffset() {
+    const { clientOffset, initialClientOffset, initialSourceClientOffset } = this.state;
+    if (!clientOffset || !initialClientOffset || !initialSourceClientOffset) {
+      return null;
+    }
+
+    return {
+      x: clientOffset.x + initialSourceClientOffset.x - initialClientOffset.x,
+      y: clientOffset.y + initialSourceClientOffset.y - initialClientOffset.y
+    };
+  }
+
   getDifferenceFromInitialOffset() {
     const { clientOffset, initialClientOffset } = this.state;
     if (!clientOffset || !initialClientOffset) {

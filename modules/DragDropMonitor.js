@@ -161,6 +161,10 @@ export default class DragDropMonitor {
     return this.dragOffsetStore.getInitialSourceClientOffset();
   }
 
+  getSourceClientOffset() {
+    return this.dragOffsetStore.getSourceClientOffset();
+  }
+
   getClientOffset() {
     return this.dragOffsetStore.getClientOffset();
   }

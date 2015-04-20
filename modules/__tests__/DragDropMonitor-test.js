@@ -430,6 +430,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateBeginDrag([sourceId], {
@@ -439,6 +440,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getClientOffset()).to.eql({ x: 50, y: 40 });
+      expect(monitor.getSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: 0, y: 0});
 
       backend.simulateHover([targetId], {
@@ -447,6 +449,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getClientOffset()).to.eql({ x: 60, y: 70 });
+      expect(monitor.getSourceClientOffset()).to.eql({ x: 30, y: 40 });
       expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: 10, y: 30});
 
       backend.simulateHover([targetId], {
@@ -455,18 +458,21 @@ describe('DragDropMonitor', () => {
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getClientOffset()).to.eql({ x: 0, y: 0 });
+      expect(monitor.getSourceClientOffset()).to.eql({ x: -30, y: -30 });
       expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: -50, y: -40});
 
       backend.simulateDrop();
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateEndDrag();
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateBeginDrag([sourceId], {
@@ -476,12 +482,14 @@ describe('DragDropMonitor', () => {
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getClientOffset()).to.eql({ x: 50, y: 40 });
+      expect(monitor.getSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: 0, y: 0});
 
       backend.simulateEndDrag();
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
     });
 
@@ -494,12 +502,14 @@ describe('DragDropMonitor', () => {
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateBeginDrag([sourceId]);
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateHover([targetId], {
@@ -508,12 +518,14 @@ describe('DragDropMonitor', () => {
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.eql({ x: 60, y: 70 });
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateHover([targetId]);
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateHover([targetId], {
@@ -522,18 +534,21 @@ describe('DragDropMonitor', () => {
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.eql({ x: 60, y: 70 });
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateDrop();
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateEndDrag();
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
     });
 
@@ -546,6 +561,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateBeginDrag([sourceId], {
@@ -555,12 +571,14 @@ describe('DragDropMonitor', () => {
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getClientOffset()).to.eql({ x: 50, y: 40 });
+      expect(monitor.getSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: 0, y: 0 });
 
       backend.simulateHover([targetId]);
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateHover([targetId], {
@@ -569,18 +587,21 @@ describe('DragDropMonitor', () => {
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getClientOffset()).to.eql({ x: 60, y: 70 });
+      expect(monitor.getSourceClientOffset()).to.eql({ x: 30, y: 40 });
       expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: 10, y: 30 });
 
       backend.simulateDrop();
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateEndDrag();
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
       expect(monitor.getClientOffset()).to.equal(null);
+      expect(monitor.getSourceClientOffset()).to.equal(null);
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
     });
 
