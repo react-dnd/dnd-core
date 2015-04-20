@@ -22,7 +22,7 @@ This was written to support some rather complicated scenarios that were too hard
 * [Dragging multiple items at once](https://github.com/gaearon/react-dnd/issues/14)
 * [Even when source is removed, letting another drag source “represent it” (e.g. card disappeared from one Kanban list, reappeared in another one)](https://github.com/gaearon/react-dnd/pull/64#issuecomment-76118757)
 
-All of this should be easy to implement in React DnD (and any other library using dnd-core) once dnd-core matures.
+Turns out, these problems are much easier to solve when DOM is thrown out of the window.
 
 ## What's the API like?
 
