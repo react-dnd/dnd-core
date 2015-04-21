@@ -67,11 +67,25 @@ export default class DragOperationStore extends Store {
       didChange = true;
     }
 
-    if (didChange) {
-      this.setState({
-        targetIds
-      }, dirtyHandlerIds);
+    if (!didChange) {
+      return;
     }
+
+    const prevInnermostTargetId = prevTargetIds[prevTargetIds.length - 1];
+    const innermostTargetId = targetIds[targetIds.length - 1];
+
+    if (prevInnermostTargetId !== innermostTargetId) {
+      if (prevInnermostTargetId) {
+        dirtyHandlerIds.push(prevInnermostTargetId);
+      }
+      if (innermostTargetId) {
+        dirtyHandlerIds.push(innermostTargetId);
+      }
+    }
+
+    this.setState({
+      targetIds
+    }, dirtyHandlerIds);
   }
 
   handleRemoveTarget({ targetId }) {

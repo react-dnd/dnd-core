@@ -286,6 +286,86 @@ describe('DragDropMonitor', () => {
       expect(raisedChangeForSourceBAndTargetE).to.equal(true);
     });
 
+   it('raises local change event when target stops being or becomes innermost in hover()', () => {
+      const source = new NormalSource();
+      const sourceId = registry.addSource(Types.FOO, source);
+      const targetA = new NormalTarget();
+      const targetAId = registry.addTarget(Types.FOO, targetA);
+      const targetB = new NormalTarget();
+      const targetBId = registry.addTarget(Types.FOO, targetB);
+      const targetC = new NormalTarget();
+      const targetCId = registry.addTarget(Types.FOO, targetC);
+      const targetD = new NormalTarget();
+      const targetDId = registry.addTarget(Types.FOO, targetD);
+
+      backend.simulateBeginDrag([sourceId]);
+      backend.simulateHover([targetAId, targetBId, targetCId, targetDId]);
+
+      let raisedChangeForTargetA = false;
+      monitor.subscribeToStateChange(() => {
+        raisedChangeForTargetA = true;
+      }, {
+        handlerIds: [targetAId]
+      });
+
+      let raisedChangeForTargetB = false;
+      monitor.subscribeToStateChange(() => {
+        raisedChangeForTargetB = true;
+      }, {
+        handlerIds: [targetBId]
+      });
+
+      let raisedChangeForTargetC = false;
+      monitor.subscribeToStateChange(() => {
+        raisedChangeForTargetC = true;
+      }, {
+        handlerIds: [targetCId]
+      });
+
+      let raisedChangeForTargetD = false;
+      monitor.subscribeToStateChange(() => {
+        raisedChangeForTargetD = true;
+      }, {
+        handlerIds: [targetDId]
+      });
+
+      backend.simulateHover([targetAId, targetBId, targetCId]);
+      expect(raisedChangeForTargetA).to.equal(false);
+      expect(raisedChangeForTargetB).to.equal(false);
+      expect(raisedChangeForTargetC).to.equal(true);
+      expect(raisedChangeForTargetD).to.equal(true);
+
+      raisedChangeForTargetA = false;
+      raisedChangeForTargetB = false;
+      raisedChangeForTargetC = false;
+      raisedChangeForTargetD = false;
+      backend.simulateHover([targetAId, targetBId, targetCId, targetDId]);
+      expect(raisedChangeForTargetA).to.equal(false);
+      expect(raisedChangeForTargetB).to.equal(false);
+      expect(raisedChangeForTargetC).to.equal(true);
+      expect(raisedChangeForTargetD).to.equal(true);
+
+      raisedChangeForTargetA = false;
+      raisedChangeForTargetB = false;
+      raisedChangeForTargetC = false;
+      raisedChangeForTargetD = false;
+      backend.simulateHover([targetAId]);
+      expect(raisedChangeForTargetA).to.equal(true);
+      expect(raisedChangeForTargetB).to.equal(true);
+      expect(raisedChangeForTargetC).to.equal(true);
+      expect(raisedChangeForTargetD).to.equal(true);
+
+      raisedChangeForTargetA = false;
+      raisedChangeForTargetB = false;
+      raisedChangeForTargetC = false;
+      raisedChangeForTargetD = false;
+      backend.simulateHover([targetAId, targetBId]);
+      expect(raisedChangeForTargetA).to.equal(true);
+      expect(raisedChangeForTargetB).to.equal(true);
+      expect(raisedChangeForTargetC).to.equal(false);
+      expect(raisedChangeForTargetD).to.equal(false);
+    });
+
     it('raises global change event on endDrag()', (done) => {
       const source = new NormalSource();
       const sourceId = registry.addSource(Types.FOO, source);
