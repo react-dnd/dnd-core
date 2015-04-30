@@ -59,6 +59,15 @@ describe('DragDropManager', () => {
       expect(() => registry.removeTarget(sourceId)).to.throwError();
     });
 
+    it('accepts symbol types', () => {
+      const source = new NormalSource();
+      const target = new NormalTarget();
+
+      expect(() => registry.addSource(Symbol(), source)).to.not.throwError();
+      expect(() => registry.addTarget(Symbol(), target)).to.not.throwError();
+      expect(() => registry.addTarget([Symbol(), Symbol()], target)).to.not.throwError();
+    });
+
     it('throws on invalid type', () => {
       const source = new NormalSource();
       const target = new NormalTarget();

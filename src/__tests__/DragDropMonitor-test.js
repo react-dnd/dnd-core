@@ -872,6 +872,52 @@ describe('DragDropMonitor', () => {
       expect(monitor.canDropOnTarget(targetDId)).to.equal(false);
     });
 
+    it('treats symbol types just like string types', () => {
+      const FooType = Symbol();
+      const BarType = Symbol();
+
+      const source = new NormalSource();
+      const sourceId = registry.addSource(FooType, source);
+      const targetA = new NormalTarget();
+      const targetAId = registry.addTarget(FooType, targetA);
+      const targetB = new NormalTarget();
+      const targetBId = registry.addTarget(FooType, targetB);
+      const targetC = new NormalTarget();
+      const targetCId = registry.addTarget(BarType, targetC);
+      const targetD = new NonDroppableTarget();
+      const targetDId = registry.addTarget(FooType, targetD);
+
+      expect(monitor.canDropOnTarget(targetAId)).to.equal(false);
+      expect(monitor.canDropOnTarget(targetBId)).to.equal(false);
+      expect(monitor.canDropOnTarget(targetCId)).to.equal(false);
+      expect(monitor.canDropOnTarget(targetDId)).to.equal(false);
+
+      backend.simulateBeginDrag([sourceId]);
+      expect(monitor.canDropOnTarget(targetAId)).to.equal(true);
+      expect(monitor.canDropOnTarget(targetBId)).to.equal(true);
+      expect(monitor.canDropOnTarget(targetCId)).to.equal(false);
+      expect(monitor.canDropOnTarget(targetDId)).to.equal(false);
+
+      backend.simulateHover([targetAId]);
+      backend.simulateDrop();
+      expect(monitor.canDropOnTarget(targetAId)).to.equal(false);
+      expect(monitor.canDropOnTarget(targetBId)).to.equal(false);
+      expect(monitor.canDropOnTarget(targetCId)).to.equal(false);
+      expect(monitor.canDropOnTarget(targetDId)).to.equal(false);
+
+      backend.simulateEndDrag();
+      expect(monitor.canDropOnTarget(targetAId)).to.equal(false);
+      expect(monitor.canDropOnTarget(targetBId)).to.equal(false);
+      expect(monitor.canDropOnTarget(targetCId)).to.equal(false);
+      expect(monitor.canDropOnTarget(targetDId)).to.equal(false);
+
+      backend.simulateBeginDrag([sourceId]);
+      expect(monitor.canDropOnTarget(targetAId)).to.equal(true);
+      expect(monitor.canDropOnTarget(targetBId)).to.equal(true);
+      expect(monitor.canDropOnTarget(targetCId)).to.equal(false);
+      expect(monitor.canDropOnTarget(targetDId)).to.equal(false);
+    });
+
     it('returns true from isDragging only while dragging', () => {
       const source = new NormalSource();
       const sourceId = registry.addSource(Types.FOO, source);
