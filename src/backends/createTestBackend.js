@@ -1,3 +1,5 @@
+import noop from 'lodash/utility/noop';
+
 class TestBackend {
   constructor(manager) {
     this.actions = manager.getActions();
@@ -9,6 +11,18 @@ class TestBackend {
 
   teardown() {
     this.didCallTeardown = true;
+  }
+
+  connectDragSource() {
+    return noop;
+  }
+
+  connectDragPreview() {
+    return noop;
+  }
+
+  connectDropTarget() {
+    return noop;
   }
 
   simulateBeginDrag(sourceIds, options) {
