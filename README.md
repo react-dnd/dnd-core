@@ -2,9 +2,9 @@
 
 
 Drag and drop sans the GUI.  
-Work in progress.
 
-This is a clean re-implementation of drag and drop primitives and will eventually become core of [React DnD](https://github.com/gaearon/react-dnd).  
+This is a clean implementation of drag and drop primitives that does not depend on the browser.  
+It powers [React DnD](https://github.com/gaearon/react-dnd) internally.  
 
 ## Wat?
 
