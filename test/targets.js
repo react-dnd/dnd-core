@@ -1,4 +1,4 @@
-import { DropTarget } from '..';
+import { DropTarget } from '../src';
 
 export class NormalTarget extends DropTarget {
   constructor(dropResult) {

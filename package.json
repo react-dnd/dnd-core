@@ -4,9 +4,10 @@
   "description": "Drag and drop sans the GUI",
   "main": "modules/index.js",
   "scripts": {
-    "build": "./scripts/build",
-    "test": "./scripts/test",
-    "test-cov": "./scripts/test-cov",
+    "build": "babel src --out-dir modules",
+    "test": "mocha --compilers js:babel/register --recursive",
+    "test:cov": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel/register --recursive",
+    "test:watch": "npm run test -- --watch",
     "prepublish": "npm run build"
   },
   "repository": {

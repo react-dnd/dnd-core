@@ -2,7 +2,7 @@ import expect from 'expect.js';
 import Types from './types';
 import { NormalSource, NonDraggableSource, BadItemSource } from './sources';
 import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult, BadResultTarget, TransformResultTarget } from './targets';
-import { DragDropManager, createTestBackend } from '..';
+import { DragDropManager, createTestBackend } from '../src';
 import isString from 'lodash/lang/isString';
 
 describe('DragDropManager', () => {
