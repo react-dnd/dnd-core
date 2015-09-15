@@ -135,20 +135,16 @@ export default class HandlerRegistry {
 
   removeSource(sourceId) {
     invariant(this.getSource(sourceId), 'Expected an existing source.');
-
+    this.store.dispatch(removeSource(sourceId));
     delete this.handlers[sourceId];
     delete this.types[sourceId];
-
-    this.store.dispatch(removeSource(sourceId));
   }
 
   removeTarget(targetId) {
     invariant(this.getTarget(targetId), 'Expected an existing target.');
-
+    this.store.dispatch(removeTarget(targetId));
     delete this.handlers[targetId];
     delete this.types[targetId];
-
-    this.store.dispatch(removeTarget(targetId));
   }
 
   pinSource(sourceId) {

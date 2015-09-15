@@ -10,12 +10,11 @@ export default function dirtyHandlerIds(state = NONE, action, dragOperation) {
   switch (action.type) {
   case HOVER:
     break;
-  case REMOVE_TARGET:
-    return NONE;
   case ADD_SOURCE:
   case ADD_TARGET:
+  case REMOVE_TARGET:
   case REMOVE_SOURCE:
-    return state;
+    return NONE;
   case BEGIN_DRAG:
   case PUBLISH_DRAG_SOURCE:
   case END_DRAG:
