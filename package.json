@@ -4,7 +4,8 @@
   "description": "Drag and drop sans the GUI",
   "main": "modules/index.js",
   "scripts": {
-    "build": "babel src --out-dir modules",
+    "clean": "rimraf modules",
+    "build": "npm run clean && babel src --out-dir modules",
     "test": "mocha --compilers js:babel/register --recursive",
     "test:cov": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel/register --recursive",
     "test:watch": "npm run test -- --watch",
@@ -25,7 +26,8 @@
     "babel-plugin-object-assign": "^1.2.1",
     "expect.js": "^0.3.1",
     "istanbul": "~0.3.7",
-    "mocha": "^2.0.1"
+    "mocha": "^2.0.1",
+    "rimraf": "^2.4.3"
   },
   "dependencies": {
     "invariant": "^2.0.0",
