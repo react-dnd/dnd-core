@@ -1,21 +1,23 @@
-import Flux from './Flux';
+import createStore from 'redux/lib/createStore';
+import reducer from './reducers';
+import * as dragDropActions from './actions/dragDrop';
 import DragDropMonitor from './DragDropMonitor';
-import HandlerRegistry from './utils/HandlerRegistry';
+import HandlerRegistry from './HandlerRegistry';
 
 export default class DragDropManager {
   constructor(createBackend) {
-    const flux = new Flux(this);
+    const store = createStore(reducer);
 
-    this.flux = flux;
-    this.registry = new HandlerRegistry(flux.registryActions);
-    this.monitor = new DragDropMonitor(flux, this.registry);
+    this.store = store;
+    this.monitor = new DragDropMonitor(store);
+    this.registry = this.monitor.registry;
     this.backend = createBackend(this);
 
-    flux.refCountStore.addListener('change', this.handleRefCountChange, this);
+    store.subscribe(this.handleRefCountChange.bind(this));
   }
 
   handleRefCountChange() {
-    const shouldSetUp = this.flux.refCountStore.hasRefs();
+    const shouldSetUp = this.store.getState().refCount > 0;
     if (shouldSetUp && !this.isSetUp) {
       this.backend.setup();
       this.isSetUp = true;
@@ -38,6 +40,23 @@ export default class DragDropManager {
   }
 
   getActions() {
-    return this.flux.dragDropActions;
+    const manager = this;
+    const { dispatch } = this.store;
+
+    function bindActionCreator(actionCreator) {
+      return function () {
+        const action = actionCreator.apply(manager, arguments);
+        if (typeof action !== 'undefined') {
+          dispatch(action);
+        }
+      }
+    }
+
+    return Object.keys(dragDropActions).filter(
+      key => typeof dragDropActions[key] === 'function'
+    ).reduce((boundActions, key) => {
+      boundActions[key] = bindActionCreator(dragDropActions[key]);
+      return boundActions;
+    }, {});
   }
 }

@@ -1,42 +1,35 @@
 import invariant from 'invariant';
 import matchesType from './utils/matchesType';
 import isArray from 'lodash/lang/isArray';
+import HandlerRegistry from './HandlerRegistry';
+import { getSourceClientOffset, getDifferenceFromInitialOffset } from './reducers/dragOffset';
+import { areDirty } from './reducers/dirtyHandlerIds';
 
 export default class DragDropMonitor {
-  constructor(flux, registry) {
-    this.dragOperationStore = flux.dragOperationStore;
-    this.dragOffsetStore = flux.dragOffsetStore;
-    this.registry = registry;
+  constructor(store) {
+    this.store = store;
+    this.registry = new HandlerRegistry(store);
   }
 
   subscribeToStateChange(listener, {
-    handlerIds = null
+    handlerIds
   }: options = {}) {
     invariant(
       typeof listener === 'function',
       'listener must be a function.'
     );
+    invariant(
+      typeof handlerIds === 'undefined' || isArray(handlerIds),
+      'handlerIds, when specified, must be an array of strings.'
+    );
 
-    const { dragOperationStore } = this;
-
-    let handleChange = listener;
-    if (handlerIds) {
-      invariant(
-        isArray(handlerIds),
-        'handlerIds, when specified, must be an array of strings.'
-      );
-      handleChange = function () {
-        if (dragOperationStore.areDirty(handlerIds)) {
-          listener();
-        }
-      };
-    }
-
-    dragOperationStore.addListener('change', handleChange);
-
-    return function dispose() {
-      dragOperationStore.removeListener('change', handleChange);
+    const handleChange = () => {
+      if (areDirty(this.store.getState().dirtyHandlerIds, handlerIds)) {
+        listener();
+      }
     };
+
+    return this.store.subscribe(handleChange);
   }
 
   subscribeToOffsetChange(listener) {
@@ -45,12 +38,18 @@ export default class DragDropMonitor {
       'listener must be a function.'
     );
 
-    const { dragOffsetStore } = this;
-    dragOffsetStore.addListener('change', listener);
+    let previousState = this.store.getState().dragOffset;
+    const handleChange = () => {
+      let nextState = this.store.getState().dragOffset;
+      if (nextState === previousState) {
+        return;
+      }
 
-    return function dispose() {
-      dragOffsetStore.removeListener('change', listener);
-    };
+      previousState = nextState;
+      listener();
+    }
+
+    return this.store.subscribe(handleChange);
   }
 
   canDragSource(sourceId) {
@@ -79,7 +78,7 @@ export default class DragDropMonitor {
   }
 
   isDragging() {
-    return this.dragOperationStore.isDragging();
+    return Boolean(this.getItemType());
   }
 
   isDraggingSource(sourceId) {
@@ -126,50 +125,50 @@ export default class DragDropMonitor {
   }
 
   getItemType() {
-    return this.dragOperationStore.getItemType();
+    return this.store.getState().dragOperation.itemType;
   }
 
   getItem() {
-    return this.dragOperationStore.getItem();
+    return this.store.getState().dragOperation.item;
   }
 
   getSourceId() {
-    return this.dragOperationStore.getSourceId();
+    return this.store.getState().dragOperation.sourceId;
   }
 
   getTargetIds() {
-    return this.dragOperationStore.getTargetIds();
+    return this.store.getState().dragOperation.targetIds;
   }
 
   getDropResult() {
-    return this.dragOperationStore.getDropResult();
+    return this.store.getState().dragOperation.dropResult;
   }
 
   didDrop() {
-    return this.dragOperationStore.didDrop();
+    return this.store.getState().dragOperation.didDrop;
   }
 
   isSourcePublic() {
-    return this.dragOperationStore.isSourcePublic();
+    return this.store.getState().dragOperation.isSourcePublic;
   }
 
   getInitialClientOffset() {
-    return this.dragOffsetStore.getInitialClientOffset();
+    return this.store.getState().dragOffset.initialClientOffset;
   }
 
   getInitialSourceClientOffset() {
-    return this.dragOffsetStore.getInitialSourceClientOffset();
-  }
-
-  getSourceClientOffset() {
-    return this.dragOffsetStore.getSourceClientOffset();
+    return this.store.getState().dragOffset.initialSourceClientOffset;
   }
 
   getClientOffset() {
-    return this.dragOffsetStore.getClientOffset();
+    return this.store.getState().dragOffset.clientOffset;
+  }
+
+  getSourceClientOffset() {
+    return getSourceClientOffset(this.store.getState().dragOffset);
   }
 
   getDifferenceFromInitialOffset() {
-    return this.dragOffsetStore.getDifferenceFromInitialOffset();
+    return getDifferenceFromInitialOffset(this.store.getState().dragOffset);
   }
 }

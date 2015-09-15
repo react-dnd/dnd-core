@@ -1,7 +1,8 @@
 import invariant from 'invariant';
 import keyMirror from 'keymirror';
 import isArray from 'lodash/lang/isArray';
-import getNextUniqueId from './getNextUniqueId';
+import getNextUniqueId from './utils/getNextUniqueId';
+import { addSource, addTarget, removeSource, removeTarget } from './actions/registry';
 
 const HandlerRoles = keyMirror({
   SOURCE: null,
@@ -58,8 +59,8 @@ function parseRoleFromHandlerId(handlerId) {
 }
 
 export default class HandlerRegistry {
-  constructor(actions) {
-    this.actions = actions;
+  constructor(store) {
+    this.store = store;
 
     this.types = {};
     this.handlers = {};
@@ -73,7 +74,7 @@ export default class HandlerRegistry {
     validateSourceContract(source);
 
     const sourceId = this.addHandler(HandlerRoles.SOURCE, type, source);
-    this.actions.addSource(sourceId);
+    this.store.dispatch(addSource(sourceId));
     return sourceId;
   }
 
@@ -82,7 +83,7 @@ export default class HandlerRegistry {
     validateTargetContract(target);
 
     const targetId = this.addHandler(HandlerRoles.TARGET, type, target);
-    this.actions.addTarget(targetId);
+    this.store.dispatch(addTarget(targetId));
     return targetId;
   }
 
@@ -138,7 +139,7 @@ export default class HandlerRegistry {
     delete this.handlers[sourceId];
     delete this.types[sourceId];
 
-    this.actions.removeSource(sourceId);
+    this.store.dispatch(removeSource(sourceId));
   }
 
   removeTarget(targetId) {
@@ -147,7 +148,7 @@ export default class HandlerRegistry {
     delete this.handlers[targetId];
     delete this.types[targetId];
 
-    this.actions.removeTarget(targetId);
+    this.store.dispatch(removeTarget(targetId));
   }
 
   pinSource(sourceId) {
