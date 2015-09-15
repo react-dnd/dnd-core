@@ -2,10 +2,10 @@
   "name": "dnd-core",
   "version": "1.1.0",
   "description": "Drag and drop sans the GUI",
-  "main": "modules/index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "clean": "rimraf modules",
-    "build": "npm run clean && babel src --out-dir modules",
+    "clean": "rimraf lib",
+    "build": "npm run clean && babel src --out-dir lib",
     "test": "mocha --compilers js:babel/register --recursive",
     "test:cov": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel/register --recursive",
     "test:watch": "npm run test -- --watch",
