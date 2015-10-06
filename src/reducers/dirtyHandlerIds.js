@@ -9,7 +9,7 @@ const ALL = [];
 export default function dirtyHandlerIds(state = NONE, action, dragOperation) {
   switch (action.type) {
   case HOVER:
-    break;
+    return ALL;
   case ADD_SOURCE:
   case ADD_TARGET:
   case REMOVE_TARGET:
@@ -22,40 +22,6 @@ export default function dirtyHandlerIds(state = NONE, action, dragOperation) {
   default:
     return ALL;
   }
-
-  const { targetIds } = action;
-  const { targetIds: prevTargetIds } = dragOperation;
-  const dirtyHandlerIds = xor(targetIds, prevTargetIds);
-
-  let didChange = false;
-  if (dirtyHandlerIds.length === 0) {
-    for (let i = 0; i < targetIds.length; i++) {
-      if (targetIds[i] !== prevTargetIds[i]) {
-        didChange = true;
-        break;
-      }
-    }
-  } else {
-    didChange = true;
-  }
-
-  if (!didChange) {
-    return NONE;
-  }
-
-  const prevInnermostTargetId = prevTargetIds[prevTargetIds.length - 1];
-  const innermostTargetId = targetIds[targetIds.length - 1];
-
-  if (prevInnermostTargetId !== innermostTargetId) {
-    if (prevInnermostTargetId) {
-      dirtyHandlerIds.push(prevInnermostTargetId);
-    }
-    if (innermostTargetId) {
-      dirtyHandlerIds.push(innermostTargetId);
-    }
-  }
-
-  return dirtyHandlerIds;
 }
 
 export function areDirty(state, handlerIds) {
