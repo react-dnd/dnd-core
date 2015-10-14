@@ -1,7 +1,3 @@
-import keyMirror from 'keymirror';
-
-export default keyMirror({
-  FOO: null,
-  BAR: null,
-  BAZ: null
-});
+export const FOO = 'FOO';
+export const BAR = 'BAR';
+export const BAZ = 'BAZ';

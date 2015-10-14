@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import Types from './types';
+import * as Types from './types';
 import { NormalSource, NonDraggableSource, BadItemSource } from './sources';
 import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult, BadResultTarget, TransformResultTarget } from './targets';
 import { DragDropManager, createTestBackend } from '../src';

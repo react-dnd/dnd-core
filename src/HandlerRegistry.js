@@ -1,13 +1,12 @@
 import invariant from 'invariant';
-import keyMirror from 'keymirror';
 import isArray from 'lodash/lang/isArray';
 import getNextUniqueId from './utils/getNextUniqueId';
 import { addSource, addTarget, removeSource, removeTarget } from './actions/registry';
 
-const HandlerRoles = keyMirror({
-  SOURCE: null,
-  TARGET: null
-});
+const HandlerRoles = {
+  SOURCE: 'SOURCE',
+  TARGET: 'TARGET'
+};
 
 function validateSourceContract(source) {
   invariant(typeof source.canDrag === 'function', 'Expected canDrag to be a function.');
