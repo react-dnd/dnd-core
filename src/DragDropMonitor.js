@@ -23,9 +23,21 @@ export default class DragDropMonitor {
       'handlerIds, when specified, must be an array of strings.'
     );
 
+    let prevStateId = this.store.getState().stateId;
     const handleChange = () => {
-      if (areDirty(this.store.getState().dirtyHandlerIds, handlerIds)) {
-        listener();
+      const state = this.store.getState();
+      const currentStateId = state.stateId;
+      try {
+        const canSkipListener = currentStateId === prevStateId || (
+          currentStateId === prevStateId + 1 &&
+          !areDirty(state.dirtyHandlerIds, handlerIds)
+        )
+
+        if (!canSkipListener) {
+          listener();
+        }
+      } finally {
+        prevStateId = currentStateId;
       }
     };
 
