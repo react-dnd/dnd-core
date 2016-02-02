@@ -1,4 +1,4 @@
-import noop from 'lodash/utility/noop';
+import noop from 'lodash/noop';
 
 class TestBackend {
   constructor(manager) {

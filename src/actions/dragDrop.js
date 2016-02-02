@@ -1,7 +1,7 @@
 import matchesType from '../utils/matchesType';
 import invariant from 'invariant';
-import isArray from 'lodash/lang/isArray';
-import isObject from 'lodash/lang/isObject';
+import isArray from 'lodash/isArray';
+import isObject from 'lodash/isObject';
 
 export const BEGIN_DRAG = 'dnd-core/BEGIN_DRAG';
 export const PUBLISH_DRAG_SOURCE = 'dnd-core/PUBLISH_DRAG_SOURCE';

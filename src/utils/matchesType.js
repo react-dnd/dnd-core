@@ -1,4 +1,4 @@
-import isArray from 'lodash/lang/isArray';
+import isArray from 'lodash/isArray';
 
 export default function matchesType(targetType, draggedItemType) {
   if (isArray(targetType)) {
