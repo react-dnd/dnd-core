@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 import matchesType from './utils/matchesType';
-import isArray from 'lodash/lang/isArray';
+import isArray from 'lodash/isArray';
 import HandlerRegistry from './HandlerRegistry';
 import { getSourceClientOffset, getDifferenceFromInitialOffset } from './reducers/dragOffset';
 import { areDirty } from './reducers/dirtyHandlerIds';

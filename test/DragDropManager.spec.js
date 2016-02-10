@@ -3,7 +3,7 @@ import * as Types from './types';
 import { NormalSource, NonDraggableSource, BadItemSource } from './sources';
 import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult, BadResultTarget, TransformResultTarget } from './targets';
 import { DragDropManager, createTestBackend } from '../src';
-import isString from 'lodash/lang/isString';
+import isString from 'lodash/isString';
 
 describe('DragDropManager', () => {
   let manager;

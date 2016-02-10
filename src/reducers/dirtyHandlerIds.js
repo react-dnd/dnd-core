@@ -1,5 +1,5 @@
-import xor from 'lodash/array/xor';
-import intersection from 'lodash/array/intersection';
+import xor from 'lodash/xor';
+import intersection from 'lodash/intersection';
 import { BEGIN_DRAG, PUBLISH_DRAG_SOURCE, HOVER, END_DRAG, DROP } from '../actions/dragDrop';
 import { ADD_SOURCE, ADD_TARGET, REMOVE_SOURCE, REMOVE_TARGET } from '../actions/registry';
 

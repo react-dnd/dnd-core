@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import isArray from 'lodash/lang/isArray';
+import isArray from 'lodash/isArray';
 import getNextUniqueId from './utils/getNextUniqueId';
 import { addSource, addTarget, removeSource, removeTarget } from './actions/registry';
 

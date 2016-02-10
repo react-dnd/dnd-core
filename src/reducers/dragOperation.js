@@ -1,6 +1,6 @@
 import { BEGIN_DRAG, PUBLISH_DRAG_SOURCE, HOVER, END_DRAG, DROP } from '../actions/dragDrop';
 import { REMOVE_TARGET } from '../actions/registry';
-import without from 'lodash/array/without';
+import without from 'lodash/without';
 
 const initialState = {
   itemType: null,
