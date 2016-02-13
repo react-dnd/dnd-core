@@ -58,6 +58,23 @@ describe('DragDropMonitor', () => {
       backend.simulateBeginDrag([sourceId]);
     });
 
+    it('raises global change event on beginDrag() even if a subscriber causes other changes', (done) => {
+      const source = new NormalSource();
+      const sourceId = registry.addSource(Types.FOO, source);
+      const target = new NormalTarget()
+
+      let notified = false;
+      monitor.subscribeToStateChange(() => {
+        if (!notified) {
+          notified = true;
+          registry.addTarget(Types.FOO, target);
+        }
+      });
+
+      monitor.subscribeToStateChange(done);
+      backend.simulateBeginDrag([sourceId]);
+    });
+
     it('raises local change event on sources and targets in beginDrag()', () => {
       const sourceA = new NormalSource();
       const sourceAId = registry.addSource(Types.FOO, sourceA);
@@ -461,29 +478,6 @@ describe('DragDropMonitor', () => {
         getSourceClientOffset: () => ({ x: 0, y: 0 })
       });
       expect(raisedChange).to.equal(false);
-    });
-
-    it('raises global change event on beginDrag(), even if redux did not notify us for all stat updates.', (done) => {
-      const source = new NormalSource();
-      const sourceId = registry.addSource(Types.FOO, source);
-      const target = new NormalTarget()
-
-      let notified = false;
-      monitor.subscribeToStateChange(
-          () => {
-            if (!notified)
-            {
-              notified = true;
-              // Add target will send an action to redux, which will trigger a new state update.
-              // The redux behaviour then is to send only the latest state to the subscribers
-              // which means that the subscription below will not receive this state.
-              registry.addTarget(Types.FOO, target)
-            }
-          });
-
-      monitor.subscribeToStateChange(
-          () => { done()});
-      backend.simulateBeginDrag([sourceId]);
     });
 
     it('throws when passing clientOffset without getSourceClientOffset', () => {
