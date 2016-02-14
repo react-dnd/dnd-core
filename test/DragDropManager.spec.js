@@ -16,35 +16,61 @@ describe('DragDropManager', () => {
     registry = manager.getRegistry();
   });
 
-  describe('handler registration', () => {
+  describe('handler registration', (done) => {
     it('registers and unregisters drag sources', () => {
       const source = new NormalSource();
       const sourceId = registry.addSource(Types.FOO, source);
       expect(registry.getSource(sourceId)).to.equal(source);
 
       registry.removeSource(sourceId);
-      expect(registry.getSource(sourceId)).to.equal(undefined);
-      expect(() => registry.removeSource(sourceId)).to.throwError();
+
+      setImmediate(() => {
+        expect(registry.getSource(sourceId)).to.equal(undefined);
+        expect(() => registry.removeSource(sourceId)).to.throwError();
+        done();
+      });
     });
 
-    it('registers and unregisters drop targets', () => {
+    it('registers and unregisters drop targets', (done) => {
       const target = new NormalTarget();
       const targetId = registry.addTarget(Types.FOO, target);
       expect(registry.getTarget(targetId)).to.equal(target);
 
       registry.removeTarget(targetId);
-      expect(registry.getTarget(targetId)).to.equal(undefined);
-      expect(() => registry.removeTarget(targetId)).to.throwError();
+
+      setImmediate(() => {
+        expect(registry.getTarget(targetId)).to.equal(undefined);
+        expect(() => registry.removeTarget(targetId)).to.throwError();
+        done();
+      });
     });
 
-    it('registers and unregisters multi-type drop targets', () => {
+    it('registers and unregisters drop targets', (done) => {
+      const target = new NormalTarget();
+      const targetId = registry.addTarget(Types.FOO, target);
+      expect(registry.getTarget(targetId)).to.equal(target);
+
+      registry.removeTarget(targetId);
+
+      setImmediate(() => {
+        expect(registry.getTarget(targetId)).to.equal(undefined);
+        expect(() => registry.removeTarget(targetId)).to.throwError();
+        done();
+      });
+    });
+
+    it('registers and unregisters multi-type drop targets', (done) => {
       const target = new NormalTarget();
       const targetId = registry.addTarget([Types.FOO, Types.BAR], target);
       expect(registry.getTarget(targetId)).to.equal(target);
 
       registry.removeTarget(targetId);
-      expect(registry.getTarget(targetId)).to.equal(undefined);
-      expect(() => registry.removeTarget(targetId)).to.throwError();
+
+      setImmediate(() => {
+        expect(registry.getTarget(targetId)).to.equal(undefined);
+        expect(() => registry.removeTarget(targetId)).to.throwError();
+        done();
+      });
     });
 
     it('knows the difference between sources and targets', () => {
@@ -181,7 +207,7 @@ describe('DragDropManager', () => {
         expect(() => backend.simulateBeginDrag([sourceId])).to.throwError();
       });
 
-      it('throws in beginDrag() if it is called with an invalid handles', () => {
+      it('throws in beginDrag() if it is called with an invalid handles', (done) => {
         const source = new NormalSource();
         const sourceId = registry.addSource(Types.FOO, source);
         const target = new NormalTarget();
@@ -197,7 +223,11 @@ describe('DragDropManager', () => {
         expect(() => backend.simulateBeginDrag([targetId, sourceId])).to.throwError();
 
         registry.removeSource(sourceId);
-        expect(() => backend.simulateBeginDrag([sourceId])).to.throwError();
+
+        setImmediate(() => {
+          expect(() => backend.simulateBeginDrag([sourceId])).to.throwError();
+          done();
+        });
       });
 
       it('calls beginDrag() on the innermost handler with canDrag() returning true', () => {
@@ -273,8 +303,6 @@ describe('DragDropManager', () => {
 
         backend.simulateBeginDrag([sourceId]);
         registry.removeSource(sourceId);
-        expect(registry.getSource(sourceId)).to.equal(undefined);
-
         backend.simulateEndDrag();
         expect(source.recordedDropResult).to.equal(null);
       });
@@ -616,37 +644,6 @@ describe('DragDropManager', () => {
         expect(() => backend.simulateHover([targetId, null])).to.throwError();
         expect(() => backend.simulateHover([targetId, 'yo'])).to.throwError();
         expect(() => backend.simulateHover([targetId, sourceId])).to.throwError();
-      });
-
-      it('throws in hover() if it contains a removed drop target', () => {
-        const source = new NormalSource();
-        const sourceId = registry.addSource(Types.FOO, source);
-        const targetA = new NormalTarget();
-        let targetAId = registry.addTarget(Types.BAR, targetA);
-        const targetB = new NormalTarget();
-        let targetBId = registry.addTarget(Types.FOO, targetB);
-
-        backend.simulateBeginDrag([sourceId]);
-        expect(() => backend.simulateHover([targetAId, targetBId])).to.not.throwError();
-
-        backend.simulateHover([targetAId, targetBId]);
-        registry.removeTarget(targetAId);
-        expect(() => backend.simulateHover([targetBId, targetAId])).to.throwError();
-        expect(() => backend.simulateHover([targetAId, targetBId])).to.throwError();
-        expect(() => backend.simulateHover([targetBId])).to.not.throwError();
-
-        backend.simulateHover([targetBId]);
-        registry.removeTarget(targetBId);
-        expect(() => backend.simulateHover([targetBId, targetAId])).to.throwError();
-        expect(() => backend.simulateHover([targetBId])).to.throwError();
-        expect(() => backend.simulateHover([targetAId])).to.throwError();
-
-        targetAId = registry.addTarget(Types.FOO, targetA);
-        expect(() => backend.simulateHover([targetAId])).to.not.throwError();
-
-        backend.simulateHover([targetAId]);
-        targetBId = registry.addTarget(Types.BAR, targetB);
-        expect(() => backend.simulateHover([targetAId, targetBId])).to.not.throwError();
       });
     });
   });

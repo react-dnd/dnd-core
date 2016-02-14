@@ -1422,19 +1422,19 @@ describe('DragDropMonitor', () => {
       expect(monitor.isDraggingSource(sourceAId)).to.equal(false);
       expect(monitor.isDraggingSource(sourceBId)).to.equal(true);
       expect(monitor.isDraggingSource(sourceCId)).to.equal(false);
-      expect(() => monitor.isDraggingSource(sourceDId)).to.throwError();
+      expect(monitor.isDraggingSource(sourceDId)).to.equal(true);
 
       backend.simulateEndDrag();
       expect(monitor.isDraggingSource(sourceAId)).to.equal(false);
       expect(monitor.isDraggingSource(sourceBId)).to.equal(false);
       expect(monitor.isDraggingSource(sourceCId)).to.equal(false);
-      expect(() => monitor.isDraggingSource(sourceDId)).to.throwError();
+      expect(monitor.isDraggingSource(sourceDId)).to.equal(false);
 
       backend.simulateBeginDrag([sourceBId]);
       expect(monitor.isDraggingSource(sourceAId)).to.equal(false);
       expect(monitor.isDraggingSource(sourceBId)).to.equal(true);
       expect(monitor.isDraggingSource(sourceCId)).to.equal(false);
-      expect(() => monitor.isDraggingSource(sourceDId)).to.throwError();
+      expect(monitor.isDraggingSource(sourceDId)).to.equal(true);
 
       sourceA.number = 1;
       expect(monitor.isDraggingSource(sourceAId)).to.equal(true);
