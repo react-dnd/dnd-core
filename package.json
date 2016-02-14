@@ -30,6 +30,7 @@
     "rimraf": "^2.4.3"
   },
   "dependencies": {
+    "asap": "^2.0.3",
     "invariant": "^2.0.0",
     "lodash": "^4.2.0",
     "redux": "^3.2.0"
