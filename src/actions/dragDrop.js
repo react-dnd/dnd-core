@@ -95,6 +95,18 @@ export function hover(targetIds, { clientOffset = null } = {}) {
   );
 
   const draggedItemType = monitor.getItemType();
+
+  // Remove those targetIds that don't match the targetType.  This
+  // fixes shallow isOver which would only be non-shallow because of
+  // non-matching targets.
+  for (let i = targetIds.length - 1; i >= 0; i--) {
+    const targetId = targetIds[i];
+    const targetType = registry.getTargetType(targetId);
+    if (!matchesType(targetType, draggedItemType)) {
+      targetIds.splice(i, 1);
+    }
+  }
+
   for (let i = 0; i < targetIds.length; i++) {
     const targetId = targetIds[i];
     invariant(
@@ -108,10 +120,7 @@ export function hover(targetIds, { clientOffset = null } = {}) {
       'Expected targetIds to be registered.'
     );
 
-    const targetType = registry.getTargetType(targetId);
-    if (matchesType(targetType, draggedItemType)) {
-      target.hover(monitor, targetId);
-    }
+    target.hover(monitor, targetId);
   }
 
   return {
