@@ -612,7 +612,7 @@ describe('DragDropManager', () => {
 
       it('throws in hover() if it contains the same target twice', () => {
         const source = new NormalSource();
-        const sourceId = registry.addSource(Types.FOO, source);
+        const sourceId = registry.addSource(Types.BAR, source);
         const targetA = new NormalTarget();
         const targetAId = registry.addTarget(Types.BAR, targetA);
         const targetB = new NormalTarget();

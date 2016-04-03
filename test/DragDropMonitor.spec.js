@@ -1292,27 +1292,25 @@ describe('DragDropMonitor', () => {
 
       backend.simulateHover([targetAId, targetBId, targetCId]);
       handles = monitor.getTargetIds();
-      expect(handles.length).to.be(3);
+      expect(handles.length).to.be(2);
       expect(handles[0]).to.equal(targetAId);
       expect(monitor.isOverTarget(targetAId)).to.equal(true);
       expect(monitor.isOverTarget(targetAId, { shallow: true })).to.equal(false);
       expect(handles[1]).to.equal(targetBId);
       expect(monitor.isOverTarget(targetBId)).to.equal(true);
-      expect(monitor.isOverTarget(targetBId, { shallow: true })).to.equal(false);
-      expect(handles[2]).to.equal(targetCId);
+      expect(monitor.isOverTarget(targetBId, { shallow: true })).to.equal(true);
       expect(monitor.isOverTarget(targetCId)).to.equal(false);
       expect(monitor.isOverTarget(targetCId, { shallow: true })).to.equal(false);
 
       backend.simulateHover([targetCId, targetBId, targetAId]);
       handles = monitor.getTargetIds();
-      expect(handles.length).to.be(3);
-      expect(handles[0]).to.equal(targetCId);
+      expect(handles.length).to.be(2);
       expect(monitor.isOverTarget(targetCId)).to.equal(false);
       expect(monitor.isOverTarget(targetCId, { shallow: true })).to.equal(false);
-      expect(handles[1]).to.equal(targetBId);
+      expect(handles[0]).to.equal(targetBId);
       expect(monitor.isOverTarget(targetBId)).to.equal(true);
       expect(monitor.isOverTarget(targetBId, { shallow: true })).to.equal(false);
-      expect(handles[2]).to.equal(targetAId);
+      expect(handles[1]).to.equal(targetAId);
       expect(monitor.isOverTarget(targetAId)).to.equal(true);
       expect(monitor.isOverTarget(targetAId, { shallow: true })).to.equal(true);
 

@@ -94,6 +94,21 @@ export function hover(targetIds, { clientOffset = null } = {}) {
     'Cannot call hover after drop.'
   );
 
+  // First check invariants.
+  for (let i = 0; i < targetIds.length; i++) {
+    const targetId = targetIds[i];
+    invariant(
+      targetIds.lastIndexOf(targetId) === i,
+      'Expected targetIds to be unique in the passed array.'
+    );
+
+    const target = registry.getTarget(targetId);
+    invariant(
+      target,
+      'Expected targetIds to be registered.'
+    );
+  }
+
   const draggedItemType = monitor.getItemType();
 
   // Remove those targetIds that don't match the targetType.  This
@@ -107,19 +122,10 @@ export function hover(targetIds, { clientOffset = null } = {}) {
     }
   }
 
+  // Finally call hover on all matching targets.
   for (let i = 0; i < targetIds.length; i++) {
     const targetId = targetIds[i];
-    invariant(
-      targetIds.lastIndexOf(targetId) === i,
-      'Expected targetIds to be unique in the passed array.'
-    );
-
     const target = registry.getTarget(targetId);
-    invariant(
-      target,
-      'Expected targetIds to be registered.'
-    );
-
     target.hover(monitor, targetId);
   }
 
