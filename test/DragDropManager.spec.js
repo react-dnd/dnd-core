@@ -612,6 +612,18 @@ describe('DragDropManager', () => {
 
       it('throws in hover() if it contains the same target twice', () => {
         const source = new NormalSource();
+        const sourceId = registry.addSource(Types.BAR, source);
+        const targetA = new NormalTarget();
+        const targetAId = registry.addTarget(Types.BAR, targetA);
+        const targetB = new NormalTarget();
+        const targetBId = registry.addTarget(Types.BAR, targetB);
+
+        backend.simulateBeginDrag([sourceId]);
+        expect(() => backend.simulateHover([targetAId, targetBId, targetAId])).to.throwError();
+      });
+
+      it('throws in hover() if it contains the same target twice (even if wrong type)', () => {
+        const source = new NormalSource();
         const sourceId = registry.addSource(Types.FOO, source);
         const targetA = new NormalTarget();
         const targetAId = registry.addTarget(Types.BAR, targetA);
