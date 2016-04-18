@@ -45,20 +45,6 @@ describe('DragDropManager', () => {
       });
     });
 
-    it('registers and unregisters drop targets', (done) => {
-      const target = new NormalTarget();
-      const targetId = registry.addTarget(Types.FOO, target);
-      expect(registry.getTarget(targetId)).to.equal(target);
-
-      registry.removeTarget(targetId);
-
-      setImmediate(() => {
-        expect(registry.getTarget(targetId)).to.equal(undefined);
-        expect(() => registry.removeTarget(targetId)).to.throwError();
-        done();
-      });
-    });
-
     it('registers and unregisters multi-type drop targets', (done) => {
       const target = new NormalTarget();
       const targetId = registry.addTarget([Types.FOO, Types.BAR], target);
