@@ -111,7 +111,8 @@ export default class DragDropMonitor {
   }
 
   isOverTarget(targetId, {
-    shallow = false
+    shallow = false,
+    filterTargets = false
   }: options = {}) {
     if (!this.isDragging()) {
       return false;
@@ -123,9 +124,16 @@ export default class DragDropMonitor {
       return false;
     }
 
-    const targetIds = this.getTargetIds();
+    let targetIds = this.getTargetIds();
     if (!targetIds.length) {
       return false;
+    }
+
+    if (filterTargets) {
+      targetIds = targetIds.filter(id => {
+        const type = this.registry.getTargetType(id);
+        return matchesType(type, draggedItemType);
+      });
     }
 
     const index = targetIds.indexOf(targetId);
