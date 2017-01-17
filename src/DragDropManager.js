@@ -5,9 +5,9 @@ import DragDropMonitor from './DragDropMonitor';
 import HandlerRegistry from './HandlerRegistry';
 
 export default class DragDropManager {
-  constructor(createBackend) {
+  constructor(createBackend, context = (global || window)) {
     const store = createStore(reducer);
-
+    this.context = context;
     this.store = store;
     this.monitor = new DragDropMonitor(store);
     this.registry = this.monitor.registry;
@@ -25,6 +25,10 @@ export default class DragDropManager {
       this.backend.teardown();
       this.isSetUp = false;
     }
+  }
+
+  getContext() {
+    return this.context;
   }
 
   getMonitor() {
