@@ -30,9 +30,10 @@ export default function dragOffset(state = initialState, action) {
       if (areOffsetsEqual(state.clientOffset, action.clientOffset)) {
         return state;
       }
-      return Object.assign({}, state, {
+      return {
+        ...state,
         clientOffset: action.clientOffset,
-      });
+      };
     case END_DRAG:
     case DROP:
       return initialState;
