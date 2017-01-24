@@ -13,14 +13,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gaearon/dnd-core.git"
+    "url": "https://github.com/react-dnd/dnd-core.git"
   },
   "author": "Dan Abramov <dan.abramov@me.com> (http://github.com/gaearon)",
+  "contributors": [],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gaearon/dnd-core/issues"
+    "url": "https://github.com/react-dnd/dnd-core/issues"
   },
-  "homepage": "https://github.com/gaearon/dnd-core",
+  "homepage": "https://github.com/react-dnd/dnd-core",
   "devDependencies": {
     "babel": "^5.8.23",
     "babel-plugin-object-assign": "^1.2.1",
