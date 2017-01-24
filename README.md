@@ -1,8 +1,9 @@
 [![npm package](https://img.shields.io/npm/v/dnd-core.svg?style=flat-square)](https://www.npmjs.org/package/dnd-core)
 [![Build Status](https://travis-ci.org/react-dnd/dnd-core.svg?branch=master)](https://travis-ci.org/react-dnd/dnd-core)
 [![Test Coverage](https://codeclimate.com/github/react-dnd/dnd-core/badges/coverage.svg)](https://codeclimate.com/github/react-dnd/dnd-core)
-[![dependencies Status](https://david-dm.org/react-dnd/react-dnd/status.svg)](https://david-dm.org/react-dnd/react-dnd)
-[![devDependencies Status](https://david-dm.org/react-dnd/react-dnd/dev-status.svg)](https://david-dm.org/react-dnd/react-dnd?type=dev)
+[![dependencies Status](https://david-dm.org/react-dnd/dnd-core/status.svg)](https://david-dm.org/react-dnd/dnd-core)
+[![devDependencies Status](https://david-dm.org/react-dnd/dnd-core/dev-status.svg)](https://david-dm.org/react-dnd/dnd-core?type=dev)
+[![peerDependencies Status](https://david-dm.org/react-dnd/dnd-core/peer-status.svg)](https://david-dm.org/react-dnd/dnd-core?type=peer)
 
 # dnd-core
 
