@@ -6,27 +6,27 @@ export const REMOVE_TARGET = 'dnd-core/REMOVE_TARGET';
 export function addSource(sourceId) {
   return {
     type: ADD_SOURCE,
-    sourceId
+    sourceId,
   };
 }
 
 export function addTarget(targetId) {
   return {
     type: ADD_TARGET,
-    targetId
+    targetId,
   };
 }
 
 export function removeSource(sourceId) {
   return {
     type: REMOVE_SOURCE,
-    sourceId
+    sourceId,
   };
 }
 
 export function removeTarget(targetId) {
   return {
     type: REMOVE_TARGET,
-    targetId
+    targetId,
   };
 }

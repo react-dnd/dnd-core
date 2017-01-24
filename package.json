@@ -5,12 +5,13 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
+    "lint": "eslint '{src,test}/**/*.js'",
     "build": "babel src --out-dir lib",
     "unit_test": "mocha",
     "unit_test:watch": "npm run unit_test -- --watch",
     "unit_test:cov": "nyc ./node_modules/.bin/_mocha",
     "develop": "npm run unit_test:watch",
-    "test": "npm-run-all clean build unit_test:cov",
+    "test": "npm-run-all clean lint build unit_test:cov",
     "prepublish": "npm run build"
   },
   "repository": {
@@ -29,6 +30,11 @@
     "babel-preset-latest": "^6.22.0",
     "babel-preset-stage-2": "^6.22.0",
     "babel-register": "^6.22.0",
+    "eslint": "^3.14.0",
+    "eslint-config-airbnb": "^14.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^3.0.2",
+    "eslint-plugin-react": "^6.9.0",
     "expect.js": "^0.3.1",
     "mocha": "^3.2.0",
     "mocha-junit-reporter": "^1.13.0",

@@ -2,7 +2,6 @@ import createStore from 'redux/lib/createStore';
 import reducer from './reducers';
 import * as dragDropActions from './actions/dragDrop';
 import DragDropMonitor from './DragDropMonitor';
-import HandlerRegistry from './HandlerRegistry';
 
 export default class DragDropManager {
   constructor(createBackend) {
@@ -44,18 +43,19 @@ export default class DragDropManager {
     const { dispatch } = this.store;
 
     function bindActionCreator(actionCreator) {
-      return function () {
-        const action = actionCreator.apply(manager, arguments);
+      return (...args) => {
+        const action = actionCreator.apply(manager, args);
         if (typeof action !== 'undefined') {
           dispatch(action);
         }
-      }
+      };
     }
 
     return Object.keys(dragDropActions).filter(
-      key => typeof dragDropActions[key] === 'function'
+      key => typeof dragDropActions[key] === 'function',
     ).reduce((boundActions, key) => {
-      boundActions[key] = bindActionCreator(dragDropActions[key]);
+      const action = dragDropActions[key];
+      boundActions[key] = bindActionCreator(action); // eslint-disable-line no-param-reassign
       return boundActions;
     }, {});
   }

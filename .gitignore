@@ -4,3 +4,4 @@ coverage
 lib
 test-results.xml
 .nyc_output
+*-debug.log
