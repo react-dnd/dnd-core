@@ -6,9 +6,9 @@
   "scripts": {
     "clean": "rimraf lib",
     "build": "babel src --out-dir lib",
-    "unit_test": "mocha --compilers js:babel/register --recursive",
+    "unit_test": "mocha",
     "unit_test:watch": "npm run unit_test -- --watch",
-    "unit_test:cov": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel/register --recursive",
+    "unit_test:cov": "nyc ./node_modules/.bin/_mocha",
     "develop": "npm run unit_test:watch",
     "test": "npm-run-all clean build unit_test:cov",
     "prepublish": "npm run build"
@@ -25,12 +25,17 @@
   },
   "homepage": "https://github.com/react-dnd/dnd-core",
   "devDependencies": {
-    "babel": "^5.8.23",
-    "babel-plugin-object-assign": "^1.2.1",
+    "babel-cli": "^6.22.2",
+    "babel-preset-latest": "^6.22.0",
+    "babel-preset-stage-2": "^6.22.0",
+    "babel-register": "^6.22.0",
     "expect.js": "^0.3.1",
-    "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
+    "mocha-junit-reporter": "^1.13.0",
+    "mocha-multi": "^0.10.0",
+    "mocha-osx-reporter": "^0.1.2",
     "npm-run-all": "^4.0.1",
+    "nyc": "^10.1.2",
     "rimraf": "^2.4.3"
   },
   "dependencies": {

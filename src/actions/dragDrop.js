@@ -9,11 +9,8 @@ export const HOVER = 'dnd-core/HOVER';
 export const DROP = 'dnd-core/DROP';
 export const END_DRAG = 'dnd-core/END_DRAG';
 
-export function beginDrag(sourceIds, {
-  publishSource = true,
-  clientOffset = null,
-  getSourceClientOffset
-}: options = {}) {
+export function beginDrag(sourceIds, options = { publishSource: true, clientOffset: null }) {
+  const { publishSource, clientOffset, getSourceClientOffset } = options;
   invariant(isArray(sourceIds), 'Expected sourceIds to be an array.');
 
   const monitor = this.getMonitor();

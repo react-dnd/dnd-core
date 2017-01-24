@@ -11,9 +11,8 @@ export default class DragDropMonitor {
     this.registry = new HandlerRegistry(store);
   }
 
-  subscribeToStateChange(listener, {
-    handlerIds
-  }: options = {}) {
+  subscribeToStateChange(listener, options = {}) {
+    const { handlerIds } = options;
     invariant(
       typeof listener === 'function',
       'listener must be a function.'
@@ -110,9 +109,8 @@ export default class DragDropMonitor {
     return source.isDragging(this, sourceId);
   }
 
-  isOverTarget(targetId, {
-    shallow = false
-  }: options = {}) {
+  isOverTarget(targetId, options = { shallow: false }) {
+    const { shallow } = options;
     if (!this.isDragging()) {
       return false;
     }
