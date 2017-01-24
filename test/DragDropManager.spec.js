@@ -94,6 +94,21 @@ describe('DragDropManager', () => {
       expect(() => registry.addTarget([Symbol(), Symbol()], target)).to.not.throwError();
     });
 
+    // The target type true is a wildcard and matches all target types.  The
+    // target type false matches no target types.
+    //
+    // Using true or false as a source type doesn't make sense and isn't
+    // supported.
+    it('accepts boolean as type for DropTargets, not for DragSources', () => {
+      const source = new NormalSource();
+      const target = new NormalTarget();
+
+      expect(() => registry.addSource(true, source)).to.throwError();
+      expect(() => registry.addTarget(true, target)).to.not.throwError();
+      expect(() => registry.addTarget(false, target)).to.not.throwError();
+      expect(() => registry.addTarget([true, true, false], target)).to.not.throwError();
+    });
+
     it('throws on invalid type', () => {
       const source = new NormalSource();
       const target = new NormalTarget();
@@ -358,13 +373,16 @@ describe('DragDropManager', () => {
       it('ignores drop() if target has a different type', () => {
         const source = new NormalSource();
         const sourceId = registry.addSource(Types.FOO, source);
-        const target = new NormalTarget();
-        const targetId = registry.addTarget(Types.BAR, target);
+        const targetA = new NormalTarget();
+        const targetAId = registry.addTarget(Types.BAR, targetA);
+        const targetB = new NormalTarget();
+        const targetBId = registry.addTarget(Types.NIL, targetB);
 
         backend.simulateBeginDrag([sourceId]);
-        backend.simulateHover([targetId]);
+        backend.simulateHover([targetAId, targetBId]);
         backend.simulateDrop();
-        expect(target.didCallDrop).to.equal(false);
+        expect(targetA.didCallDrop).to.equal(false);
+        expect(targetB.didCallDrop).to.equal(false);
       });
 
       it('throws in drop() if it is called outside a drag operation', () => {
@@ -422,16 +440,20 @@ describe('DragDropManager', () => {
           const targetAId = registry.addTarget(Types.FOO, targetA);
           const targetB = new NormalTarget({ number: 16 });
           const targetBId = registry.addTarget(Types.BAR, targetB);
-          const targetC = new NormalTarget({ number: 42 });
-          const targetCId = registry.addTarget(Types.FOO, targetC);
+          const targetC = new NormalTarget({ number: 29 });
+          const targetCId = registry.addTarget(Types.NIL, targetC);
+          const targetD = new NormalTarget({ number: 42 });
+          const targetDId = registry.addTarget(Types.FOO, targetD);
 
           backend.simulateBeginDrag([sourceId]);
-          backend.simulateHover([targetAId, targetBId, targetCId]);
+          backend.simulateHover([targetAId, targetBId, targetCId, targetDId]);
           backend.simulateDrop();
           backend.simulateEndDrag();
           expect(targetA.didCallDrop).to.equal(true);
           expect(targetB.didCallDrop).to.equal(false);
-          expect(targetC.didCallDrop).to.equal(true);
+          console.log("C dropped?", targetC.didCallDrop);
+          expect(targetC.didCallDrop).to.equal(false);
+          expect(targetD.didCallDrop).to.equal(true);
           expect(source.recordedDropResult).to.eql({ number: 42 });
         });
 
@@ -587,13 +609,22 @@ describe('DragDropManager', () => {
         const targetCId = registry.addTarget(Types.FOO, targetC);
         const targetD = new NormalTarget();
         const targetDId = registry.addTarget([Types.BAZ, Types.FOO], targetD);
+        const targetE = new NormalTarget();
+        const targetEId = registry.addTarget(Types.WILDCARD, targetE);
+        const targetF = new NormalTarget();
+        const targetFId = registry.addTarget(Types.NIL, targetF);
+        const targetG = new NormalTarget();
+        const targetGId = registry.addTarget([Types.WILDCARD, Types.NIL], targetG);
 
         backend.simulateBeginDrag([sourceId]);
-        backend.simulateHover([targetAId, targetBId, targetCId, targetDId]);
+        backend.simulateHover([targetAId, targetBId, targetCId, targetDId, targetEId, targetFId, targetGId]);
         expect(targetA.didCallHover).to.equal(true);
         expect(targetB.didCallHover).to.equal(false);
         expect(targetC.didCallHover).to.equal(true);
         expect(targetD.didCallHover).to.equal(true);
+        expect(targetE.didCallHover).to.equal(true);
+        expect(targetF.didCallHover).to.equal(false);
+        expect(targetG.didCallHover).to.equal(true);
       });
 
       it('includes non-droppable targets when dispatching hover', () => {
@@ -603,11 +634,14 @@ describe('DragDropManager', () => {
         const targetAId = registry.addTarget(Types.FOO, targetA);
         const targetB = new TargetWithNoDropResult();
         const targetBId = registry.addTarget(Types.FOO, targetB);
+        const targetC = new TargetWithNoDropResult();
+        const targetCId = registry.addTarget(Types.WILDCARD, targetC);
 
         backend.simulateBeginDrag([sourceId]);
-        backend.simulateHover([targetAId, targetBId]);
+        backend.simulateHover([targetAId, targetBId, targetCId]);
         expect(targetA.didCallHover).to.equal(true);
         expect(targetB.didCallHover).to.equal(true);
+        expect(targetC.didCallHover).to.equal(true);
       });
 
       it('throws in hover() if it contains the same target twice', () => {

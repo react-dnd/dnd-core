@@ -1,6 +1,8 @@
 import invariant from 'invariant';
 import isArray from 'lodash/isArray';
 import getNextUniqueId from './utils/getNextUniqueId';
+import isValidSourceType from './utils/isValidSourceType';
+import isValidTargetType from './utils/isValidTargetType';
 import { addSource, addTarget, removeSource, removeTarget } from './actions/registry';
 import asap from 'asap';
 
@@ -19,20 +21,6 @@ function validateTargetContract(target) {
   invariant(typeof target.canDrop === 'function', 'Expected canDrop to be a function.');
   invariant(typeof target.hover === 'function', 'Expected hover to be a function.');
   invariant(typeof target.drop === 'function', 'Expected beginDrag to be a function.');
-}
-
-function validateType(type, allowArray) {
-  if (allowArray && isArray(type)) {
-    type.forEach(t => validateType(t, false));
-    return;
-  }
-
-  invariant(
-    typeof type === 'string' || typeof type === 'symbol',
-    allowArray ?
-      'Type can only be a string, a symbol, or an array of either.' :
-      'Type can only be a string or a symbol.'
-  );
 }
 
 function getNextHandlerId(role) {
@@ -70,7 +58,10 @@ export default class HandlerRegistry {
   }
 
   addSource(type, source) {
-    validateType(type);
+    invariant(
+      isValidSourceType(type),
+        'Source type can only be a string, a symbol, a boolean, or an array thereof.'
+    );
     validateSourceContract(source);
 
     const sourceId = this.addHandler(HandlerRoles.SOURCE, type, source);
@@ -79,7 +70,10 @@ export default class HandlerRegistry {
   }
 
   addTarget(type, target) {
-    validateType(type, true);
+    invariant(
+      isValidTargetType(type),
+        'Target type can only be a string or a symbol.'
+    );
     validateTargetContract(target);
 
     const targetId = this.addHandler(HandlerRoles.TARGET, type, target);
