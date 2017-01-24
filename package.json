@@ -5,10 +5,12 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "build": "npm run clean && babel src --out-dir lib",
-    "test": "mocha --compilers js:babel/register --recursive",
-    "test:cov": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel/register --recursive",
-    "test:watch": "npm run test -- --watch",
+    "build": "babel src --out-dir lib",
+    "unit_test": "mocha --compilers js:babel/register --recursive",
+    "unit_test:watch": "npm run unit_test -- --watch",
+    "unit_test:cov": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel/register --recursive",
+    "develop": "npm run unit_test:watch",
+    "test": "npm-run-all clean build unit_test:cov",
     "prepublish": "npm run build"
   },
   "repository": {
@@ -28,6 +30,7 @@
     "expect.js": "^0.3.1",
     "istanbul": "~0.3.7",
     "mocha": "^2.0.1",
+    "npm-run-all": "^4.0.1",
     "rimraf": "^2.4.3"
   },
   "dependencies": {
