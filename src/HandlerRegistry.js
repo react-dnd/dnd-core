@@ -1,12 +1,12 @@
 import invariant from 'invariant';
 import isArray from 'lodash/isArray';
-import getNextUniqueId from './utils/getNextUniqueId';
-import { addSource, addTarget, removeSource, removeTarget } from './actions/registry';
 import asap from 'asap';
+import { addSource, addTarget, removeSource, removeTarget } from './actions/registry';
+import getNextUniqueId from './utils/getNextUniqueId';
 
 const HandlerRoles = {
   SOURCE: 'SOURCE',
-  TARGET: 'TARGET'
+  TARGET: 'TARGET',
 };
 
 function validateSourceContract(source) {
@@ -31,30 +31,30 @@ function validateType(type, allowArray) {
     typeof type === 'string' || typeof type === 'symbol',
     allowArray ?
       'Type can only be a string, a symbol, or an array of either.' :
-      'Type can only be a string or a symbol.'
+      'Type can only be a string or a symbol.',
   );
 }
 
 function getNextHandlerId(role) {
   const id = getNextUniqueId().toString();
   switch (role) {
-  case HandlerRoles.SOURCE:
-    return `S${id}`;
-  case HandlerRoles.TARGET:
-    return `T${id}`;
-  default:
-    invariant(false, `Unknown role: ${role}`);
+    case HandlerRoles.SOURCE:
+      return `S${id}`;
+    case HandlerRoles.TARGET:
+      return `T${id}`;
+    default:
+      invariant(false, `Unknown role: ${role}`);
   }
 }
 
 function parseRoleFromHandlerId(handlerId) {
   switch (handlerId[0]) {
-  case 'S':
-    return HandlerRoles.SOURCE;
-  case 'T':
-    return HandlerRoles.TARGET;
-  default:
-    invariant(false, `Cannot parse handler ID: ${handlerId}`);
+    case 'S':
+      return HandlerRoles.SOURCE;
+    case 'T':
+      return HandlerRoles.TARGET;
+    default:
+      invariant(false, `Cannot parse handler ID: ${handlerId}`);
   }
 }
 

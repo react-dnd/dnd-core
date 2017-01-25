@@ -1,6 +1,3 @@
 {
-  "stage": 0,
-  "loose": ["es6.modules", "es6.classes"],
-  "optional": ["es6.spec.symbols"],
-  "plugins": ["object-assign"]
+  "presets": ["latest", "stage-2"]
 }

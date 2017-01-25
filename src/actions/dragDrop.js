@@ -1,7 +1,7 @@
-import matchesType from '../utils/matchesType';
 import invariant from 'invariant';
 import isArray from 'lodash/isArray';
 import isObject from 'lodash/isObject';
+import matchesType from '../utils/matchesType';
 
 export const BEGIN_DRAG = 'dnd-core/BEGIN_DRAG';
 export const PUBLISH_DRAG_SOURCE = 'dnd-core/PUBLISH_DRAG_SOURCE';
@@ -9,24 +9,21 @@ export const HOVER = 'dnd-core/HOVER';
 export const DROP = 'dnd-core/DROP';
 export const END_DRAG = 'dnd-core/END_DRAG';
 
-export function beginDrag(sourceIds, {
-  publishSource = true,
-  clientOffset = null,
-  getSourceClientOffset
-}: options = {}) {
+export function beginDrag(sourceIds, options = { publishSource: true, clientOffset: null }) {
+  const { publishSource, clientOffset, getSourceClientOffset } = options;
   invariant(isArray(sourceIds), 'Expected sourceIds to be an array.');
 
   const monitor = this.getMonitor();
   const registry = this.getRegistry();
   invariant(
     !monitor.isDragging(),
-    'Cannot call beginDrag while dragging.'
+    'Cannot call beginDrag while dragging.',
   );
 
   for (let i = 0; i < sourceIds.length; i++) {
     invariant(
       registry.getSource(sourceIds[i]),
-      'Expected sourceIds to be registered.'
+      'Expected sourceIds to be registered.',
     );
   }
 
@@ -45,7 +42,7 @@ export function beginDrag(sourceIds, {
   if (clientOffset) {
     invariant(
       typeof getSourceClientOffset === 'function',
-      'When clientOffset is provided, getSourceClientOffset must be a function.'
+      'When clientOffset is provided, getSourceClientOffset must be a function.',
     );
     sourceClientOffset = getSourceClientOffset(sourceId);
   }
@@ -64,34 +61,32 @@ export function beginDrag(sourceIds, {
     sourceId,
     clientOffset,
     sourceClientOffset,
-    isSourcePublic: publishSource
+    isSourcePublic: publishSource,
   };
 }
 
-export function publishDragSource(manager) {
+export function publishDragSource() {
   const monitor = this.getMonitor();
   if (!monitor.isDragging()) {
     return;
   }
 
-  return {
-    type: PUBLISH_DRAG_SOURCE
-  };
+  return { type: PUBLISH_DRAG_SOURCE };
 }
 
-export function hover(targetIds, { clientOffset = null } = {}) {
-  invariant(isArray(targetIds), 'Expected targetIds to be an array.');
-  targetIds = targetIds.slice(0);
+export function hover(targetIdsArg, { clientOffset = null } = {}) {
+  invariant(isArray(targetIdsArg), 'Expected targetIds to be an array.');
+  const targetIds = targetIdsArg.slice(0);
 
   const monitor = this.getMonitor();
   const registry = this.getRegistry();
   invariant(
     monitor.isDragging(),
-    'Cannot call hover while not dragging.'
+    'Cannot call hover while not dragging.',
   );
   invariant(
     !monitor.didDrop(),
-    'Cannot call hover after drop.'
+    'Cannot call hover after drop.',
   );
 
   // First check invariants.
@@ -99,13 +94,13 @@ export function hover(targetIds, { clientOffset = null } = {}) {
     const targetId = targetIds[i];
     invariant(
       targetIds.lastIndexOf(targetId) === i,
-      'Expected targetIds to be unique in the passed array.'
+      'Expected targetIds to be unique in the passed array.',
     );
 
     const target = registry.getTarget(targetId);
     invariant(
       target,
-      'Expected targetIds to be registered.'
+      'Expected targetIds to be registered.',
     );
   }
 
@@ -132,7 +127,7 @@ export function hover(targetIds, { clientOffset = null } = {}) {
   return {
     type: HOVER,
     targetIds,
-    clientOffset
+    clientOffset,
   };
 }
 
@@ -141,11 +136,11 @@ export function drop() {
   const registry = this.getRegistry();
   invariant(
     monitor.isDragging(),
-    'Cannot call drop while not dragging.'
+    'Cannot call drop while not dragging.',
   );
   invariant(
     !monitor.didDrop(),
-    'Cannot call drop twice during one drag operation.'
+    'Cannot call drop twice during one drag operation.',
   );
 
   const targetIds = monitor
@@ -159,7 +154,7 @@ export function drop() {
     let dropResult = target.drop(monitor, targetId);
     invariant(
       typeof dropResult === 'undefined' || isObject(dropResult),
-      'Drop result must either be an object or undefined.'
+      'Drop result must either be an object or undefined.',
     );
     if (typeof dropResult === 'undefined') {
       dropResult = index === 0 ?
@@ -169,7 +164,7 @@ export function drop() {
 
     this.store.dispatch({
       type: DROP,
-      dropResult
+      dropResult,
     });
   });
 }
@@ -179,7 +174,7 @@ export function endDrag() {
   const registry = this.getRegistry();
   invariant(
     monitor.isDragging(),
-    'Cannot call endDrag while not dragging.'
+    'Cannot call endDrag while not dragging.',
   );
 
   const sourceId = monitor.getSourceId();
@@ -188,7 +183,5 @@ export function endDrag() {
 
   registry.unpinSource();
 
-  return {
-    type: END_DRAG
-  };
+  return { type: END_DRAG };
 }
