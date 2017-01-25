@@ -8,27 +8,27 @@ const ALL = [];
 
 export default function dirtyHandlerIds(state = NONE, action, dragOperation) {
   switch (action.type) {
-  case HOVER:
-    break;
-  case ADD_SOURCE:
-  case ADD_TARGET:
-  case REMOVE_TARGET:
-  case REMOVE_SOURCE:
-    return NONE;
-  case BEGIN_DRAG:
-  case PUBLISH_DRAG_SOURCE:
-  case END_DRAG:
-  case DROP:
-  default:
-    return ALL;
+    case HOVER:
+      break;
+    case ADD_SOURCE:
+    case ADD_TARGET:
+    case REMOVE_TARGET:
+    case REMOVE_SOURCE:
+      return NONE;
+    case BEGIN_DRAG:
+    case PUBLISH_DRAG_SOURCE:
+    case END_DRAG:
+    case DROP:
+    default:
+      return ALL;
   }
 
   const { targetIds } = action;
   const { targetIds: prevTargetIds } = dragOperation;
-  const dirtyHandlerIds = xor(targetIds, prevTargetIds);
+  const result = xor(targetIds, prevTargetIds);
 
   let didChange = false;
-  if (dirtyHandlerIds.length === 0) {
+  if (result.length === 0) {
     for (let i = 0; i < targetIds.length; i++) {
       if (targetIds[i] !== prevTargetIds[i]) {
         didChange = true;
@@ -48,14 +48,14 @@ export default function dirtyHandlerIds(state = NONE, action, dragOperation) {
 
   if (prevInnermostTargetId !== innermostTargetId) {
     if (prevInnermostTargetId) {
-      dirtyHandlerIds.push(prevInnermostTargetId);
+      result.push(prevInnermostTargetId);
     }
     if (innermostTargetId) {
-      dirtyHandlerIds.push(innermostTargetId);
+      result.push(innermostTargetId);
     }
   }
 
-  return dirtyHandlerIds;
+  return result;
 }
 
 export function areDirty(state, handlerIds) {

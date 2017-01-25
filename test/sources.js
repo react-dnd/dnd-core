@@ -57,7 +57,7 @@ export class NumberSource extends DragSource {
 
   beginDrag() {
     return {
-      number: this.number
+      number: this.number,
     };
   }
 }

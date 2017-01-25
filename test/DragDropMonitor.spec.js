@@ -19,7 +19,7 @@ describe('DragDropMonitor', () => {
 
   describe('state change subscription', () => {
     it('throws on bad listener', () => {
-      expect(() => monitor.subscribeToStateChange(() => {})).to.not.throwError();
+      expect(() => monitor.subscribeToStateChange(() => { })).to.not.throwError();
 
       expect(() => monitor.subscribeToStateChange()).to.throwError();
       expect(() => monitor.subscribeToStateChange(42)).to.throwError();
@@ -28,10 +28,10 @@ describe('DragDropMonitor', () => {
     });
 
     it('throws on bad handlerIds', () => {
-      expect(() => monitor.subscribeToStateChange(() => {}, { handlerIds: [] })).to.not.throwError();
-      expect(() => monitor.subscribeToStateChange(() => {}, { handlerIds: ['hi'] })).to.not.throwError();
-      expect(() => monitor.subscribeToStateChange(() => {}, { handlerIds: {} })).to.throwError();
-      expect(() => monitor.subscribeToStateChange(() => {}, { handlerIds: () => {} })).to.throwError();
+      expect(() => monitor.subscribeToStateChange(() => { }, { handlerIds: [] })).to.not.throwError();
+      expect(() => monitor.subscribeToStateChange(() => { }, { handlerIds: ['hi'] })).to.not.throwError();
+      expect(() => monitor.subscribeToStateChange(() => { }, { handlerIds: {} })).to.throwError();
+      expect(() => monitor.subscribeToStateChange(() => { }, { handlerIds: () => { } })).to.throwError();
     });
 
     it('allows to unsubscribe', () => {
@@ -61,7 +61,7 @@ describe('DragDropMonitor', () => {
     it('raises global change event on beginDrag() even if a subscriber causes other changes', (done) => {
       const source = new NormalSource();
       const sourceId = registry.addSource(Types.FOO, source);
-      const target = new NormalTarget()
+      const target = new NormalTarget();
 
       let notified = false;
       monitor.subscribeToStateChange(() => {
@@ -87,28 +87,28 @@ describe('DragDropMonitor', () => {
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceA = true;
       }, {
-        handlerIds: [sourceAId]
+        handlerIds: [sourceAId],
       });
 
       let raisedChangeForSourceB = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceB = true;
       }, {
-        handlerIds: [sourceBId]
+        handlerIds: [sourceBId],
       });
 
       let raisedChangeForSourceAAndB = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceAAndB = true;
       }, {
-        handlerIds: [sourceAId, sourceBId]
+        handlerIds: [sourceAId, sourceBId],
       });
 
       let raisedChangeForTargetA = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetA = true;
       }, {
-        handlerIds: [targetAId]
+        handlerIds: [targetAId],
       });
 
       backend.simulateBeginDrag([sourceAId]);
@@ -132,28 +132,28 @@ describe('DragDropMonitor', () => {
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceA = true;
       }, {
-        handlerIds: [sourceAId]
+        handlerIds: [sourceAId],
       });
 
       let raisedChangeForSourceB = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceB = true;
       }, {
-        handlerIds: [sourceBId]
+        handlerIds: [sourceBId],
       });
 
       let raisedChangeForSourceAAndB = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceAAndB = true;
       }, {
-        handlerIds: [sourceAId, sourceBId]
+        handlerIds: [sourceAId, sourceBId],
       });
 
       let raisedChangeForTargetA = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetA = true;
       }, {
-        handlerIds: [targetAId]
+        handlerIds: [targetAId],
       });
 
       backend.simulateEndDrag();
@@ -178,28 +178,28 @@ describe('DragDropMonitor', () => {
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceA = true;
       }, {
-        handlerIds: [sourceAId]
+        handlerIds: [sourceAId],
       });
 
       let raisedChangeForSourceB = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceB = true;
       }, {
-        handlerIds: [sourceBId]
+        handlerIds: [sourceBId],
       });
 
       let raisedChangeForSourceAAndB = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceAAndB = true;
       }, {
-        handlerIds: [sourceAId, sourceBId]
+        handlerIds: [sourceAId, sourceBId],
       });
 
       let raisedChangeForTargetA = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetA = true;
       }, {
-        handlerIds: [targetAId]
+        handlerIds: [targetAId],
       });
 
       backend.simulateDrop();
@@ -232,63 +232,63 @@ describe('DragDropMonitor', () => {
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceA = true;
       }, {
-        handlerIds: [sourceAId]
+        handlerIds: [sourceAId],
       });
 
       let raisedChangeForSourceB = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceB = true;
       }, {
-        handlerIds: [sourceBId]
+        handlerIds: [sourceBId],
       });
 
       let raisedChangeForTargetA = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetA = true;
       }, {
-        handlerIds: [targetAId]
+        handlerIds: [targetAId],
       });
 
       let raisedChangeForTargetB = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetB = true;
       }, {
-        handlerIds: [targetBId]
+        handlerIds: [targetBId],
       });
 
       let raisedChangeForTargetC = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetC = true;
       }, {
-        handlerIds: [targetCId]
+        handlerIds: [targetCId],
       });
 
       let raisedChangeForTargetD = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetD = true;
       }, {
-        handlerIds: [targetDId]
+        handlerIds: [targetDId],
       });
 
       let raisedChangeForTargetE = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetE = true;
       }, {
-        handlerIds: [targetEId]
+        handlerIds: [targetEId],
       });
 
       let raisedChangeForSourceBAndTargetC = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceBAndTargetC = true;
       }, {
-        handlerIds: [sourceBId, targetCId]
+        handlerIds: [sourceBId, targetCId],
       });
 
       let raisedChangeForSourceBAndTargetE = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForSourceBAndTargetE = true;
       }, {
-        handlerIds: [sourceBId, targetEId]
+        handlerIds: [sourceBId, targetEId],
       });
 
       backend.simulateHover([targetDId, targetEId]);
@@ -303,7 +303,7 @@ describe('DragDropMonitor', () => {
       expect(raisedChangeForSourceBAndTargetE).to.equal(true);
     });
 
-   it('raises local change event when target stops being or becomes innermost in hover()', () => {
+    it('raises local change event when target stops being or becomes innermost in hover()', () => {
       const source = new NormalSource();
       const sourceId = registry.addSource(Types.FOO, source);
       const targetA = new NormalTarget();
@@ -322,28 +322,28 @@ describe('DragDropMonitor', () => {
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetA = true;
       }, {
-        handlerIds: [targetAId]
+        handlerIds: [targetAId],
       });
 
       let raisedChangeForTargetB = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetB = true;
       }, {
-        handlerIds: [targetBId]
+        handlerIds: [targetBId],
       });
 
       let raisedChangeForTargetC = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetC = true;
       }, {
-        handlerIds: [targetCId]
+        handlerIds: [targetCId],
       });
 
       let raisedChangeForTargetD = false;
       monitor.subscribeToStateChange(() => {
         raisedChangeForTargetD = true;
       }, {
-        handlerIds: [targetDId]
+        handlerIds: [targetDId],
       });
 
       backend.simulateHover([targetAId, targetBId, targetCId]);
@@ -453,7 +453,7 @@ describe('DragDropMonitor', () => {
 
   describe('offset change subscription', () => {
     it('throws on bad listener', () => {
-      expect(() => monitor.subscribeToOffsetChange(() => {})).to.not.throwError();
+      expect(() => monitor.subscribeToOffsetChange(() => { })).to.not.throwError();
 
       expect(() => monitor.subscribeToOffsetChange()).to.throwError();
       expect(() => monitor.subscribeToOffsetChange(42)).to.throwError();
@@ -475,7 +475,7 @@ describe('DragDropMonitor', () => {
 
       backend.simulateBeginDrag([sourceId], {
         clientOffset: { x: 0, y: 0 },
-        getSourceClientOffset: () => ({ x: 0, y: 0 })
+        getSourceClientOffset: () => ({ x: 0, y: 0 }),
       });
       expect(raisedChange).to.equal(false);
     });
@@ -485,17 +485,17 @@ describe('DragDropMonitor', () => {
       const sourceId = registry.addSource(Types.FOO, source);
 
       expect(() => backend.simulateBeginDrag([sourceId], {
-        clientOffset: { x: 0, y: 0 }
+        clientOffset: { x: 0, y: 0 },
       })).to.throwError();
 
       expect(() => backend.simulateBeginDrag([sourceId], {
         clientOffset: { x: 0, y: 0 },
-        getSourceClientOffset: { x: 0, y: 0 }
+        getSourceClientOffset: { x: 0, y: 0 },
       })).to.throwError();
 
       expect(() => backend.simulateBeginDrag([sourceId], {
         clientOffset: { x: 0, y: 0 },
-        getSourceClientOffset: () => ({ x: 0, y: 0 })
+        getSourceClientOffset: () => ({ x: 0, y: 0 }),
       })).to.not.throwError();
     });
 
@@ -511,8 +511,9 @@ describe('DragDropMonitor', () => {
 
       backend.simulateBeginDrag([sourceAId, sourceBId, sourceCId, sourceDId], {
         clientOffset: { x: 0, y: 0 },
-        getSourceClientOffset: (sourceId) =>
+        getSourceClientOffset: sourceId => (
           sourceId === sourceCId ? { x: 42, y: 0 } : { x: 0, y: 0 }
+        ),
       });
 
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 42, y: 0 });
@@ -532,31 +533,31 @@ describe('DragDropMonitor', () => {
 
       backend.simulateBeginDrag([sourceId], {
         clientOffset: { x: 50, y: 40 },
-        getSourceClientOffset: () => ({ x: 20, y: 10 })
+        getSourceClientOffset: () => ({ x: 20, y: 10 }),
       });
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getSourceClientOffset()).to.eql({ x: 20, y: 10 });
-      expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: 0, y: 0});
+      expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: 0, y: 0 });
 
       backend.simulateHover([targetId], {
-        clientOffset: { x: 60, y: 70 }
+        clientOffset: { x: 60, y: 70 },
       });
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getClientOffset()).to.eql({ x: 60, y: 70 });
       expect(monitor.getSourceClientOffset()).to.eql({ x: 30, y: 40 });
-      expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: 10, y: 30});
+      expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: 10, y: 30 });
 
       backend.simulateHover([targetId], {
-        clientOffset: { x: 0, y: 0 }
+        clientOffset: { x: 0, y: 0 },
       });
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getClientOffset()).to.eql({ x: 0, y: 0 });
       expect(monitor.getSourceClientOffset()).to.eql({ x: -30, y: -30 });
-      expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: -50, y: -40});
+      expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: -50, y: -40 });
 
       backend.simulateDrop();
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
@@ -574,13 +575,13 @@ describe('DragDropMonitor', () => {
 
       backend.simulateBeginDrag([sourceId], {
         clientOffset: { x: 50, y: 40 },
-        getSourceClientOffset: () => ({ x: 20, y: 10 })
+        getSourceClientOffset: () => ({ x: 20, y: 10 }),
       });
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getClientOffset()).to.eql({ x: 50, y: 40 });
       expect(monitor.getSourceClientOffset()).to.eql({ x: 20, y: 10 });
-      expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: 0, y: 0});
+      expect(monitor.getDifferenceFromInitialOffset()).to.eql({ x: 0, y: 0 });
 
       backend.simulateEndDrag();
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
@@ -610,7 +611,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateHover([targetId], {
-        clientOffset: { x: 60, y: 70 }
+        clientOffset: { x: 60, y: 70 },
       });
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
@@ -626,7 +627,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateHover([targetId], {
-        clientOffset: { x: 60, y: 70 }
+        clientOffset: { x: 60, y: 70 },
       });
       expect(monitor.getInitialSourceClientOffset()).to.equal(null);
       expect(monitor.getInitialClientOffset()).to.equal(null);
@@ -663,7 +664,7 @@ describe('DragDropMonitor', () => {
 
       backend.simulateBeginDrag([sourceId], {
         clientOffset: { x: 50, y: 40 },
-        getSourceClientOffset: () => ({ x: 20, y: 10 })
+        getSourceClientOffset: () => ({ x: 20, y: 10 }),
       });
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
@@ -679,7 +680,7 @@ describe('DragDropMonitor', () => {
       expect(monitor.getDifferenceFromInitialOffset()).to.equal(null);
 
       backend.simulateHover([targetId], {
-        clientOffset: { x: 60, y: 70 }
+        clientOffset: { x: 60, y: 70 },
       });
       expect(monitor.getInitialSourceClientOffset()).to.eql({ x: 20, y: 10 });
       expect(monitor.getInitialClientOffset()).to.eql({ x: 50, y: 40 });
@@ -709,7 +710,7 @@ describe('DragDropMonitor', () => {
       monitor.subscribeToOffsetChange(done);
       backend.simulateBeginDrag([sourceId], {
         clientOffset: { x: 0, y: 0 },
-        getSourceClientOffset: () => ({ x: 0, y: 0 })
+        getSourceClientOffset: () => ({ x: 0, y: 0 }),
       });
     });
 
@@ -721,12 +722,12 @@ describe('DragDropMonitor', () => {
 
       backend.simulateBeginDrag([sourceId], {
         clientOffset: { x: 10, y: 10 },
-        getSourceClientOffset: () => ({ x: 0, y: 0 })
+        getSourceClientOffset: () => ({ x: 0, y: 0 }),
       });
 
       monitor.subscribeToOffsetChange(done);
       backend.simulateHover([targetId], {
-        clientOffset: { x: 20, y: 10 }
+        clientOffset: { x: 20, y: 10 },
       });
     });
 
@@ -755,7 +756,7 @@ describe('DragDropMonitor', () => {
 
       backend.simulateBeginDrag([sourceId], {
         clientOffset: { x: 100, y: 200 },
-        getSourceClientOffset: () => ({ x: 0, y: 0 })
+        getSourceClientOffset: () => ({ x: 0, y: 0 }),
       });
 
       let raisedChange = false;
@@ -764,15 +765,15 @@ describe('DragDropMonitor', () => {
       });
 
       backend.simulateHover([targetId], {
-        clientOffset: { x: 100, y: 200 }
+        clientOffset: { x: 100, y: 200 },
       });
       expect(raisedChange).to.equal(false);
       backend.simulateHover([], {
-        clientOffset: { x: 100, y: 200 }
+        clientOffset: { x: 100, y: 200 },
       });
       expect(raisedChange).to.equal(false);
       backend.simulateHover([targetId], {
-        clientOffset: { x: 101, y: 200 }
+        clientOffset: { x: 101, y: 200 },
       });
       expect(raisedChange).to.equal(true);
     });
@@ -890,8 +891,8 @@ describe('DragDropMonitor', () => {
     });
 
     it('treats symbol types just like string types', () => {
-      const FooType = Symbol();
-      const BarType = Symbol();
+      const FooType = Symbol('foo');
+      const BarType = Symbol('bar');
 
       const source = new NormalSource();
       const sourceId = registry.addSource(FooType, source);

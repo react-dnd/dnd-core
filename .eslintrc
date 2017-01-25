@@ -1,16 +1,14 @@
 {
+  "extends": "eslint-config-airbnb",
   "env": {
     "browser": true,
-    "node": true,
-    "mocha": true
+    "node": true
   },
-  "parser": "babel-eslint",
   "rules": {
-    "quotes": [2, "single"],
-    "eol-last": [0],
-    "no-mixed-requires": [0],
-    "no-underscore-dangle": [0],
-    "consistent-return": [0],
-    "strict": [0, "never"]
+    "no-plusplus": "off",
+    "consistent-return": "off",
+    "class-methods-use-this": "off",
+    "no-mixed-operators": "off",
+    "no-else-return": "off"
   }
 }

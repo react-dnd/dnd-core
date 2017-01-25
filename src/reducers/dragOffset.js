@@ -3,7 +3,7 @@ import { BEGIN_DRAG, HOVER, END_DRAG, DROP } from '../actions/dragDrop';
 const initialState = {
   initialSourceClientOffset: null,
   initialClientOffset: null,
-  clientOffset: null
+  clientOffset: null,
 };
 
 function areOffsetsEqual(offsetA, offsetB) {
@@ -20,24 +20,25 @@ function areOffsetsEqual(offsetA, offsetB) {
 
 export default function dragOffset(state = initialState, action) {
   switch (action.type) {
-  case BEGIN_DRAG:
-    return {
-      initialSourceClientOffset: action.sourceClientOffset,
-      initialClientOffset: action.clientOffset,
-      clientOffset: action.clientOffset
-    };
-  case HOVER:
-    if (areOffsetsEqual(state.clientOffset, action.clientOffset)) {
+    case BEGIN_DRAG:
+      return {
+        initialSourceClientOffset: action.sourceClientOffset,
+        initialClientOffset: action.clientOffset,
+        clientOffset: action.clientOffset,
+      };
+    case HOVER:
+      if (areOffsetsEqual(state.clientOffset, action.clientOffset)) {
+        return state;
+      }
+      return {
+        ...state,
+        clientOffset: action.clientOffset,
+      };
+    case END_DRAG:
+    case DROP:
+      return initialState;
+    default:
       return state;
-    }
-    return Object.assign({}, state, {
-      clientOffset: action.clientOffset
-    });
-  case END_DRAG:
-  case DROP:
-    return initialState;
-  default:
-    return state;
   }
 }
 
@@ -48,7 +49,7 @@ export function getSourceClientOffset(state) {
   }
   return {
     x: clientOffset.x + initialSourceClientOffset.x - initialClientOffset.x,
-    y: clientOffset.y + initialSourceClientOffset.y - initialClientOffset.y
+    y: clientOffset.y + initialSourceClientOffset.y - initialClientOffset.y,
   };
 }
 
@@ -59,6 +60,6 @@ export function getDifferenceFromInitialOffset(state) {
   }
   return {
     x: clientOffset.x - initialClientOffset.x,
-    y: clientOffset.y - initialClientOffset.y
+    y: clientOffset.y - initialClientOffset.y,
   };
 }
