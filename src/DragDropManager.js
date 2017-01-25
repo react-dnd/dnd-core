@@ -4,7 +4,7 @@ import * as dragDropActions from './actions/dragDrop';
 import DragDropMonitor from './DragDropMonitor';
 
 export default class DragDropManager {
-  constructor(createBackend, context = (global || window)) {
+  constructor(createBackend, context = {}) {
     const store = createStore(reducer);
     this.context = context;
     this.store = store;
