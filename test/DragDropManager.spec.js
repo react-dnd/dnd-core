@@ -1,9 +1,19 @@
+import isString from 'lodash/isString';
 import expect from 'expect.js';
 import * as Types from './types';
-import { NormalSource, NonDraggableSource, BadItemSource } from './sources';
-import { NormalTarget, NonDroppableTarget, TargetWithNoDropResult, BadResultTarget, TransformResultTarget } from './targets';
+import {
+  NormalSource,
+  NonDraggableSource,
+  BadItemSource,
+} from './sources';
+import {
+  NormalTarget,
+  NonDroppableTarget,
+  TargetWithNoDropResult,
+  BadResultTarget,
+  TransformResultTarget,
+} from './targets';
 import { DragDropManager, createTestBackend } from '../src';
-import isString from 'lodash/isString';
 
 describe('DragDropManager', () => {
   let manager;
@@ -16,8 +26,8 @@ describe('DragDropManager', () => {
     registry = manager.getRegistry();
   });
 
-  describe('handler registration', (done) => {
-    it('registers and unregisters drag sources', () => {
+  describe('handler registration', () => {
+    it('registers and unregisters drag sources', (done) => {
       const source = new NormalSource();
       const sourceId = registry.addSource(Types.FOO, source);
       expect(registry.getSource(sourceId)).to.equal(source);
@@ -27,20 +37,6 @@ describe('DragDropManager', () => {
       setImmediate(() => {
         expect(registry.getSource(sourceId)).to.equal(undefined);
         expect(() => registry.removeSource(sourceId)).to.throwError();
-        done();
-      });
-    });
-
-    it('registers and unregisters drop targets', (done) => {
-      const target = new NormalTarget();
-      const targetId = registry.addTarget(Types.FOO, target);
-      expect(registry.getTarget(targetId)).to.equal(target);
-
-      registry.removeTarget(targetId);
-
-      setImmediate(() => {
-        expect(registry.getTarget(targetId)).to.equal(undefined);
-        expect(() => registry.removeTarget(targetId)).to.throwError();
         done();
       });
     });
@@ -89,9 +85,9 @@ describe('DragDropManager', () => {
       const source = new NormalSource();
       const target = new NormalTarget();
 
-      expect(() => registry.addSource(Symbol(), source)).to.not.throwError();
-      expect(() => registry.addTarget(Symbol(), target)).to.not.throwError();
-      expect(() => registry.addTarget([Symbol(), Symbol()], target)).to.not.throwError();
+      expect(() => registry.addSource(Symbol('a'), source)).to.not.throwError();
+      expect(() => registry.addTarget(Symbol('b'), target)).to.not.throwError();
+      expect(() => registry.addTarget([Symbol('c'), Symbol('d')], target)).to.not.throwError();
     });
 
     it('throws on invalid type', () => {
@@ -476,7 +472,7 @@ describe('DragDropManager', () => {
           backend.simulateBeginDrag([sourceId]);
           backend.simulateHover([
             targetAId, targetBId, targetCId, targetDId,
-            targetEId, targetFId, targetGId
+            targetEId, targetFId, targetGId,
           ]);
           backend.simulateDrop();
           backend.simulateEndDrag();
@@ -511,7 +507,7 @@ describe('DragDropManager', () => {
           backend.simulateBeginDrag([sourceId]);
           backend.simulateHover([
             targetAId, targetBId, targetCId, targetDId,
-            targetEId, targetFId, targetGId
+            targetEId, targetFId, targetGId,
           ]);
           backend.simulateDrop();
           backend.simulateEndDrag();

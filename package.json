@@ -5,28 +5,40 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "build": "npm run clean && babel src --out-dir lib",
-    "test": "mocha --compilers js:babel/register --recursive",
-    "test:cov": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel/register --recursive",
-    "test:watch": "npm run test -- --watch",
+    "lint": "eslint '{src,test}/**/*.js'",
+    "build": "babel src --out-dir lib",
+    "unit_test": "jest",
+    "unit_test:watch": "jest --watch",
+    "unit_test:cov": "jest --coverage",
+    "develop": "npm run unit_test:watch",
+    "test": "npm-run-all clean lint build unit_test:cov",
     "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gaearon/dnd-core.git"
+    "url": "https://github.com/react-dnd/dnd-core.git"
   },
   "author": "Dan Abramov <dan.abramov@me.com> (http://github.com/gaearon)",
+  "contributors": [
+    "Chris Trevino <darthtrevino@gmail.com> (http://github.com/darthtrevino)"
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gaearon/dnd-core/issues"
+    "url": "https://github.com/react-dnd/dnd-core/issues"
   },
-  "homepage": "https://github.com/gaearon/dnd-core",
+  "homepage": "https://github.com/react-dnd/dnd-core",
   "devDependencies": {
-    "babel": "^5.8.23",
-    "babel-plugin-object-assign": "^1.2.1",
+    "babel-cli": "^6.22.2",
+    "babel-preset-latest": "^6.22.0",
+    "babel-preset-stage-2": "^6.22.0",
+    "eslint": "^3.14.0",
+    "eslint-config-airbnb": "^14.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^3.0.2",
+    "eslint-plugin-react": "^6.9.0",
     "expect.js": "^0.3.1",
-    "istanbul": "~0.3.7",
-    "mocha": "^2.0.1",
+    "jest": "^18.1.0",
+    "npm-run-all": "^4.0.1",
     "rimraf": "^2.4.3"
   },
   "dependencies": {

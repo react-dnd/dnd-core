@@ -1,6 +1,6 @@
 import invariant from 'invariant';
-import matchesType from './utils/matchesType';
 import isArray from 'lodash/isArray';
+import matchesType from './utils/matchesType';
 import HandlerRegistry from './HandlerRegistry';
 import { getSourceClientOffset, getDifferenceFromInitialOffset } from './reducers/dragOffset';
 import { areDirty } from './reducers/dirtyHandlerIds';
@@ -11,16 +11,15 @@ export default class DragDropMonitor {
     this.registry = new HandlerRegistry(store);
   }
 
-  subscribeToStateChange(listener, {
-    handlerIds
-  }: options = {}) {
+  subscribeToStateChange(listener, options = {}) {
+    const { handlerIds } = options;
     invariant(
       typeof listener === 'function',
-      'listener must be a function.'
+      'listener must be a function.',
     );
     invariant(
       typeof handlerIds === 'undefined' || isArray(handlerIds),
-      'handlerIds, when specified, must be an array of strings.'
+      'handlerIds, when specified, must be an array of strings.',
     );
 
     let prevStateId = this.store.getState().stateId;
@@ -31,7 +30,7 @@ export default class DragDropMonitor {
         const canSkipListener = currentStateId === prevStateId || (
           currentStateId === prevStateId + 1 &&
           !areDirty(state.dirtyHandlerIds, handlerIds)
-        )
+        );
 
         if (!canSkipListener) {
           listener();
@@ -47,19 +46,19 @@ export default class DragDropMonitor {
   subscribeToOffsetChange(listener) {
     invariant(
       typeof listener === 'function',
-      'listener must be a function.'
+      'listener must be a function.',
     );
 
     let previousState = this.store.getState().dragOffset;
     const handleChange = () => {
-      let nextState = this.store.getState().dragOffset;
+      const nextState = this.store.getState().dragOffset;
       if (nextState === previousState) {
         return;
       }
 
       previousState = nextState;
       listener();
-    }
+    };
 
     return this.store.subscribe(handleChange);
   }
@@ -110,9 +109,8 @@ export default class DragDropMonitor {
     return source.isDragging(this, sourceId);
   }
 
-  isOverTarget(targetId, {
-    shallow = false
-  }: options = {}) {
+  isOverTarget(targetId, options = { shallow: false }) {
+    const { shallow } = options;
     if (!this.isDragging()) {
       return false;
     }

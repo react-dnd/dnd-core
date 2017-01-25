@@ -1,15 +1,15 @@
-import { default as dragOffset } from './dragOffset';
-import { default as dragOperation } from './dragOperation';
-import { default as refCount } from './refCount';
-import { default as dirtyHandlerIds } from './dirtyHandlerIds';
-import { default as stateId } from './stateId';
+import dragOffset from './dragOffset';
+import dragOperation from './dragOperation';
+import refCount from './refCount';
+import dirtyHandlerIds from './dirtyHandlerIds';
+import stateId from './stateId';
 
-export default function (state = {}, action) {
+export default function reduce(state = {}, action) {
   return {
     dirtyHandlerIds: dirtyHandlerIds(state.dirtyHandlerIds, action, state.dragOperation),
     dragOffset: dragOffset(state.dragOffset, action),
     refCount: refCount(state.refCount, action),
     dragOperation: dragOperation(state.dragOperation, action),
-    stateId: stateId(state.stateId)
+    stateId: stateId(state.stateId),
   };
 }
