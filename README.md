@@ -6,7 +6,9 @@
 [![bitHound Dependencies](https://www.bithound.io/github/react-dnd/dnd-core/badges/dependencies.svg)](https://www.bithound.io/github/react-dnd/dnd-core/master/dependencies/npm)
 [![bitHound Dev Dependencies](https://www.bithound.io/github/react-dnd/dnd-core/badges/devDependencies.svg)](https://www.bithound.io/github/react-dnd/dnd-core/master/dependencies/npm)
 
-# dnd-core
+# dnd-core [Legacy Repo]
+
+** NOTE: React-Dnd has been restructured as a monorepo. This code has been merged into the the [react-dnd](http://github.com/react-dnd/react-dnd) main repository.
 
 Drag and drop sans the GUI.
 
